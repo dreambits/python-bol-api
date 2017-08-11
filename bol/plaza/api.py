@@ -9,7 +9,7 @@ from enum import Enum
 
 from xml.etree import ElementTree
 
-from .models import Orders, Payments, Shipments, ProcessStatus, PurchasableShippingLabels
+from .models import Orders, Payments, Shipments, ProcessStatus, PurchasableShippingLabels, ReturnItems
 
 
 __all__ = ['PlazaAPI']
@@ -60,6 +60,8 @@ class TransporterCode(Enum):
 class MethodGroup(object):
 
     def __init__(self, api, group):
+        # print "\n MethodGroup=> __init__()-> api -> ",api
+        print "\n MethodGroup=> __init__()-> group -> ",group
         self.api = api
         self.group = group
 
@@ -68,6 +70,10 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
+        print "MethodGroup=> request()-> method ",method
+        print "MethodGroup=> request()-> uri ",uri
+        print "MethodGroup=> request()-> params ",params
+        print "MethodGroup=> request()-> data ",data
         xml = self.api.request(method, uri, params=params, data=data)
         return xml
 
@@ -170,6 +176,7 @@ class ShipmentMethods(MethodGroup):
         response = self.request('POST', data=xml)
         return ProcessStatus.parse(self.api, response)
 
+
 class LabelMethods(MethodGroup):
 
     def __init__(self, api):
@@ -197,6 +204,19 @@ class TransportMethods(MethodGroup):
         return ProcessStatus.parse(self.api, response)
 
 
+class ReturnItemsMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(ReturnItemsMethods, self).__init__(api, 'return-items')
+
+    def getUnhandled(self):
+        xml=self.request('GET', path="/unhandled")
+        print "\n ReturnItemsMethods=> getUnhandled-> dir(ReturnItemsMethods)-> ", dir(ReturnItemsMethods)
+        return ReturnItemsMethods.parse(self.api,xml)
+
+
+
+
 class PlazaAPI(object):
 
     def __init__(self, public_key, private_key, test=False, timeout=None,
@@ -213,6 +233,7 @@ class PlazaAPI(object):
         self.transports = TransportMethods(self)
         self.session = session or requests.Session()
         self.labels = LabelMethods(self)
+        self.return_items = ReturnItemsMethods(self)
 
     def request(self, method, uri, params={}, data=None):
         content_type = 'application/xml; charset=UTF-8'
