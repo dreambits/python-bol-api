@@ -65,7 +65,7 @@ class MethodGroup(object):
         self.api = api
         self.group = group
 
-    def request(self, method, path='', params={}, data=None):
+    def request(self, method, path='', params={}, data=None, accept="application/xml"):
         uri = '/services/rest/{group}/{version}{path}'.format(
             group=self.group,
             version=self.api.version,
@@ -74,7 +74,7 @@ class MethodGroup(object):
         print "MethodGroup=> request()-> uri ",uri
         print "MethodGroup=> request()-> params ",params
         print "MethodGroup=> request()-> data ",data
-        xml = self.api.request(method, uri, params=params, data=data)
+        xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
     def create_request_xml(self, root, **kwargs):
@@ -159,34 +159,33 @@ class ShipmentMethods(MethodGroup):
 
     def create(self, order_item_id, date_time, expected_delivery_date,
                shipment_reference=None, transporter_code=None,
-               track_and_trace=None):
+               track_and_trace=None,shipping_label_code=None):
+        #moved the params to a dict so it can be easy to add/remove parameters
+        values = {
+            'OrderItemId':order_item_id,
+            'DateTime':date_time,
+            'ShipmentReference':shipment_reference,
+            'ExpectedDeliveryDate':expected_delivery_date,
+        }
+
         if transporter_code:
             transporter_code = TransporterCode.to_string(
                 transporter_code)
-        xml = self.create_request_xml(
-            'ShipmentRequest',
-            OrderItemId=order_item_id,
-            DateTime=date_time,
-            ShipmentReference=shipment_reference,
-            ExpectedDeliveryDate=expected_delivery_date,
-            Transport={
+
+        if shipping_label_code:
+            values['ShippingLabelCode'] = shipping_label_code
+        else:
+            values['Transport'] = {
                 'TransporterCode': transporter_code,
                 'TrackAndTrace': track_and_trace
-            })
+            }
+
+        xml = self.create_request_xml(
+            'ShipmentRequest',
+           **values)
+
         response = self.request('POST', data=xml)
         return ProcessStatus.parse(self.api, response)
-
-
-class LabelMethods(MethodGroup):
-
-    def __init__(self, api):
-        super(LabelMethods, self).__init__(api, 'purchasable-shipping-labels')
-
-    def list(self, orderItemId):
-
-        params = {'orderItemId':orderItemId}
-        xml = self.request('GET', params=params)
-        return PurchasableShippingLabels.parse(self.api, xml)
 
 
 class TransportMethods(MethodGroup):
@@ -202,6 +201,23 @@ class TransportMethods(MethodGroup):
             TrackAndTrace=track_and_trace)
         response = self.request('PUT', '/{}'.format(id), data=xml)
         return ProcessStatus.parse(self.api, response)
+
+    def getSingle(self, transportId, shippingLabelId, file_location):
+        content = self.request('GET', '/{}/shipping-label/{}'.format(transportId, shippingLabelId), params={}, data=None, accept="application/pdf")
+        #now lets store this content in pdf:
+
+        with open(file_location, 'wb') as f:
+                f.write(content)
+
+class PurchasableShippingLabelsMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(PurchasableShippingLabelsMethods, self).__init__(api, 'purchasable-shipping-labels')
+
+    def get(self, id):
+        params = {'orderItemId':id}
+        xml = self.request('GET', params=params)#'?orderItemId={}'.format(id))
+        return PurchasableShippingLabels.parse(self.api, xml)
 
 
 class ReturnItemsMethods(MethodGroup):
@@ -221,9 +237,11 @@ class PlazaAPI(object):
 
     def __init__(self, public_key, private_key, test=False, timeout=None,
                  session=None):
+
         self.public_key = public_key
         self.private_key = private_key
         self.url = 'https://%splazaapi.bol.com' % ('test-' if test else '')
+
         self.version = 'v2'
         self.timeout = timeout
         self.orders = OrderMethods(self)
@@ -231,11 +249,11 @@ class PlazaAPI(object):
         self.shipments = ShipmentMethods(self)
         self.process_status = ProcessStatusMethods(self)
         self.transports = TransportMethods(self)
+        self.labels = PurchasableShippingLabelsMethods(self)
         self.session = session or requests.Session()
-        self.labels = LabelMethods(self)
         self.return_items = ReturnItemsMethods(self)
 
-    def request(self, method, uri, params={}, data=None):
+    def request(self, method, uri, params={}, data=None, accept="application/xml"):
         content_type = 'application/xml; charset=UTF-8'
         date = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime())
         msg = """{method}
@@ -256,7 +274,9 @@ x-bol-date:{date}
 
         headers = {'Content-Type': content_type,
                    'X-BOL-Date': date,
-                   'X-BOL-Authorization': signature}
+                   'X-BOL-Authorization': signature,
+                   'accept':accept}
+
         request_kwargs = {
             'method': method,
             'url': self.url + uri,
@@ -266,7 +286,11 @@ x-bol-date:{date}
         }
         if data:
             request_kwargs['data'] = data
+
         resp = self.session.request(**request_kwargs)
         resp.raise_for_status()
-        tree = ElementTree.fromstring(resp.content)
-        return tree
+        if accept == "application/pdf":
+            return resp.content
+        else:
+            tree = ElementTree.fromstring(resp.content)
+            return tree
