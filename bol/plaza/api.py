@@ -70,10 +70,7 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
-        print "MethodGroup=> request()-> method ",method
-        print "MethodGroup=> request()-> uri ",uri
-        print "MethodGroup=> request()-> params ",params
-        print "MethodGroup=> request()-> data ",data
+        
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -218,7 +215,6 @@ class PurchasableShippingLabelsMethods(MethodGroup):
         params = {'orderItemId':id}
         xml = self.request('GET', params=params)#'?orderItemId={}'.format(id))
         return PurchasableShippingLabels.parse(self.api, xml)
-
 
 class ReturnItemsMethods(MethodGroup):
 
