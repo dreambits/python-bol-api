@@ -60,6 +60,8 @@ class TransporterCode(Enum):
 class MethodGroup(object):
 
     def __init__(self, api, group):
+        # print "\n MethodGroup=> __init__()-> api -> ",api
+        print "\n MethodGroup=> __init__()-> group -> ",group
         self.api = api
         self.group = group
 
@@ -68,6 +70,7 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
+        
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -221,7 +224,6 @@ class ReturnItemsMethods(MethodGroup):
     def getUnhandled(self):
         xml=self.request('GET', path="/unhandled", accept="application/xml")
         return ReturnItems.parse(self.api, xml)
-
 
 
 
