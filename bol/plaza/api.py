@@ -70,7 +70,7 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
-        
+
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -251,6 +251,7 @@ class PlazaAPI(object):
         content_type = 'application/xml; charset=UTF-8'
         date = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime())
         msg = """{method}
+
 {content_type}
 {date}
 x-bol-date:{date}
