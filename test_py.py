@@ -25,11 +25,14 @@ private_key = 'bjOZlUUNBqkfyjFiykcoDAeYbZrmMAGVTfFNjbZuGkWRBHKVzfjflbmCIGMxVbjUW
 # print "shipping_label => ",shipping_label
 
 
-api = PlazaAPI(prod_public_key, prod_private_key, test=False)
+api = PlazaAPI(public_key, private_key, test=False)
 print "\n\n test.pt=> dir(api) => ",dir(api)
 print "\n\n test.pt=> dir(api.return_items) => ",dir(api.return_items)
 return_items = api.return_items.getUnhandled()
 print "test.pt=> return_items => ",return_items
+print "test.pt=> return_items => ",dir(return_items[0])
+print "test.pt=> return_items[0].OrderId => ",return_items[0].OrderId
+return_items = api.return_items.getHandle(34007720)
 
 # open_orders = api.orders.list()
 
