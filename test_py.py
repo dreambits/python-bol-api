@@ -32,7 +32,7 @@ return_items = api.return_items.getUnhandled()
 print "test.pt=> return_items => ",return_items
 print "test.pt=> return_items => ",dir(return_items[0])
 print "test.pt=> return_items[0].OrderId => ",return_items[0].OrderId
-return_items = api.return_items.getHandle(34007720)
+return_items = api.return_items.getHandle(34007720,'PRODUCT_RECEIVED','1')
 
 # open_orders = api.orders.list()
 

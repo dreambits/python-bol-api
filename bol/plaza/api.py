@@ -222,8 +222,8 @@ class ReturnItemsMethods(MethodGroup):
         xml=self.request('GET', path="/unhandled", accept="application/xml")
         return ReturnItems.parse(self.api, xml)
 
-    def getHandle(self, orderId):
-        xml = self.request('PUT', '/{}/handle'.format(orderId), params={'StatusReason':'PRODUCT_RECEIVED ','QuantityReturned':'1'})
+    def getHandle(self, orderId,status_reason, qty_return):
+        xml = self.request('PUT', '/{}/handle'.format(orderId), params={'StatusReason':status_reason,'QuantityReturned':qty_return})
         return ProcessStatus.parse(self.api, xml)
 
 
