@@ -265,8 +265,13 @@ class Item(Model):
 class ReturnItems(ModelList):
 
     class Meta:
-        item_type = Item 
- 
+        item_type = Item
+
+class ProcessStatusLinks(Model):
+
+    class Meta:
+        link = IntegerField()
+
 class ProcessStatus(Model):
 
     class Meta:
@@ -279,8 +284,3 @@ class ProcessStatus(Model):
         ReturnDateAnnouncement = TextField()
         ReturnReason = TextField()
         Links = ProcessStatusLinks()
-
-class ProcessStatusLinks(Model):
-
-    class Meta:
-        link = IntegerField()
