@@ -68,7 +68,6 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
-
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -226,7 +225,6 @@ class ReturnItemsMethods(MethodGroup):
     def getHandle(self, orderId):
         xml = self.request('PUT', '/{}/handle'.format(orderId), params={'StatusReason':'PRODUCT_RECEIVED ','QuantityReturned':'1'})
         return ProcessStatus.parse(self.api, xml)
-
 
 
 
