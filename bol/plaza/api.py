@@ -227,6 +227,18 @@ class ReturnItemsMethods(MethodGroup):
         return ProcessStatus.parse(self.api, xml)
 
 
+class CreatUpdateMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(CreatUpdateMethods, self).__init__(api, 'offers')
+
+    def upsertOffers(self, id, retailer_offer_list):
+        xml = self.create_request_xml(
+            'UpsertRequest',
+            retailer_offer_list)
+        response = self.request('PUT', '/', data=xml)
+        return ProcessStatus.parse(self.api, response)
+
 
 
 class PlazaAPI(object):
