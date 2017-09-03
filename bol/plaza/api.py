@@ -9,7 +9,7 @@ from enum import Enum
 
 from xml.etree import ElementTree
 
-from .models import Orders, Payments, Shipments, ProcessStatus, PurchasableShippingLabels, ReturnItems
+from .models import Orders, Payments, Shipments, ProcessStatus, PurchasableShippingLabels, ReturnItems, ProcessStatus
 
 
 __all__ = ['PlazaAPI']
@@ -60,8 +60,6 @@ class TransporterCode(Enum):
 class MethodGroup(object):
 
     def __init__(self, api, group):
-        # print "\n MethodGroup=> __init__()-> api -> ",api
-        # print "\n MethodGroup=> __init__()-> group -> ",group
         self.api = api
         self.group = group
 
@@ -71,7 +69,6 @@ class MethodGroup(object):
             version=self.api.version,
             path=path)
 
-        print "uri >> ",uri
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -227,9 +224,8 @@ class ReturnItemsMethods(MethodGroup):
         return ReturnItems.parse(self.api, xml)
 
     def getHandle(self, orderId):
-        xml = self.request('PUT', '/{}/handle'.format(orderId), params={'StatusReason':'PRODUCT_RECEIVED','QuantityReturned':'1'})
-        #now lets store this content in pdf:
-        return ReturnItems.parse(self.api, xml)
+        xml = self.request('PUT', '/{}/handle'.format(orderId), params={'StatusReason':'PRODUCT_RECEIVED ','QuantityReturned':'1'})
+        return ProcessStatus.parse(self.api, xml)
 
 
 
@@ -290,7 +286,6 @@ x-bol-date:{date}
             request_kwargs['data'] = data
 
         resp = self.session.request(**request_kwargs)
-        print "response >> ",resp
         resp.raise_for_status()
         if accept == "application/pdf":
             return resp.content

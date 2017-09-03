@@ -231,7 +231,6 @@ class PurchasableShippingLabels(ModelList):
         item_type = Labels
 
 
-
 class RI_CustomerDetails(Model):
 
     class Meta:
@@ -267,3 +266,21 @@ class ReturnItems(ModelList):
 
     class Meta:
         item_type = Item
+
+class ProcessStatus(Model):
+
+    class Meta:
+        id = IntegerField()
+        sellerId = IntegerField()
+        entityId = IntegerField()
+        eventType = TextField()
+        status = TextField()
+        createTimestamp = TextField()
+        ReturnDateAnnouncement = TextField()
+        ReturnReason = TextField()
+        Links = ProcessStatusLinks()
+
+class ProcessStatusLinks(Model):
+
+    class Meta:
+        link = IntegerField()
