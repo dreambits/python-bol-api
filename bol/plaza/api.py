@@ -60,6 +60,8 @@ class TransporterCode(Enum):
 class MethodGroup(object):
 
     def __init__(self, api, group):
+        # print "\n MethodGroup=> __init__()-> api -> ",api
+        # print "\n MethodGroup=> __init__()-> group -> ",group
         self.api = api
         self.group = group
 
@@ -68,6 +70,7 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
+        print "uri >> ",uri
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -78,13 +81,16 @@ class MethodGroup(object):
 {elements}
 </{root}>
 """.format(root=root, elements=elements)
+        print "create_request_xml-> xml-> \n",xml
         return xml
 
     def _create_request_xml_elements(self, indent, **kwargs):
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
         xml = ''
+        print "\ntag -> value "
         for tag, value in kwargs.items():
+            print "\n", tag," -> ",value
             if value is not None:
                 prefix = ' ' * 4 * indent
                 if isinstance(value, dict):
@@ -203,6 +209,7 @@ class TransportMethods(MethodGroup):
         with open(file_location, 'wb') as f:
                 f.write(content)
 
+
 class PurchasableShippingLabelsMethods(MethodGroup):
 
     def __init__(self, api):
@@ -212,6 +219,7 @@ class PurchasableShippingLabelsMethods(MethodGroup):
         params = {'orderItemId':id}
         xml = self.request('GET', params=params)#'?orderItemId={}'.format(id))
         return PurchasableShippingLabels.parse(self.api, xml)
+
 
 class ReturnItemsMethods(MethodGroup):
 
@@ -232,11 +240,18 @@ class CreatUpdateMethods(MethodGroup):
     def __init__(self, api):
         super(CreatUpdateMethods, self).__init__(api, 'offers')
 
-    def upsertOffers(self, id, retailer_offer_list):
+    def upsertOffers(self, offers, path='/', params={}, data=None, accept="application/xml"):
         xml = self.create_request_xml(
             'UpsertRequest',
-            retailer_offer_list)
-        response = self.request('PUT', '/', data=xml)
+            RetailerOffer=offers[0])
+        # response = self.request('PUT', '/', data=xml)
+
+        uri = '/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path=path)
+        print "uri >> ",uri
+        xml = self.api.request('PUT', uri, params=params, data=xml, accept=accept)
         return ProcessStatus.parse(self.api, response)
 
 
@@ -260,6 +275,7 @@ class PlazaAPI(object):
         self.labels = PurchasableShippingLabelsMethods(self)
         self.session = session or requests.Session()
         self.return_items = ReturnItemsMethods(self)
+        self.upserts_offers = CreatUpdateMethods(self)
 
     def request(self, method, uri, params={}, data=None, accept="application/xml"):
         content_type = 'application/xml; charset=UTF-8'
@@ -295,7 +311,9 @@ x-bol-date:{date}
         if data:
             request_kwargs['data'] = data
 
+        print "\nrequest_kwargs >> ",request_kwargs
         resp = self.session.request(**request_kwargs)
+        print "\nresponse >> ",resp
         resp.raise_for_status()
         if accept == "application/pdf":
             return resp.content

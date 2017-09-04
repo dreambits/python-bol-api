@@ -25,14 +25,44 @@ private_key = 'bjOZlUUNBqkfyjFiykcoDAeYbZrmMAGVTfFNjbZuGkWRBHKVzfjflbmCIGMxVbjUW
 # print "shipping_label => ",shipping_label
 
 
-api = PlazaAPI(public_key, private_key, test=False)
+api = PlazaAPI(prod_public_key, prod_private_key, test=False)
 print "\n\n test.pt=> dir(api) => ",dir(api)
-print "\n\n test.pt=> dir(api.return_items) => ",dir(api.return_items)
-return_items = api.return_items.getUnhandled()
-print "test.pt=> return_items => ",return_items
-print "test.pt=> return_items => ",dir(return_items[0])
-print "test.pt=> return_items[0].OrderId => ",return_items[0].OrderId
-return_items = api.return_items.getHandle(34007720,'PRODUCT_RECEIVED','1')
+print "\n\n test.pt=> dir(api.upserts_offers) => ",dir(api.upserts_offers)
+# return_items = api.return_items.getUnhandled()
+# print "test.pt=> return_items => ",return_items
+# print "test.pt=> return_items => ",dir(return_items[0])
+# print "test.pt=> return_items[0].OrderId => ",return_items[0].OrderId
+# return_items = api.return_items.getHandle(34007720,'PRODUCT_RECEIVED','1')
+
+data = [
+    {
+        "EAN":"9789076174082",
+        "Condition":"REASONABLE",
+        "Price":7.50,
+        "DeliveryCode":"3-5d",
+        "QuantityInStock":1,
+        "Publish":"true",
+        "ReferenceCode":"HarryPotter-2ehands",
+        "Description":"boek met koffievlekken",
+        "Title":"",
+        "FulfillmentMethod":"FBR"
+    },
+    {
+        "EAN":"9789076174082",
+        "Condition":"REASONABLE",
+        "Price":7.50,
+        "DeliveryCode":"3-5d",
+        "QuantityInStock":1,
+        "Publish":"true",
+        "ReferenceCode":"HarryPotter-2ehands",
+        "Description":"boek met koffievlekken",
+        "Title":"",
+        "FulfillmentMethod":"FBR"
+    }
+]
+
+upserts = api.upserts_offers.upsertOffers(data)
+print "test.pt=> upserts => ",upserts
 
 # open_orders = api.orders.list()
 
