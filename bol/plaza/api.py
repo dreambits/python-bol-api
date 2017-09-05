@@ -84,6 +84,16 @@ class MethodGroup(object):
         print "create_request_xml-> xml-> \n",xml
         return xml
 
+    def create_request_offers_xml(self, root, **kwargs):
+        elements = self._create_request_xml_elements(1, **kwargs)
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<{root} xmlns="https://plazaapi.bol.com/offers/xsd/api-2.0.xsd">
+{elements}
+</{root}>
+""".format(root=root, elements=elements)
+        print "create_request_xml-> xml-> \n",xml
+        return xml
+
     def _create_request_xml_elements(self, indent, **kwargs):
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
@@ -235,13 +245,13 @@ class ReturnItemsMethods(MethodGroup):
         return ProcessStatus.parse(self.api, xml)
 
 
-class CreatUpdateMethods(MethodGroup):
+class CreateUpdateMethods(MethodGroup):
 
     def __init__(self, api):
-        super(CreatUpdateMethods, self).__init__(api, 'offers')
+        super(CreateUpdateMethods, self).__init__(api, 'offers')
 
     def upsertOffers(self, offers, path='/', params={}, data=None, accept="application/xml"):
-        xml = self.create_request_xml(
+        xml = self.create_request_offers_xml(
             'UpsertRequest',
             RetailerOffer=offers[0])
         # response = self.request('PUT', '/', data=xml)
@@ -251,8 +261,9 @@ class CreatUpdateMethods(MethodGroup):
             version=self.api.version,
             path=path)
         print "uri >> ",uri
-        xml = self.api.request('PUT', uri, params=params, data=xml, accept=accept)
-        return ProcessStatus.parse(self.api, response)
+        response = self.api.request('PUT', uri, params=params, data=xml, accept=accept)
+        # return ProcessStatus.parse(self.api, xml)
+        return response
 
 
 
@@ -275,7 +286,7 @@ class PlazaAPI(object):
         self.labels = PurchasableShippingLabelsMethods(self)
         self.session = session or requests.Session()
         self.return_items = ReturnItemsMethods(self)
-        self.upserts_offers = CreatUpdateMethods(self)
+        self.upserts_offers = CreateUpdateMethods(self)
 
     def request(self, method, uri, params={}, data=None, accept="application/xml"):
         content_type = 'application/xml; charset=UTF-8'
@@ -314,9 +325,14 @@ x-bol-date:{date}
         print "\nrequest_kwargs >> ",request_kwargs
         resp = self.session.request(**request_kwargs)
         print "\nresponse >> ",resp
+        print "\nresponse >> ",dir(resp)
+        print "\nresponse.status_code >> ",resp.status_code
         resp.raise_for_status()
         if accept == "application/pdf":
             return resp.content
         else:
-            tree = ElementTree.fromstring(resp.content)
-            return tree
+            if resp.status_code == 202:
+                return True
+            else:
+                tree = ElementTree.fromstring(resp.content)
+                return tree

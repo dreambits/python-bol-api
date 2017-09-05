@@ -36,33 +36,33 @@ print "\n\n test.pt=> dir(api.upserts_offers) => ",dir(api.upserts_offers)
 
 data = [
     {
-        "EAN":"9789076174082",
-        "Condition":"REASONABLE",
-        "Price":7.50,
-        "DeliveryCode":"3-5d",
-        "QuantityInStock":1,
+        "EAN":"8718047060360",
+        "Condition":"NEW",
+        "Price":26.95,
+        "DeliveryCode":"24uurs-17",
+        "QuantityInStock":20,
         "Publish":"true",
-        "ReferenceCode":"HarryPotter-2ehands",
-        "Description":"boek met koffievlekken",
+        "ReferenceCode":"060360 PV",
+        "Description":"",
         "Title":"",
         "FulfillmentMethod":"FBR"
     },
-    {
-        "EAN":"9789076174082",
-        "Condition":"REASONABLE",
-        "Price":7.50,
-        "DeliveryCode":"3-5d",
-        "QuantityInStock":1,
-        "Publish":"true",
-        "ReferenceCode":"HarryPotter-2ehands",
-        "Description":"boek met koffievlekken",
-        "Title":"",
-        "FulfillmentMethod":"FBR"
-    }
+    # {
+    #     "EAN":"8718047060360",
+    #     "Condition":"NEW",
+    #     "Price":26.95,
+    #     "DeliveryCode":"24hour-17th",
+    #     "QuantityInStock":20,
+    #     "Publish":"true",
+    #     "ReferenceCode":"HarryPotter-2ehands",
+    #     "Description":"boek met koffievlekken",
+    #     "Title":"",
+    #     "FulfillmentMethod":"FBR"
+    # },
 ]
 
 upserts = api.upserts_offers.upsertOffers(data)
-print "test.pt=> upserts => ",upserts
+print "test.py=> upserts => ",upserts
 
 # open_orders = api.orders.list()
 
