@@ -9,7 +9,10 @@ from enum import Enum
 
 from xml.etree import ElementTree
 
-from .models import Orders, Payments, Shipments, ProcessStatus, PurchasableShippingLabels, ReturnItems, ProcessStatus
+from .models import Orders, Payments, Shipments, ProcessStatus
+
+#custom Method Models For DreamBits
+from .models import PurchasableShippingLabels, ReturnItems, ProcessStatus#, UpsertOffersError
 
 
 __all__ = ['PlazaAPI']
@@ -263,7 +266,10 @@ class CreateUpdateMethods(MethodGroup):
         print "uri >> ",uri
         response = self.api.request('PUT', uri, params=params, data=xml, accept=accept)
         # return ProcessStatus.parse(self.api, xml)
-        return response
+        if response is True:
+            return response
+        # else:
+        #     return UpsertOffersError.parse(self.api, response)
 
 
 
@@ -327,12 +333,21 @@ x-bol-date:{date}
         print "\nresponse >> ",resp
         print "\nresponse >> ",dir(resp)
         print "\nresponse.status_code >> ",resp.status_code
-        resp.raise_for_status()
-        if accept == "application/pdf":
-            return resp.content
-        else:
-            if resp.status_code == 202:
+        print "\nresponse.text >> ",resp.text
+        print "\nresponse.content >> ",resp.content
+        print "\nself.url >> ",request_kwargs['url']
+
+        if request_kwargs['url'] == 'https://plazaapi.bol.com/offers/v2/':
+            if resp.status_code == 202 and resp.text is not null:
                 return True
             else:
                 tree = ElementTree.fromstring(resp.content)
                 return tree
+
+
+        resp.raise_for_status()
+        if accept == "application/pdf":
+            return resp.content
+        else:
+            tree = ElementTree.fromstring(resp.content)
+            return tree

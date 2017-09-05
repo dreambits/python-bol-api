@@ -39,7 +39,7 @@ data = [
         "EAN":"8718047060360",
         "Condition":"NEW",
         "Price":26.95,
-        "DeliveryCode":"24uurs-17",
+        # "DeliveryCode":"24uurs-17",
         "QuantityInStock":20,
         "Publish":"true",
         "ReferenceCode":"060360 PV",
