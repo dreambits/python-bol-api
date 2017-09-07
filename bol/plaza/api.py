@@ -63,8 +63,6 @@ class TransporterCode(Enum):
 class MethodGroup(object):
 
     def __init__(self, api, group):
-        # print "\n MethodGroup=> __init__()-> api -> ",api
-        # print "\n MethodGroup=> __init__()-> group -> ",group
         self.api = api
         self.group = group
 
@@ -88,13 +86,15 @@ class MethodGroup(object):
         return xml
 
     def create_request_offers_xml(self, root, **kwargs):
+        print "create_request_offers_xml-> **kwargs-> \n",kwargs
         elements = self._create_request_xml_elements(1, **kwargs)
         xml = """<?xml version="1.0" encoding="UTF-8"?>
 <{root} xmlns="https://plazaapi.bol.com/offers/xsd/api-2.0.xsd">
 {elements}
 </{root}>
 """.format(root=root, elements=elements)
-        print "create_request_xml-> xml-> \n",xml
+        print "create_request_offers_xml-> xml-> \n",xml
+        # 5/0
         return xml
 
     def _create_request_xml_elements(self, indent, **kwargs):
@@ -106,24 +106,46 @@ class MethodGroup(object):
             print "\n", tag," -> ",value
             if value is not None:
                 prefix = ' ' * 4 * indent
-                if isinstance(value, dict):
-                    text = '\n{}\n{}'.format(
-                        self._create_request_xml_elements(
-                            indent + 1, **value),
-                        prefix)
-                elif isinstance(value, datetime):
-                    text = value.isoformat()
+                print "value ->  ",type(value)
+                if not isinstance(value, list):
+                    if isinstance(value, dict):
+                        text = '\n{}\n{}'.format(
+                            self._create_request_xml_elements(
+                                indent + 1, **value),
+                            prefix)
+                    elif isinstance(value, datetime):
+                        text = value.isoformat()
+                    else:
+                        text = str(value)
+                    # TODO: Escape! For now this will do I am only dealing
+                    # with track & trace codes and simplistic IDs...
+                    if xml:
+                        xml += '\n'
+                    xml += prefix
+                    xml += "<{tag}>{text}</{tag}>".format(
+                        tag=tag,
+                        text=text
+                    )
                 else:
-                    text = str(value)
-                # TODO: Escape! For now this will do I am only dealing
-                # with track & trace codes and simplistic IDs...
-                if xml:
-                    xml += '\n'
-                xml += prefix
-                xml += "<{tag}>{text}</{tag}>".format(
-                    tag=tag,
-                    text=text
-                )
+                    for item in value:
+                        print "value ->  ",type(item)," item ", item
+                        if isinstance(item, dict):
+                            text = '\n{}\n{}'.format(
+                                self._create_request_xml_elements(
+                                    indent + 1, **item),
+                                prefix)
+                        else:
+                            text = str(item)
+                        # TODO: Escape! For now this will do I am only dealing
+                        # with track & trace codes and simplistic IDs...
+                        if xml:
+                            xml += '\n'
+                        xml += prefix
+                        xml += "<{tag}>{text}</{tag}>".format(
+                            tag=tag,
+                            text=text
+                        )
+        # 5/0
         return xml
 
 
@@ -256,7 +278,7 @@ class CreateUpdateMethods(MethodGroup):
     def upsertOffers(self, offers, path='/', params={}, data=None, accept="application/xml"):
         xml = self.create_request_offers_xml(
             'UpsertRequest',
-            RetailerOffer=offers[0])
+            RetailerOffer=offers)
         # response = self.request('PUT', '/', data=xml)
 
         uri = '/{group}/{version}{path}'.format(
@@ -338,7 +360,7 @@ x-bol-date:{date}
         print "\nself.url >> ",request_kwargs['url']
 
         if request_kwargs['url'] == 'https://plazaapi.bol.com/offers/v2/':
-            if resp.status_code == 202 and resp.text is not null:
+            if resp.status_code == 202 and resp.text is not None:
                 return True
             else:
                 tree = ElementTree.fromstring(resp.content)

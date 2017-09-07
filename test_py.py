@@ -26,12 +26,12 @@ private_key = 'bjOZlUUNBqkfyjFiykcoDAeYbZrmMAGVTfFNjbZuGkWRBHKVzfjflbmCIGMxVbjUW
 
 
 api = PlazaAPI(prod_public_key, prod_private_key, test=False)
-print "\n\n test.pt=> dir(api) => ",dir(api)
-print "\n\n test.pt=> dir(api.upserts_offers) => ",dir(api.upserts_offers)
+# print "\n\n test.py=> dir(api) => ",dir(api)
+# print "\n\n test.py=> dir(api.upserts_offers) => ",dir(api.upserts_offers)
 # return_items = api.return_items.getUnhandled()
-# print "test.pt=> return_items => ",return_items
-# print "test.pt=> return_items => ",dir(return_items[0])
-# print "test.pt=> return_items[0].OrderId => ",return_items[0].OrderId
+# print "test.py=> return_items => ",return_items
+# print "test.py=> return_items => ",dir(return_items[0])
+# print "test.py=> return_items[0].OrderId => ",return_items[0].OrderId
 # return_items = api.return_items.getHandle(34007720,'PRODUCT_RECEIVED','1')
 
 data = [
@@ -39,7 +39,7 @@ data = [
         "EAN":"8718047060360",
         "Condition":"NEW",
         "Price":26.95,
-        # "DeliveryCode":"24uurs-17",
+        "DeliveryCode":"24uurs-17",
         "QuantityInStock":20,
         "Publish":"true",
         "ReferenceCode":"060360 PV",
@@ -51,14 +51,14 @@ data = [
     #     "EAN":"8718047060360",
     #     "Condition":"NEW",
     #     "Price":26.95,
-    #     "DeliveryCode":"24hour-17th",
+    #     "DeliveryCode":"24uurs-17",
     #     "QuantityInStock":20,
     #     "Publish":"true",
-    #     "ReferenceCode":"HarryPotter-2ehands",
-    #     "Description":"boek met koffievlekken",
+    #     "ReferenceCode":"060360 PV",
+    #     "Description":"",
     #     "Title":"",
     #     "FulfillmentMethod":"FBR"
-    # },
+    # }
 ]
 
 upserts = api.upserts_offers.upsertOffers(data)
