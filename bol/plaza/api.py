@@ -71,7 +71,6 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
-        print "uri >> ",uri
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -82,31 +81,24 @@ class MethodGroup(object):
 {elements}
 </{root}>
 """.format(root=root, elements=elements)
-        print "create_request_xml-> xml-> \n",xml
         return xml
 
     def create_request_offers_xml(self, root, **kwargs):
-        print "create_request_offers_xml-> **kwargs-> \n",kwargs
         elements = self._create_request_xml_elements(1, **kwargs)
         xml = """<?xml version="1.0" encoding="UTF-8"?>
 <{root} xmlns="https://plazaapi.bol.com/offers/xsd/api-2.0.xsd">
 {elements}
 </{root}>
 """.format(root=root, elements=elements)
-        print "create_request_offers_xml-> xml-> \n",xml
-        # 5/0
         return xml
 
     def _create_request_xml_elements(self, indent, **kwargs):
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
         xml = ''
-        print "\ntag -> value "
         for tag, value in kwargs.items():
-            print "\n", tag," -> ",value
             if value is not None:
                 prefix = ' ' * 4 * indent
-                print "value ->  ",type(value)
                 if not isinstance(value, list):
                     if isinstance(value, dict):
                         text = '\n{}\n{}'.format(
@@ -128,7 +120,6 @@ class MethodGroup(object):
                     )
                 else:
                     for item in value:
-                        print "value ->  ",type(item)," item ", item
                         if isinstance(item, dict):
                             text = '\n{}\n{}'.format(
                                 self._create_request_xml_elements(
@@ -145,7 +136,6 @@ class MethodGroup(object):
                             tag=tag,
                             text=text
                         )
-        # 5/0
         return xml
 
 
@@ -279,13 +269,10 @@ class CreateUpdateMethods(MethodGroup):
         xml = self.create_request_offers_xml(
             'UpsertRequest',
             RetailerOffer=offers)
-        # response = self.request('PUT', '/', data=xml)
-
         uri = '/{group}/{version}{path}'.format(
             group=self.group,
             version=self.api.version,
             path=path)
-        print "uri >> ",uri
         response = self.api.request('PUT', uri, params=params, data=xml, accept=accept)
         # return ProcessStatus.parse(self.api, xml)
         if response is True:
@@ -350,14 +337,7 @@ x-bol-date:{date}
         if data:
             request_kwargs['data'] = data
 
-        print "\nrequest_kwargs >> ",request_kwargs
         resp = self.session.request(**request_kwargs)
-        print "\nresponse >> ",resp
-        print "\nresponse >> ",dir(resp)
-        print "\nresponse.status_code >> ",resp.status_code
-        print "\nresponse.text >> ",resp.text
-        print "\nresponse.content >> ",resp.content
-        print "\nself.url >> ",request_kwargs['url']
 
         if request_kwargs['url'] == 'https://plazaapi.bol.com/offers/v2/':
             if resp.status_code == 202 and resp.text is not None:
@@ -365,7 +345,6 @@ x-bol-date:{date}
             else:
                 tree = ElementTree.fromstring(resp.content)
                 return tree
-
 
         resp.raise_for_status()
         if accept == "application/pdf":
