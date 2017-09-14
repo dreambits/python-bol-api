@@ -287,9 +287,7 @@ class OffersMethods(MethodGroup):
             group=self.group,
             version=self.api.version,
             path='/{}'.format(ean))
-        print "uri >> ",uri
         response = self.api.request('GET', uri, params=params, data=data, accept=accept)
-        print "response -> ", response
         return OffersResponse.parse(self.api, response)
 
 
