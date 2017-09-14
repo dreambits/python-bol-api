@@ -13,6 +13,7 @@ from .models import Orders, Payments, Shipments, ProcessStatus
 
 #custom Method Models For DreamBits
 from .models import PurchasableShippingLabels, ReturnItems, ProcessStatus#, UpsertOffersError
+from .models import OffersResponse
 
 
 __all__ = ['PlazaAPI']
@@ -280,6 +281,16 @@ class OffersMethods(MethodGroup):
         # else:
         #     return UpsertOffersError.parse(self.api, response)
 
+    def getSingleOffers(self, ean, path='/', params={}, data=None, accept="application/xml"):
+
+        uri = '/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path='/{}'.format(ean))
+        print "uri >> ",uri
+        response = self.api.request('GET', uri, params=params, data=data, accept=accept)
+        print "response -> ", response
+        return OffersResponse.parse(self.api, response)
 
 
 class PlazaAPI(object):
