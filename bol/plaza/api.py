@@ -260,12 +260,12 @@ class ReturnItemsMethods(MethodGroup):
         return ProcessStatus.parse(self.api, xml)
 
 
-class CreateUpdateMethods(MethodGroup):
+class OffersMethods(MethodGroup):
 
     def __init__(self, api):
-        super(CreateUpdateMethods, self).__init__(api, 'offers')
+        super(OffersMethods, self).__init__(api, 'offers')
 
-    def upsertOffers(self, offers, path='/', params={}, data=None, accept="application/xml"):
+    def offers(self, offers, path='/', params={}, data=None, accept="application/xml"):
         xml = self.create_request_offers_xml(
             'UpsertRequest',
             RetailerOffer=offers)
@@ -301,7 +301,7 @@ class PlazaAPI(object):
         self.labels = PurchasableShippingLabelsMethods(self)
         self.session = session or requests.Session()
         self.return_items = ReturnItemsMethods(self)
-        self.upserts_offers = CreateUpdateMethods(self)
+        self.offers = OffersMethods(self)
 
     def request(self, method, uri, params={}, data=None, accept="application/xml"):
         content_type = 'application/xml; charset=UTF-8'

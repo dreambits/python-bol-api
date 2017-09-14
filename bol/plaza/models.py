@@ -59,9 +59,6 @@ class Model(object):
 
     @classmethod
     def parse(cls, api, xml):
-        # print "\n Model=> parse()-> cls",cls
-        # print " Model=> parse()-> api",api
-        # print " Model=> parse()-> xml",xml 
         m = cls()
         m.xml = xml
         for element in xml.getchildren():
@@ -284,3 +281,44 @@ class ProcessStatus(Model):
         ReturnDateAnnouncement = TextField()
         ReturnReason = TextField()
         Links = ProcessStatusLinks()
+
+
+
+
+# models used for 'get single offer' method  :: RetailerOfferStatus, RetailerOffer, RetailerOffers, OffersResponse
+
+class RetailerOfferStatus(Model):
+
+    class Meta:
+        Published = BooleanField()
+        ErrorCode = TextField()
+        ErrorMessage = TextField()
+
+
+class RetailerOffer(Model):
+
+    class Meta:
+        EAN = TextField()
+        Condition = TextField()
+        Price = DecimalField()
+        DeliveryCode = TextField()
+        QuantityInStock = DecimalField()
+        UnreservedStock = DecimalField()
+        Publish = BooleanField()
+        ReferenceCode = TextField()
+        Description = TextField()
+        Title = TextField()
+        FulfillmentMethod = TextField()
+        Status = RetailerOfferStatus()
+
+
+class RetailerOffers(Model):
+
+    class Meta:
+        item_type = RetailerOffer()
+
+
+class OffersResponse(ModelList):
+
+    class Meta:
+        item_type = RetailerOffers()
