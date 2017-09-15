@@ -9,7 +9,11 @@ from enum import Enum
 
 from xml.etree import ElementTree
 
-from .models import Orders, Payments, Shipments, ProcessStatus, PurchasableShippingLabels, ReturnItems
+from .models import Orders, Payments, Shipments, ProcessStatus
+
+#custom Method Models For DreamBits
+from .models import PurchasableShippingLabels, ReturnItems, ProcessStatus#, UpsertOffersError
+from .models import OffersResponse
 
 
 __all__ = ['PlazaAPI']
@@ -60,8 +64,6 @@ class TransporterCode(Enum):
 class MethodGroup(object):
 
     def __init__(self, api, group):
-        # print "\n MethodGroup=> __init__()-> api -> ",api
-        print "\n MethodGroup=> __init__()-> group -> ",group
         self.api = api
         self.group = group
 
@@ -70,7 +72,6 @@ class MethodGroup(object):
             group=self.group,
             version=self.api.version,
             path=path)
-
         xml = self.api.request(method, uri, params=params, data=data, accept=accept)
         return xml
 
@@ -83,6 +84,15 @@ class MethodGroup(object):
 """.format(root=root, elements=elements)
         return xml
 
+    def create_request_offers_xml(self, root, **kwargs):
+        elements = self._create_request_xml_elements(1, **kwargs)
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<{root} xmlns="https://plazaapi.bol.com/offers/xsd/api-2.0.xsd">
+{elements}
+</{root}>
+""".format(root=root, elements=elements)
+        return xml
+
     def _create_request_xml_elements(self, indent, **kwargs):
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
@@ -90,24 +100,43 @@ class MethodGroup(object):
         for tag, value in kwargs.items():
             if value is not None:
                 prefix = ' ' * 4 * indent
-                if isinstance(value, dict):
-                    text = '\n{}\n{}'.format(
-                        self._create_request_xml_elements(
-                            indent + 1, **value),
-                        prefix)
-                elif isinstance(value, datetime):
-                    text = value.isoformat()
+                if not isinstance(value, list):
+                    if isinstance(value, dict):
+                        text = '\n{}\n{}'.format(
+                            self._create_request_xml_elements(
+                                indent + 1, **value),
+                            prefix)
+                    elif isinstance(value, datetime):
+                        text = value.isoformat()
+                    else:
+                        text = str(value)
+                    # TODO: Escape! For now this will do I am only dealing
+                    # with track & trace codes and simplistic IDs...
+                    if xml:
+                        xml += '\n'
+                    xml += prefix
+                    xml += "<{tag}>{text}</{tag}>".format(
+                        tag=tag,
+                        text=text
+                    )
                 else:
-                    text = str(value)
-                # TODO: Escape! For now this will do I am only dealing
-                # with track & trace codes and simplistic IDs...
-                if xml:
-                    xml += '\n'
-                xml += prefix
-                xml += "<{tag}>{text}</{tag}>".format(
-                    tag=tag,
-                    text=text
-                )
+                    for item in value:
+                        if isinstance(item, dict):
+                            text = '\n{}\n{}'.format(
+                                self._create_request_xml_elements(
+                                    indent + 1, **item),
+                                prefix)
+                        else:
+                            text = str(item)
+                        # TODO: Escape! For now this will do I am only dealing
+                        # with track & trace codes and simplistic IDs...
+                        if xml:
+                            xml += '\n'
+                        xml += prefix
+                        xml += "<{tag}>{text}</{tag}>".format(
+                            tag=tag,
+                            text=text
+                        )
         return xml
 
 
@@ -206,6 +235,7 @@ class TransportMethods(MethodGroup):
         with open(file_location, 'wb') as f:
                 f.write(content)
 
+
 class PurchasableShippingLabelsMethods(MethodGroup):
 
     def __init__(self, api):
@@ -216,6 +246,7 @@ class PurchasableShippingLabelsMethods(MethodGroup):
         xml = self.request('GET', params=params)#'?orderItemId={}'.format(id))
         return PurchasableShippingLabels.parse(self.api, xml)
 
+
 class ReturnItemsMethods(MethodGroup):
 
     def __init__(self, api):
@@ -225,6 +256,39 @@ class ReturnItemsMethods(MethodGroup):
         xml=self.request('GET', path="/unhandled", accept="application/xml")
         return ReturnItems.parse(self.api, xml)
 
+    def getHandle(self, orderId,status_reason, qty_return):
+        xml = self.request('PUT', '/{}/handle'.format(orderId), params={'StatusReason':status_reason,'QuantityReturned':qty_return})
+        return ProcessStatus.parse(self.api, xml)
+
+
+class OffersMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(OffersMethods, self).__init__(api, 'offers')
+
+    def offers(self, offers, path='/', params={}, data=None, accept="application/xml"):
+        xml = self.create_request_offers_xml(
+            'UpsertRequest',
+            RetailerOffer=offers)
+        uri = '/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path=path)
+        response = self.api.request('PUT', uri, params=params, data=xml, accept=accept)
+        # return ProcessStatus.parse(self.api, xml)
+        if response is True:
+            return response
+        # else:
+        #     return UpsertOffersError.parse(self.api, response)
+
+    def getSingleOffers(self, ean, path='/', params={}, data=None, accept="application/xml"):
+
+        uri = '/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path='/{}'.format(ean))
+        response = self.api.request('GET', uri, params=params, data=data, accept=accept)
+        return OffersResponse.parse(self.api, response)
 
 
 class PlazaAPI(object):
@@ -246,11 +310,13 @@ class PlazaAPI(object):
         self.labels = PurchasableShippingLabelsMethods(self)
         self.session = session or requests.Session()
         self.return_items = ReturnItemsMethods(self)
+        self.offers = OffersMethods(self)
 
     def request(self, method, uri, params={}, data=None, accept="application/xml"):
         content_type = 'application/xml; charset=UTF-8'
         date = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime())
         msg = """{method}
+
 {content_type}
 {date}
 x-bol-date:{date}
@@ -281,6 +347,14 @@ x-bol-date:{date}
             request_kwargs['data'] = data
 
         resp = self.session.request(**request_kwargs)
+
+        if request_kwargs['url'] == 'https://plazaapi.bol.com/offers/v2/':
+            if resp.status_code == 202 and resp.text is not None:
+                return True
+            else:
+                tree = ElementTree.fromstring(resp.content)
+                return tree
+
         resp.raise_for_status()
         if accept == "application/pdf":
             return resp.content
