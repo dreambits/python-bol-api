@@ -322,3 +322,30 @@ class OffersResponse(ModelList):
 
     class Meta:
         item_type = RetailerOffers()
+
+
+# models used for 'OffersExport' method  :: OfferFileUrl, OfferFile
+class OfferFileUrl(Model):
+
+    class Meta:
+        Url = TextField()
+
+
+class OfferFile(Model):
+
+    class Meta:
+        item_type = OfferFileUrl()
+
+
+# models used for 'Delete' method  :: DeleteBulkRequest, RetailerOfferIdentifier
+class RetailerOfferIdentifier(Model):
+
+    class Meta:
+        EAN = TextField()
+        Condition = TextField()
+
+
+class DeleteBulkRequest(ModelList):
+
+    class Meta:
+        item_type = RetailerOfferIdentifier()

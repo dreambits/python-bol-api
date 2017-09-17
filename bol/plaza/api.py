@@ -13,7 +13,7 @@ from .models import Orders, Payments, Shipments, ProcessStatus
 
 #custom Method Models For DreamBits
 from .models import PurchasableShippingLabels, ReturnItems, ProcessStatus#, UpsertOffersError
-from .models import OffersResponse
+from .models import OffersResponse, OfferFile, DeleteBulkRequest
 
 
 __all__ = ['PlazaAPI']
@@ -291,6 +291,46 @@ class OffersMethods(MethodGroup):
         return OffersResponse.parse(self.api, response)
 
 
+    def exportOffers(self, path='/', params={}, data=None, accept="application/xml"):
+
+        uri = '/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path='/export/')
+        response = self.api.request('GET', uri, params=params, data=data, accept=accept)
+        return OfferFile.parse(self.api, response)
+
+    def exportOffersCSV(self, csv, path='/', params={}, data=None, accept="text/csv"):
+
+        csv_path = csv.split("/v2/")
+
+        uri = '/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path='/{}'.format(csv_path[1]))
+        response = self.api.request('GET', uri, params=params, data=data, accept=accept)
+
+        # save return data in txt file ...
+        File_object = open(r""+csv_path[1].split("export/")[1],"w")
+        File_object.write(response.encode("utf-8"))
+        File_object.close()
+        return
+
+
+    def deleteOffers(self, offers, path='/', params={}, data=None, accept="application/xml"):
+        xml = self.create_request_offers_xml(
+            'DeleteBulkRequest',
+            RetailerOfferIdentifier=offers)
+
+        uri = '/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path=path)
+        response = self.api.request('PUT', uri, params=params, data=xml, accept=accept)
+        if response is True:
+            return response
+
+
 class PlazaAPI(object):
 
     def __init__(self, public_key, private_key, test=False, timeout=None,
@@ -355,7 +395,12 @@ x-bol-date:{date}
                 tree = ElementTree.fromstring(resp.content)
                 return tree
 
+        if 'https://plazaapi.bol.com/offers/v2/export/' in request_kwargs['url']:
+            if accept == "text/csv":
+                return resp.text
+
         resp.raise_for_status()
+
         if accept == "application/pdf":
             return resp.content
         else:
