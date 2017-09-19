@@ -309,10 +309,10 @@ class RetailerOffer(Model):
         Description = TextField()
         Title = TextField()
         FulfillmentMethod = TextField()
-        Status = RetailerOfferStatus()
+        item_type = RetailerOfferStatus()
 
 
-class RetailerOffers(Model):
+class RetailerOffers(ModelList):
 
     class Meta:
         item_type = RetailerOffer()

@@ -266,7 +266,7 @@ class OffersMethods(MethodGroup):
     def __init__(self, api):
         super(OffersMethods, self).__init__(api, 'offers')
 
-    def offers(self, offers, path='/', params={}, data=None, accept="application/xml"):
+    def upsertOffers(self, offers, path='/', params={}, data=None, accept="application/xml"):
         xml = self.create_request_offers_xml(
             'UpsertRequest',
             RetailerOffer=offers)
@@ -281,7 +281,7 @@ class OffersMethods(MethodGroup):
         # else:
         #     return UpsertOffersError.parse(self.api, response)
 
-    def getSingleOffers(self, ean, path='/', params={}, data=None, accept="application/xml"):
+    def getSingleOffer(self, ean, path='/', params={}, data=None, accept="application/xml"):
 
         uri = '/{group}/{version}{path}'.format(
             group=self.group,
@@ -291,7 +291,7 @@ class OffersMethods(MethodGroup):
         return OffersResponse.parse(self.api, response)
 
 
-    def exportOffers(self, path='/', params={}, data=None, accept="application/xml"):
+    def getOffersFileName(self, path='/', params={}, data=None, accept="application/xml"):
 
         uri = '/{group}/{version}{path}'.format(
             group=self.group,
@@ -300,21 +300,14 @@ class OffersMethods(MethodGroup):
         response = self.api.request('GET', uri, params=params, data=data, accept=accept)
         return OfferFile.parse(self.api, response)
 
-    def exportOffersCSV(self, csv, path='/', params={}, data=None, accept="text/csv"):
-
+    def getOffersFile(self, csv, path='/', params={}, data=None, accept="text/csv"):
         csv_path = csv.split("/v2/")
-
         uri = '/{group}/{version}{path}'.format(
             group=self.group,
             version=self.api.version,
             path='/{}'.format(csv_path[1]))
         response = self.api.request('GET', uri, params=params, data=data, accept=accept)
-
-        # save return data in txt file ...
-        File_object = open(r""+csv_path[1].split("export/")[1],"w")
-        File_object.write(response.encode("utf-8"))
-        File_object.close()
-        return
+        return response
 
 
     def deleteOffers(self, offers, path='/', params={}, data=None, accept="application/xml"):
