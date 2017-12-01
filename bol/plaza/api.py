@@ -10,7 +10,6 @@ from enum import Enum
 import traceback
 
 
-
 from xml.etree import ElementTree
 
 from .models import Orders, Payments, Shipments, ProcessStatus
@@ -242,7 +241,7 @@ class TransportMethods(MethodGroup):
         # Now lets store this content in pdf:
 
         with open(file_location, 'wb') as f:
-                f.write(content)
+            f.write(content)
 
 
 class PurchasableShippingLabelsMethods(MethodGroup):
@@ -348,7 +347,6 @@ class OffersMethods(MethodGroup):
             print "Got into Exception \n%s" % traceback.print_exc()
 
 
-
 class PlazaAPI(object):
 
     def __init__(self, public_key, private_key, test=False, timeout=None,
@@ -381,9 +379,9 @@ class PlazaAPI(object):
 {date}
 x-bol-date:{date}
 {uri}""".format(content_type=content_type,
-                    date=date,
-                    method=method,
-                    uri=uri)
+                date=date,
+                method=method,
+                uri=uri)
             h = hmac.new(
                 self.private_key.encode('utf-8'),
                 msg.encode('utf-8'), hashlib.sha256)
