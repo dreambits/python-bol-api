@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import time
 import requests
 import hmac
@@ -344,7 +346,7 @@ class OffersMethods(MethodGroup):
             if response is True:
                 return response
         except Exception:
-            print "Got into Exception \n%s" % traceback.print_exc()
+            print("Got into Exception \n{0}".format(traceback.print_exc()))
 
 
 class PlazaAPI(object):
@@ -426,5 +428,5 @@ x-bol-date:{date}
                 tree = ElementTree.fromstring(resp.content)
                 return tree
         except Exception:
-            print "Got into Exception \n%s" % traceback.print_exc()
+            print("Got into Exception \n{0}".format(traceback.print_exc()))
             return False
