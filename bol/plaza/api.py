@@ -152,7 +152,8 @@ class OrderMethods(MethodGroup):
     def __init__(self, api):
         super(OrderMethods, self).__init__(api, 'orders')
 
-    def list(self, page=None, fulfillment_method=None, accept="application/xml"):
+    def list(self, page=None, fulfillment_method=None,
+             accept="application/xml"):
         params = {}
 
         if page:
@@ -160,7 +161,6 @@ class OrderMethods(MethodGroup):
 
         if fulfillment_method:
             params['fulfillment-method'] = fulfillment_method
-
 
         xml = self.request('GET', params=params, accept=accept)
         return Orders.parse(self.api, xml)
