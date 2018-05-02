@@ -152,15 +152,15 @@ class OrderMethods(MethodGroup):
     def __init__(self, api):
         super(OrderMethods, self).__init__(api, 'orders')
 
-    def list(self, page=None, fulfillment_method=None,
+    def list(self, page=None, fulfilment_method=None,
              accept="application/xml"):
         params = {}
 
         if page:
             params['page'] = page
 
-        if fulfillment_method:
-            params['fulfillment-method'] = fulfillment_method
+        if fulfilment_method:
+            params['fulfilment-method'] = fulfilment_method
 
         xml = self.request('GET', params=params, accept=accept)
         return Orders.parse(self.api, xml)
@@ -191,7 +191,7 @@ class ShipmentMethods(MethodGroup):
     def __init__(self, api):
         super(ShipmentMethods, self).__init__(api, 'shipments')
 
-    def list(self, page=None, fulfillment_method=None, order_id=None,
+    def list(self, page=None, fulfilment_method=None, order_id=None,
              accept="application/xml"):
         params = {}
 
@@ -201,8 +201,8 @@ class ShipmentMethods(MethodGroup):
         if order_id:
             params['order-id'] = order_id
 
-        if fulfillment_method:
-            params['fulfillment-method'] = fulfillment_method
+        if fulfilment_method:
+            params['fulfilment-method'] = fulfilment_method
 
         xml = self.request('GET', params=params, accept=accept)
         return Shipments.parse(self.api, xml)
