@@ -100,6 +100,15 @@ class MethodGroup(object):
 """.format(root=root, elements=elements)
         return xml
 
+    def create_request_inbound_xml(self, root, **kwargs):
+        elements = self._create_request_xml_elements(1, **kwargs)
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<{root} xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+{elements}
+</{root}>
+""".format(root=root, elements=elements)
+        return xml
+
     def _create_request_xml_elements(self, indent, **kwargs):
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
@@ -349,6 +358,47 @@ class OffersMethods(MethodGroup):
             print("Got into Exception \n{0}".format(traceback.print_exc()))
 
 
+class InboundMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(InboundMethods, self).__init__(api, 'inbounds')
+
+    def create(self, reference=None, time_slot=None, fbb_code=None,
+            fbb_name=None, labelling_service=None, prod_ean=None,
+            prod_annc_qty=None):
+        # Moved the params to a dict so it can be easy to add/remove parameters
+        values = {
+            'Reference': reference,
+            'LabellingService': labelling_service
+        }
+
+        if fbb_code:
+            if 'FbbTransporter' not in values:
+                values['FbbTransporter'] = {}
+            values['FbbTransporter']['Code'] = fbb_code
+
+        if fbb_name:
+            if 'FbbTransporter' not in values:
+                values['FbbTransporter'] = {}
+            values['FbbTransporter']['Name'] = fbb_name
+
+        if prod_ean:
+            if 'Products' not in values:
+                values['Products'] = {'Product':{}}
+            values['Products']['Product']['EAN'] = prod_ean
+        if prod_annc_qty:
+            if 'Products' not in values:
+                values['Products'] = {'Product':{}}
+            values['Products']['Product']['AnnouncedQuantity'] = prod_annc_qty
+
+        xml = self.create_request_inbound_xml(
+            'InboundRequest',
+            **values)
+
+        response = self.request('POST', data=xml)
+        return ProcessStatus.parse(self.api, response)
+
+
 class PlazaAPI(object):
 
     def __init__(self, public_key, private_key, test=False, timeout=None,
@@ -369,6 +419,7 @@ class PlazaAPI(object):
         self.session = session or requests.Session()
         self.return_items = ReturnItemsMethods(self)
         self.offers = OffersMethods(self)
+        self.inbounds = InboundMethods(self)
 
     def request(self, method, uri, params={},
                 data=None, accept="application/xml"):
