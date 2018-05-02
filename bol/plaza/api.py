@@ -364,8 +364,8 @@ class InboundMethods(MethodGroup):
         super(InboundMethods, self).__init__(api, 'inbounds')
 
     def create(self, reference=None, time_slot=None, fbb_code=None,
-            fbb_name=None, labelling_service=None, prod_ean=None,
-            prod_annc_qty=None):
+                fbb_name=None, labelling_service=None, prod_ean=None,
+                prod_annc_qty=None):
         # Moved the params to a dict so it can be easy to add/remove parameters
         values = {
             'Reference': reference,
@@ -384,11 +384,11 @@ class InboundMethods(MethodGroup):
 
         if prod_ean:
             if 'Products' not in values:
-                values['Products'] = {'Product':{}}
+                values['Products'] = {'Product': {}}
             values['Products']['Product']['EAN'] = prod_ean
         if prod_annc_qty:
             if 'Products' not in values:
-                values['Products'] = {'Product':{}}
+                values['Products'] = {'Product': {}}
             values['Products']['Product']['AnnouncedQuantity'] = prod_annc_qty
 
         xml = self.create_request_inbound_xml(
