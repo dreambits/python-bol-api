@@ -412,7 +412,7 @@ INVENTORY_RESPONSE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </InventoryResponse>"""
 
 
-@urlmatch(path=r'/services/rest/inventory?quantity=0-250&state=saleable&query=0042491966861&page=1$')
+@urlmatch(path=r'/services/rest/inventory$')
 def inventory_stub(url, request):
     return INVENTORY_RESPONSE
 
