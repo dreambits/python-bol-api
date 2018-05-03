@@ -19,7 +19,12 @@ from .models import Orders, Payments, Shipments, ProcessStatus
 # custom Method Models For DreamBits
 from .models import PurchasableShippingLabels, ReturnItems
 from .models import OffersResponse, OfferFile  # DeleteBulkRequest
-from .models import InventoryResponse  # for get Inventory method
+
+# for get Inventory method
+from .models import InventoryResponse
+
+# for Get All Bounds method
+from .models import GetAllInbounds
 
 
 __all__ = ['PlazaAPI']
@@ -363,6 +368,12 @@ class InboundMethods(MethodGroup):
 
     def __init__(self, api):
         super(InboundMethods, self).__init__(api, 'inbounds')
+
+    def getAllInbounds(self, page=None):
+        uri = '/services/rest/{group}'.format(
+            group=self.group)
+        xml = self.api.request('GET', uri)
+        return GetAllInbounds.parse(self.api, xml)
 
     def create(self, reference=None, time_slot=None, fbb_code=None,
                fbb_name=None, labelling_service=None, prod_ean=None,

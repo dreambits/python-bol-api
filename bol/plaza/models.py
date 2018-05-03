@@ -349,8 +349,50 @@ class DeleteBulkRequest(ModelList):
         item_type = RetailerOfferIdentifier()
 
 
+# models used for 'Inbounds' method for fbb-endpoints ::
+# GetAllInbounds, GetAllInbound, TimeSlot, FbbTransporter
+class FbbTransporter(Model):
+
+    class Meta:
+        Name = TextField()
+        Code = TextField()
+
+
+class TimeSlot(Model):
+
+    class Meta:
+        Start = TextField()
+        End = TextField()
+
+
+class GetAllInbound(Model):
+
+    class Meta:
+        ID = IntegerField()
+        Reference = TextField()
+        CreationDate = TextField()
+        State = TextField()
+        LabellingService = TextField()
+        AnnouncedBSKUs = TextField()
+        AnnouncedQuantity = TextField()
+        ReceivedBSKUs = TextField()
+        ReceivedQuantity = TextField()
+        CreationDate = TextField()
+        EAN = TextField()
+        TimeSlot = TimeSlot()
+        FbbTransporter = FbbTransporter()
+
+
+class GetAllInbounds(ModelList):
+
+    class Meta:
+        TotalCount = IntegerField()
+        TotalPageCount = IntegerField()
+        item_type = GetAllInbound()
+
+
 # models used for 'Get Inventory' method for fbb-endpoints ::
-# DeleteBulkRequest, RetailerOfferIdentifier
+# InventoryResponse, InventoryOffers, InventoryOffer
 class InventoryOffer(Model):
 
     class Meta:
