@@ -349,7 +349,7 @@ class DeleteBulkRequest(ModelList):
         item_type = RetailerOfferIdentifier()
 
 
-# models used for 'Inbounds' method for fbb-endpoints ::
+# models used for 'GetAllInbounds' method for fbb-endpoints ::
 # GetAllInbounds, GetAllInbound, TimeSlot, FbbTransporter
 class FbbTransporter(Model):
 
@@ -389,6 +389,72 @@ class GetAllInbounds(ModelList):
         TotalCount = IntegerField()
         TotalPageCount = IntegerField()
         item_type = GetAllInbound()
+
+
+# models used for 'GetSingleInbound' method for fbb-endpoints ::
+# GetAllInbounds, GetAllInbound, SingleBoundProducts, SingleBoundProduct,
+# StateTransitions, StateTransition, TimeSlot, FbbTransporter
+class FbbTransporter(Model):
+
+    class Meta:
+        Name = TextField()
+        Code = TextField()
+
+
+class TimeSlot(Model):
+
+    class Meta:
+        Start = TextField()
+        End = TextField()
+
+
+class InboundState(Model):
+
+    class Meta:
+        State = TextField()
+        StateDate = DateTimeField()
+
+
+class StateTransitions(ModelList):
+
+    class Meta:
+        item_type = InboundState()
+
+
+class SingleBoundProduct(ModelList):
+
+    class Meta:
+        EAN = TextField()
+        State = TextField()
+        BSKUs = TextField()
+        AnnouncedQuantity = TextField()
+        ReceivedQuantity = TextField()
+
+
+class SingleBoundProducts(ModelList):
+
+    class Meta:
+        item_type = SingleBoundProduct()
+
+
+class GetSingleInbound(ModelList):
+
+    class Meta:
+        ID = IntegerField()
+        Reference = TextField()
+        CreationDate = TextField()
+        State = TextField()
+        LabellingService = TextField()
+        AnnouncedBSKUs = TextField()
+        AnnouncedQuantity = TextField()
+        ReceivedBSKUs = TextField()
+        ReceivedQuantity = TextField()
+        CreationDate = TextField()
+        EAN = TextField()
+        Products = SingleBoundProducts()
+        StateTransitions = StateTransitions()
+        TimeSlot = TimeSlot()
+        FbbTransporter = FbbTransporter()
 
 
 # models used for 'Get Inventory' method for fbb-endpoints ::

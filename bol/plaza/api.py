@@ -26,6 +26,9 @@ from .models import InventoryResponse
 # for Get All Bounds method
 from .models import GetAllInbounds
 
+# for Get Single Bounds method
+from .models import GetSingleInbound
+
 
 __all__ = ['PlazaAPI']
 
@@ -83,6 +86,15 @@ class MethodGroup(object):
         uri = '/services/rest/{group}/{version}{path}'.format(
             group=self.group,
             version=self.api.version,
+            path=path)
+        xml = self.api.request(method, uri, params=params, data=data,
+                               accept=accept)
+        return xml
+
+    def request_inbound(self, method, path='', params={}, data=None,
+                        accept="application/xml"):
+        uri = '/services/rest/{group}/{path}'.format(
+            group=self.group,
             path=path)
         xml = self.api.request(method, uri, params=params, data=data,
                                accept=accept)
@@ -374,6 +386,10 @@ class InboundMethods(MethodGroup):
             group=self.group)
         xml = self.api.request('GET', uri)
         return GetAllInbounds.parse(self.api, xml)
+
+    def getSingleInbound(self, inbound_id=None):
+        response = self.request_inbound('GET', path=inbound_id)
+        return GetSingleInbound.parse(self.api, response)
 
     def create(self, reference=None, time_slot=None, fbb_code=None,
                fbb_name=None, labelling_service=None, prod_ean=None,
