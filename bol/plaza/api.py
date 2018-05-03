@@ -439,16 +439,16 @@ class InventoryMethods(MethodGroup):
         if page:
             params['page'] = page
 
-        if page:
+        if quantity:
             params['quantity'] = quantity
 
-        if page:
+        if stock:
             params['stock'] = stock
 
-        if page:
+        if state:
             params['state'] = state
 
-        if page:
+        if query:
             params['query'] = query
 
         # xml = self.request('GET', params=params)
