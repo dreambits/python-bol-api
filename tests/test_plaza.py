@@ -365,3 +365,62 @@ def test_update_transport():
             track_and_trace='3S123',
             transporter_code=TransporterCode.GLS)
         assert process_status.sellerId == 925853
+
+
+# dreambits testing code
+INVENTORY_RESPONSE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<InventoryResponse xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+ <TotalCount>144</TotalCount>
+ <TotalPageCount>3</TotalPageCount>
+ <Offers>
+  <Offer>
+   <EAN>9789076174143</EAN>
+   <BSKU>1230000402640</BSKU>
+   <Title>Harry Potter en de gevangene van Azkaban</Title>
+   <Stock>0</Stock>
+   <NCK-Stock>1</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9789076174198</EAN>
+   <BSKU>1230000425793</BSKU>
+   <Title>Harry Potter & de Vuurbeker</Title>
+   <Stock>2</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9789061697664</EAN>
+   <BSKU>1230000889762</BSKU>
+   <Title>Harry Potter en de halfbloed Prins</Title>
+   <Stock>8</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9789061697008</EAN>
+   <BSKU>2950000418559</BSKU>
+   <Title>Harry Potter en de orde van de Feniks</Title>
+   <Stock>1</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9781781103524</EAN>
+   <BSKU>1230000425830</BSKU>
+   <Title>Harry Potter en de Relieken van de Dood</Title>
+   <Stock>20</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+ </Offers>
+</InventoryResponse>"""
+
+
+@urlmatch(path=r'/services/rest/inventory?quantity=0-250&state=saleable&query=0042491966861&page=1$')
+def inventory_stub(url, request):
+    return INVENTORY_RESPONSE
+
+def test_get_inventory():
+    with HTTMock(inventory_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+        inventory = api.inventory.getInventory(page=1, quantity="0-250",
+            state="saleable", query="0042491966861")
+
+        assert len(inventory) == 3
+
