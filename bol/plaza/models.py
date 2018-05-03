@@ -347,3 +347,38 @@ class DeleteBulkRequest(ModelList):
 
     class Meta:
         item_type = RetailerOfferIdentifier()
+
+
+# models used for 'Get Inventory' method for fbb-endpoints ::
+# DeleteBulkRequest, RetailerOfferIdentifier
+class InventoryOffer(Model):
+
+    class Meta:
+        EAN = TextField()
+        BSKU = TextField()
+        Title = TextField()
+        Stock = IntegerField()
+        NCK_Stock = IntegerField()
+
+
+class InventoryOffers(ModelList):
+
+    class Meta:
+        item_type = InventoryOffer()
+
+
+# class InventoryResponse(Model):
+
+#     class Meta:
+#         TotalCount = IntegerField()
+#         TotalPageCount = IntegerField()
+#         item_type = InventoryOffers()
+
+
+class InventoryResponse(ModelList):
+
+    class Meta:
+        TotalCount = IntegerField()
+        TotalPageCount = IntegerField()
+        item_type = InventoryOffers()
+        # item_type = InventoryResponse()

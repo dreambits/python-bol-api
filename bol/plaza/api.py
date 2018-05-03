@@ -19,6 +19,7 @@ from .models import Orders, Payments, Shipments, ProcessStatus
 # custom Method Models For DreamBits
 from .models import PurchasableShippingLabels, ReturnItems
 from .models import OffersResponse, OfferFile  # DeleteBulkRequest
+from .models import InventoryResponse  # for get Inventory method
 
 
 __all__ = ['PlazaAPI']
@@ -364,8 +365,8 @@ class InboundMethods(MethodGroup):
         super(InboundMethods, self).__init__(api, 'inbounds')
 
     def create(self, reference=None, time_slot=None, fbb_code=None,
-                fbb_name=None, labelling_service=None, prod_ean=None,
-                prod_annc_qty=None):
+               fbb_name=None, labelling_service=None, prod_ean=None,
+               prod_annc_qty=None):
         # Moved the params to a dict so it can be easy to add/remove parameters
         values = {
             'Reference': reference,
@@ -399,6 +400,38 @@ class InboundMethods(MethodGroup):
         return ProcessStatus.parse(self.api, response)
 
 
+class InventoryMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(InventoryMethods, self).__init__(api, 'inventory')
+
+    def getInventory(self, page=None, quantity=None, stock=None, state=None,
+                     query=None):
+        params = {}
+
+        if page:
+            params['page'] = page
+
+        if page:
+            params['quantity'] = quantity
+
+        if page:
+            params['stock'] = stock
+
+        if page:
+            params['state'] = state
+
+        if page:
+            params['query'] = query
+
+        # xml = self.request('GET', params=params)
+
+        uri = '/services/rest/{group}'.format(group=self.group)
+        response = self.api.request('GET', uri, params=params,
+                                    data=None)
+        return InventoryResponse.parse(self.api, response)
+
+
 class PlazaAPI(object):
 
     def __init__(self, public_key, private_key, test=False, timeout=None,
@@ -420,6 +453,7 @@ class PlazaAPI(object):
         self.return_items = ReturnItemsMethods(self)
         self.offers = OffersMethods(self)
         self.inbounds = InboundMethods(self)
+        self.inventory = InventoryMethods(self)
 
     def request(self, method, uri, params={},
                 data=None, accept="application/xml"):
