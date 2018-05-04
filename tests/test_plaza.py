@@ -369,7 +369,8 @@ def test_update_transport():
 
 # dreambits testing code
 INVENTORY_RESPONSE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<InventoryResponse xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+<InventoryResponse
+xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
  <TotalCount>144</TotalCount>
  <TotalPageCount>3</TotalPageCount>
  <Offers>
@@ -383,7 +384,7 @@ INVENTORY_RESPONSE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <Offer>
    <EAN>9789076174198</EAN>
    <BSKU>1230000425793</BSKU>
-   <Title>Harry Potter & de Vuurbeker</Title>
+   <Title>Harry Potter &amp; de Vuurbeker</Title>
    <Stock>2</Stock>
    <NCK-Stock>0</NCK-Stock>
   </Offer>
@@ -412,15 +413,24 @@ INVENTORY_RESPONSE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </InventoryResponse>"""
 
 
-@urlmatch(path=r'/services/rest/inventory$')
-def inventory_stub(url, request):
-    return INVENTORY_RESPONSE
-
 def test_get_inventory():
+
+    @urlmatch(path=r'/services/rest/inventory')
+    def inventory_stub(url, request):
+        return INVENTORY_RESPONSE
+
     with HTTMock(inventory_stub):
         api = PlazaAPI('api_key', 'api_secret', test=True)
         inventory = api.inventory.getInventory(page=1, quantity="0-250",
-            state="saleable", query="0042491966861")
+                                               state="saleable",
+                                               query="0042491966861")
 
-        assert len(inventory) == 3
-
+        print "type-> inventory ",type(inventory)
+        print "type-> inventory.TotalCount ",type(inventory.TotalCount)
+        print "type-> inventory.Offers ",type(inventory.Offers)
+        print "type-> ",dir(inventory)
+        assert inventory.TotalCount == 144
+        offer = inventory.Offers[0]
+        print "type-> inventory.Offers ",type(offer)
+        # print "type-> inventory.Offers.EAN ",type(offer.EAN)
+        assert type(offer.EAN) == inventory.Offers.EAN

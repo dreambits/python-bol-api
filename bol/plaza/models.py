@@ -472,21 +472,12 @@ class InventoryOffer(Model):
 class InventoryOffers(ModelList):
 
     class Meta:
-        item_type = InventoryOffer()
+        item_type = InventoryOffer
 
 
-# class InventoryResponse(Model):
-
-#     class Meta:
-#         TotalCount = IntegerField()
-#         TotalPageCount = IntegerField()
-#         item_type = InventoryOffers()
-
-
-class InventoryResponse(ModelList):
+class InventoryResponse(Model):
 
     class Meta:
         TotalCount = IntegerField()
         TotalPageCount = IntegerField()
-        item_type = InventoryOffers()
-        # item_type = InventoryResponse()
+        item_type = InventoryOffers
