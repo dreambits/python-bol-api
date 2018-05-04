@@ -501,7 +501,7 @@ standalone="yes"?>
 
 def test_get_single_inbound():
 
-    @urlmatch(path=r'/services/rest/inbounds/$')
+    @urlmatch(path=r'/services/rest/inbounds/1124284930$')
     def single_inbound_stub(url, request):
         return SINGLE_BOUND_RESPONSE
 
