@@ -404,8 +404,8 @@ class FbbTransporter(Model):
 class TimeSlot(Model):
 
     class Meta:
-        Start = TextField()
-        End = TextField()
+        Start = DateTimeField()
+        End = DateTimeField()
 
 
 class InboundState(Model):
@@ -421,14 +421,14 @@ class StateTransitions(ModelList):
         item_type = InboundState()
 
 
-class SingleBoundProduct(ModelList):
+class SingleBoundProduct(Model):
 
     class Meta:
         EAN = TextField()
         State = TextField()
         BSKUs = TextField()
-        AnnouncedQuantity = TextField()
-        ReceivedQuantity = TextField()
+        AnnouncedQuantity = IntegerField()
+        ReceivedQuantity = IntegerField()
 
 
 class SingleBoundProducts(ModelList):
@@ -437,24 +437,23 @@ class SingleBoundProducts(ModelList):
         item_type = SingleBoundProduct()
 
 
-class GetSingleInbound(ModelList):
+class GetSingleInbound(Model):
 
     class Meta:
         ID = IntegerField()
         Reference = TextField()
-        CreationDate = TextField()
+        CreationDate = DateTimeField()
         State = TextField()
-        LabellingService = TextField()
-        AnnouncedBSKUs = TextField()
-        AnnouncedQuantity = TextField()
-        ReceivedBSKUs = TextField()
-        ReceivedQuantity = TextField()
-        CreationDate = TextField()
+        LabellingService = BooleanField()
+        AnnouncedBSKUs = IntegerField()
+        AnnouncedQuantity = IntegerField()
+        ReceivedBSKUs = IntegerField()
+        ReceivedQuantity = IntegerField()
         EAN = TextField()
-        Products = SingleBoundProducts()
-        StateTransitions = StateTransitions()
-        TimeSlot = TimeSlot()
-        FbbTransporter = FbbTransporter()
+        Products = ModelField(SingleBoundProducts)
+        StateTransitions = ModelField(StateTransitions)
+        TimeSlot = ModelField(TimeSlot)
+        FbbTransporter = ModelField(FbbTransporter)
 
 
 # models used for 'Get Inventory' method for fbb-endpoints ::
@@ -466,7 +465,7 @@ class InventoryOffer(Model):
         BSKU = TextField()
         Title = TextField()
         Stock = IntegerField()
-        NCK_Stock = IntegerField()
+        # NCK_Stock = IntegerField()
 
 
 class InventoryOffers(ModelList):
@@ -480,4 +479,4 @@ class InventoryResponse(Model):
     class Meta:
         TotalCount = IntegerField()
         TotalPageCount = IntegerField()
-        item_type = InventoryOffers
+        Offers = ModelField(InventoryOffers)

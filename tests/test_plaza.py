@@ -368,6 +368,7 @@ def test_update_transport():
 
 
 # dreambits testing code
+
 INVENTORY_RESPONSE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <InventoryResponse
 xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
@@ -425,12 +426,90 @@ def test_get_inventory():
                                                state="saleable",
                                                query="0042491966861")
 
-        print "type-> inventory ",type(inventory)
-        print "type-> inventory.TotalCount ",type(inventory.TotalCount)
-        print "type-> inventory.Offers ",type(inventory.Offers)
-        print "type-> ",dir(inventory)
         assert inventory.TotalCount == 144
         offer = inventory.Offers[0]
-        print "type-> inventory.Offers ",type(offer)
-        # print "type-> inventory.Offers.EAN ",type(offer.EAN)
-        assert type(offer.EAN) == inventory.Offers.EAN
+        assert type(offer.EAN) == str
+        assert getattr(offer, "NCK-Stock") == "1"
+
+
+SINGLE_BOUND_RESPONSE = """<?xml version="1.0" encoding="UTF-8"
+standalone="yes"?>
+<Inbound xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+  <Id>1124284930</Id>
+  <Reference>FBB20170726</Reference>
+  <CreationDate>2017-07-26T10:58:17.079+02:00</CreationDate>
+  <State>ArrivedAtWH</State>
+  <LabellingService>false</LabellingService>
+  <AnnouncedBSKUs>69</AnnouncedBSKUs>
+  <AnnouncedQuantity>237</AnnouncedQuantity>
+  <ReceivedBSKUs>69</ReceivedBSKUs>
+  <ReceivedQuantity>240</ReceivedQuantity>
+  <Products>
+    <Product>
+      <EAN>4034398404139</EAN>
+      <BSKU>2950002126612</BSKU>
+      <AnnouncedQuantity>6</AnnouncedQuantity>
+      <ReceivedQuantity>6</ReceivedQuantity>
+      <State>Announced</State>
+  </Product>
+  <Product>
+      <EAN>4034398400902</EAN>
+      <BSKU>2950002125622</BSKU>
+      <AnnouncedQuantity>8</AnnouncedQuantity>
+      <ReceivedQuantity>8</ReceivedQuantity>
+      <State>Announced</State>
+  </Product>
+  <Product>
+      <EAN>4034398209925</EAN>
+      <BSKU>2950002126148</BSKU>
+      <AnnouncedQuantity>3</AnnouncedQuantity>
+      <ReceivedQuantity>3</ReceivedQuantity>
+      <State>Announced</State>
+  </Product>
+  <Product>
+      <EAN>4034398400964</EAN>
+      <BSKU>2950002126896</BSKU>
+      <AnnouncedQuantity>1</AnnouncedQuantity>
+      <ReceivedQuantity>1</ReceivedQuantity>
+      <State>Announced</State>
+    </Product>
+  </Products>
+  <StateTransitions>
+    <InboundState>
+      <State>ArrivedAtWH</State>
+      <StateDate>2017-07-28T09:26:23.371+02:00</StateDate>
+    </InboundState>
+    <InboundState>
+      <State>PreAnnounced</State>
+      <StateDate>2017-07-26T11:16:10.757+02:00</StateDate>
+    </InboundState>
+    <InboundState>
+      <State>Draft</State>
+      <StateDate>2017-07-26T10:58:17.925+02:00</StateDate>
+    </InboundState>
+  </StateTransitions>
+  <TimeSlot>
+    <Start>2017-07-28T06:00:00.000+02:00</Start>
+    <End>2017-07-28T19:00:00.000+02:00</End>
+  </TimeSlot>
+  <FbbTransporter>
+    <Name>PostNL</Name>
+    <Code>PostNL</Code>
+  </FbbTransporter>
+</Inbound>"""
+
+
+def test_get_single_inbound():
+
+    @urlmatch(path=r'/services/rest/inbounds/$')
+    def single_inbound_stub(url, request):
+        return SINGLE_BOUND_RESPONSE
+
+    with HTTMock(single_inbound_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+        single_inbound = api.inbounds.getSingleInbound(inbound_id="1124284930")
+
+        assert isinstance(single_inbound.LabellingService, bool)
+        product = single_inbound.Products[0]
+        assert isinstance(product.AnnouncedQuantity, int)
+        assert not isinstance(product.AnnouncedQuantity, str)
