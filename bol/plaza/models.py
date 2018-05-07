@@ -361,8 +361,8 @@ class FbbTransporter(Model):
 class TimeSlot(Model):
 
     class Meta:
-        Start = TextField()
-        End = TextField()
+        Start = DateTimeField()
+        End = DateTimeField()
 
 
 class GetAllInbound(Model):
@@ -370,25 +370,30 @@ class GetAllInbound(Model):
     class Meta:
         ID = IntegerField()
         Reference = TextField()
-        CreationDate = TextField()
+        CreationDate = DateTimeField()
         State = TextField()
-        LabellingService = TextField()
-        AnnouncedBSKUs = TextField()
-        AnnouncedQuantity = TextField()
-        ReceivedBSKUs = TextField()
-        ReceivedQuantity = TextField()
-        CreationDate = TextField()
+        LabellingService = BooleanField()
+        AnnouncedBSKUs = IntegerField()
+        AnnouncedQuantity = IntegerField()
+        ReceivedBSKUs = IntegerField()
+        ReceivedQuantity = IntegerField()
         EAN = TextField()
-        TimeSlot = TimeSlot()
-        FbbTransporter = FbbTransporter()
+        TimeSlot = ModelField(TimeSlot)
+        FbbTransporter = ModelField(FbbTransporter)
 
 
-class GetAllInbounds(ModelList):
+class GetAllInboundList(ModelList):
+
+    class Meta:
+        item_type = GetAllInbound
+
+
+class GetAllInbounds(Model):
 
     class Meta:
         TotalCount = IntegerField()
         TotalPageCount = IntegerField()
-        item_type = GetAllInbound()
+        InboundList = ModelField(GetAllInboundList)
 
 
 # models used for 'GetSingleInbound' method for fbb-endpoints ::
@@ -437,23 +442,11 @@ class SingleBoundProducts(ModelList):
         item_type = SingleBoundProduct()
 
 
-class GetSingleInbound(Model):
+class GetSingleInbound(GetAllInbound):
 
-    class Meta:
-        ID = IntegerField()
-        Reference = TextField()
-        CreationDate = DateTimeField()
-        State = TextField()
-        LabellingService = BooleanField()
-        AnnouncedBSKUs = IntegerField()
-        AnnouncedQuantity = IntegerField()
-        ReceivedBSKUs = IntegerField()
-        ReceivedQuantity = IntegerField()
-        EAN = TextField()
+    class Meta(GetAllInbound.Meta):
         Products = ModelField(SingleBoundProducts)
         StateTransitions = ModelField(StateTransitions)
-        TimeSlot = ModelField(TimeSlot)
-        FbbTransporter = ModelField(FbbTransporter)
 
 
 # models used for 'Get Inventory' method for fbb-endpoints ::

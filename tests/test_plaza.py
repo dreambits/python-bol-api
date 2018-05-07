@@ -513,3 +513,83 @@ def test_get_single_inbound():
         product = single_inbound.Products[0]
         assert isinstance(product.AnnouncedQuantity, int)
         assert not isinstance(product.AnnouncedQuantity, str)
+        assert not isinstance(product.AnnouncedQuantity, str)
+        assert single_inbound.FbbTransporter.Name == "PostNL"
+        assert single_inbound.FbbTransporter.Code == "PostNL"
+        inboundStat = single_inbound.StateTransitions[0]
+        assert inboundStat.State == "ArrivedAtWH"
+
+
+ALL_BOUND_RESPONSE = """<?xml version="1.0" encoding="UTF-8"
+standalone="yes"?>
+<Inbounds xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+  <TotalCount>4</TotalCount>
+  <TotalPageCount>1</TotalPageCount>
+  <InboundList>
+      <Inbound>
+        <Id>1124284930</Id>
+        <Reference>FBB20170726</Reference>
+        <CreationDate>2017-07-26T10:58:17.079+02:00</CreationDate>
+        <State>ArrivedAtWH</State>
+        <LabellingService>false</LabellingService>
+        <AnnouncedBSKUs>69</AnnouncedBSKUs>
+        <AnnouncedQuantity>237</AnnouncedQuantity>
+        <ReceivedBSKUs>69</ReceivedBSKUs>
+        <ReceivedQuantity>240</ReceivedQuantity>
+        <TimeSlot>
+          <Start>2017-07-28T06:00:00.000+02:00</Start>
+          <End>2017-07-28T19:00:00.000+02:00</End>
+        </TimeSlot>
+        <FbbTransporter>
+          <Name>PostNL</Name>
+          <Code>PostNL</Code>
+        </FbbTransporter>
+      </Inbound>
+      <Inbound>
+        <Id>1124284929</Id>
+        <Reference>FBB20170712</Reference>
+        <CreationDate>2017-07-12T21:08:02.433+02:00</CreationDate>
+        <State>ArrivedAtWH</State>
+        <LabellingService>false</LabellingService>
+        <AnnouncedBSKUs>85</AnnouncedBSKUs>
+        <AnnouncedQuantity>204</AnnouncedQuantity>
+        <ReceivedBSKUs>90</ReceivedBSKUs>
+        <ReceivedQuantity>203</ReceivedQuantity>
+        <TimeSlot>
+          <Start>2017-07-17T06:00:00.000+02:00</Start>
+          <End>2017-07-17T19:00:00.000+02:00</End>
+        </TimeSlot>
+        <FbbTransporter>
+          <Name>PostNL</Name>
+          <Code>PostNL</Code>
+        </FbbTransporter>
+      </Inbound>
+  </InboundList>
+</Inbounds>"""
+
+
+def test_get_all_inbound():
+
+    @urlmatch(path=r'/services/rest/inbounds$')
+    def all_inbound_stub(url, request):
+        return ALL_BOUND_RESPONSE
+
+    with HTTMock(all_inbound_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+        all_inbound = api.inbounds.getAllInbounds(page=1)
+
+        inbound = all_inbound.InboundList[0]
+        assert isinstance(inbound.Reference, str)
+        assert isinstance(inbound.State, str)
+        assert inbound.State == "ArrivedAtWH"
+        assert inbound.Id == "1124284930"
+        assert isinstance(inbound.LabellingService, bool)
+        assert not inbound.LabellingService
+        assert inbound.AnnouncedBSKUs == 69
+        assert inbound.AnnouncedQuantity == 237
+        assert inbound.ReceivedBSKUs == 69
+        assert inbound.ReceivedQuantity == 240
+        assert isinstance(inbound.FbbTransporter.Name, str)
+        assert isinstance(inbound.FbbTransporter.Code, str)
+        assert inbound.FbbTransporter.Name == "PostNL"
+        assert inbound.FbbTransporter.Code == "PostNL"
