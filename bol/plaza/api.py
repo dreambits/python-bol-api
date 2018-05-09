@@ -466,8 +466,11 @@ standalone="yes"?>
 
         print("list(all_inbound)-> {0}".format(list(all_inbound)))
 
-        newinbound = ElementTree.Element('AllInbound', nsmap=PLAZA_API_V1)
-        # newinbound = ElementTree.Qname(PLAZA_API_V1, tag='AllInbound')
+        newinbound = ElementTree.Element('{'+PLAZA_API_V1+'}AllInbound')
+        ## This is hacky solution to add proper namespace.
+        ## This needs to be checked properly but only it has been tested against
+        ## reald data
+
         for x in inbounds:
             newinbound.append(x)
 
