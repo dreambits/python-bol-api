@@ -411,17 +411,7 @@ class InboundMethods(MethodGroup):
         for x in inbounds:
             newinbound.append(x)
 
-        print("newinbound-> {0}".format(newinbound))
-
         all_inbound.append(newinbound)
-
-        print("list(all_inbound)-> {0}".format(list(all_inbound)))
-        print("ElementTree.tostring(all_inbound)-> {0}".format(ElementTree.tostring(all_inbound)))
-
-        # for x in inbounds:
-        #     newinbound.append(x)
-        # all_inbound.append(newinbound)
-        # print("list(all_inbound) -> {0}".format(list(all_inbound)))
 
         return GetAllInbounds.parse(self.api, all_inbound)
 
