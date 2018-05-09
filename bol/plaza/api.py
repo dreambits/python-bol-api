@@ -33,8 +33,7 @@ from .models import GetSingleInbound
 __all__ = ['PlazaAPI']
 
 PLAZA_API_V1 = "https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd"
-# NS_MAP = {None:PLAZA_API_V1}
-NS_MAP = {"":PLAZA_API_V1}
+
 
 class TransporterCode(Enum):
     """
@@ -387,89 +386,27 @@ class InboundMethods(MethodGroup):
     def getAllInbounds(self, page=None):
         uri = '/services/rest/{group}'.format(
             group=self.group)
-        # all_inbound = self.api.request('GET', uri)
-
-        all_inbound_rspn = """<?xml version="1.0" encoding="UTF-8"
-standalone="yes"?>
-<Inbounds xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
-  <TotalCount>4</TotalCount>
-  <TotalPageCount>1</TotalPageCount>
-      <Inbound>
-        <Id>1124284930</Id>
-        <Reference>FBB20170726</Reference>
-        <CreationDate>2017-07-26T10:58:17.079+02:00</CreationDate>
-        <State>ArrivedAtWH</State>
-        <LabellingService>false</LabellingService>
-        <AnnouncedBSKUs>69</AnnouncedBSKUs>
-        <AnnouncedQuantity>237</AnnouncedQuantity>
-        <ReceivedBSKUs>69</ReceivedBSKUs>
-        <ReceivedQuantity>240</ReceivedQuantity>
-        <TimeSlot>
-          <Start>2017-07-28T06:00:00.000+02:00</Start>
-          <End>2017-07-28T19:00:00.000+02:00</End>
-        </TimeSlot>
-        <FbbTransporter>
-          <Name>PostNL</Name>
-          <Code>PostNL</Code>
-        </FbbTransporter>
-      </Inbound>
-      <Inbound>
-        <Id>1124284929</Id>
-        <Reference>FBB20170712</Reference>
-        <CreationDate>2017-07-12T21:08:02.433+02:00</CreationDate>
-        <State>ArrivedAtWH</State>
-        <LabellingService>false</LabellingService>
-        <AnnouncedBSKUs>85</AnnouncedBSKUs>
-        <AnnouncedQuantity>204</AnnouncedQuantity>
-        <ReceivedBSKUs>90</ReceivedBSKUs>
-        <ReceivedQuantity>203</ReceivedQuantity>
-        <TimeSlot>
-          <Start>2017-07-17T06:00:00.000+02:00</Start>
-          <End>2017-07-17T19:00:00.000+02:00</End>
-        </TimeSlot>
-        <FbbTransporter>
-          <Name>PostNL</Name>
-          <Code>PostNL</Code>
-        </FbbTransporter>
-      </Inbound>
-</Inbounds>"""
-        print("all_inbound_rsp-> {0}".format(all_inbound_rspn))
-        all_inbound = ElementTree.fromstring(all_inbound_rspn)
-        print("all_inbound-> {0}".format(all_inbound))
+        all_inbound = self.api.request('GET', uri)
 
         # need to handle the structure after modifying xml data
         # as the data is not structured properly
 
         ElementTree.register_namespace("", PLAZA_API_V1)
 
-        print("all_inbound_rsp-> {0}".format(all_inbound_rspn))
-        all_inbound = ElementTree.fromstring(all_inbound_rspn)
-        print("all_inbound-> {0}".format(all_inbound))
+        # all_inbound = ElementTree.fromstring(all_inbound_rspn)
 
-        print("all_inbound-> {0}".format(all_inbound))
-        print("dir(all_inbound) -> {0}".format(dir(all_inbound)))
-        print('all_inbound.find("Inbound")-> {0}'.format(all_inbound.find("Inbound")))
-        print('all_inbound.findall("Inbound")-> {0}'.format(all_inbound.findall("Inbound")))
         allit = list(all_inbound)
-        print("allit-> {0}".format(allit))
-        #for x in allit:
-        #    print x
-        #    print x.tag
 
         inbounds = [x for x in all_inbound.iter()
-                        if x.tag.partition('}')[2]=="Inbound"]
+                    if x.tag.partition('}')[2] == "Inbound"]
 
-        print("inbounds-> {0}".format(inbounds))
-        print("all_inbound.iter()-> {0}".format(all_inbound.iter()))
         for x in inbounds:
             all_inbound.remove(x)
 
-        print("list(all_inbound)-> {0}".format(list(all_inbound)))
-
         newinbound = ElementTree.Element('{'+PLAZA_API_V1+'}AllInbound')
-        ## This is hacky solution to add proper namespace.
-        ## This needs to be checked properly but only it has been tested against
-        ## reald data
+        # This is hacky solution to add proper namespace.
+        # This needs to be checked properly but only it has been tested against
+        # real data
 
         for x in inbounds:
             newinbound.append(x)
