@@ -525,7 +525,6 @@ standalone="yes"?>
 <Inbounds xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
   <TotalCount>4</TotalCount>
   <TotalPageCount>1</TotalPageCount>
-    <AllInbound>
       <Inbound>
         <Id>1124284930</Id>
         <Reference>FBB20170726</Reference>
@@ -564,7 +563,6 @@ standalone="yes"?>
           <Code>PostNL</Code>
         </FbbTransporter>
       </Inbound>
-  </AllInbound>
 </Inbounds>"""
 
 
