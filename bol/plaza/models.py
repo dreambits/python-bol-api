@@ -393,7 +393,7 @@ class GetAllInbounds(Model):
     class Meta:
         TotalCount = IntegerField()
         TotalPageCount = IntegerField()
-        InboundList = ModelField(GetAllInboundList)
+        AllInbound = ModelField(GetAllInboundList)
 
 
 # models used for 'GetSingleInbound' method for fbb-endpoints ::

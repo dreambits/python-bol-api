@@ -525,7 +525,7 @@ standalone="yes"?>
 <Inbounds xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
   <TotalCount>4</TotalCount>
   <TotalPageCount>1</TotalPageCount>
-  <InboundList>
+    <AllInbound>
       <Inbound>
         <Id>1124284930</Id>
         <Reference>FBB20170726</Reference>
@@ -564,7 +564,7 @@ standalone="yes"?>
           <Code>PostNL</Code>
         </FbbTransporter>
       </Inbound>
-  </InboundList>
+  </AllInbound>
 </Inbounds>"""
 
 
@@ -578,7 +578,7 @@ def test_get_all_inbound():
         api = PlazaAPI('api_key', 'api_secret', test=True)
         all_inbound = api.inbounds.getAllInbounds(page=1)
 
-        inbound = all_inbound.InboundList[0]
+        inbound = all_inbound.AllInbound[0]
         assert isinstance(inbound.Reference, str)
         assert isinstance(inbound.State, str)
         assert inbound.State == "ArrivedAtWH"
