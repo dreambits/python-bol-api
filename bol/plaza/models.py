@@ -398,19 +398,8 @@ class GetAllInbounds(Model):
 
 # models used for 'GetSingleInbound' method for fbb-endpoints ::
 # GetAllInbounds, GetAllInbound, SingleBoundProducts, SingleBoundProduct,
-# StateTransitions, StateTransition, TimeSlot, FbbTransporter
-class FbbTransporter(Model):
-
-    class Meta:
-        Name = TextField()
-        Code = TextField()
-
-
-class TimeSlot(Model):
-
-    class Meta:
-        Start = DateTimeField()
-        End = DateTimeField()
+# StateTransitions, StateTransition,
+# existing classes: TimeSlot, FbbTransporter
 
 
 class InboundState(Model):
@@ -473,3 +462,12 @@ class InventoryResponse(Model):
         TotalCount = IntegerField()
         TotalPageCount = IntegerField()
         Offers = ModelField(InventoryOffers)
+
+
+# models used for 'Get Delivery Window' method for fbb-endpoints ::
+# DeliveryWindowResponse
+# existing classes: DeliveryWindowResponse.Meta as Timeslot.Meta
+class DeliveryWindowResponse(TimeSlot):
+
+    class Meta(TimeSlot.Meta):
+        pass
