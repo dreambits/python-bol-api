@@ -466,8 +466,7 @@ class InventoryResponse(Model):
 
 # models used for 'Get Delivery Window' method for fbb-endpoints ::
 # DeliveryWindowResponse
-# existing classes: DeliveryWindowResponse.Meta as Timeslot.Meta
-class DeliveryWindowResponse(TimeSlot):
+class DeliveryWindowResponse(ModelList):
 
-    class Meta(TimeSlot.Meta):
-        pass
+    class Meta:
+        item_type = TimeSlot

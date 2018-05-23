@@ -419,34 +419,28 @@ class InboundMethods(MethodGroup):
         response = self.request_inbound('GET', path=inbound_id)
         return GetSingleInbound.parse(self.api, response)
 
-    def create(self, reference=None, time_slot=None, fbb_code=None,
-               fbb_name=None, labelling_service=None, prod_ean=None,
-               prod_annc_qty=None):
+    def create(self, reference=None, time_slot=None, fbb_transporter=None,
+            labelling_service=None, prod_dict=None):
         # Moved the params to a dict so it can be easy to add/remove parameters
         values = {
             'Reference': reference,
-            'LabellingService': labelling_service
+            'LabellingService': labelling_service,
         }
 
-        if fbb_code:
-            if 'FbbTransporter' not in values:
-                values['FbbTransporter'] = {}
-            values['FbbTransporter']['Code'] = fbb_code
+        if 'Start' in time_slot and 'End' in time_slot:
+            values['TimeSlot'] = time_slot
 
-        if fbb_name:
-            if 'FbbTransporter' not in values:
-                values['FbbTransporter'] = {}
-            values['FbbTransporter']['Name'] = fbb_name
+        if 'Code' in fbb_transporter and 'Name' in fbb_transporter:
+            values['FbbTransporter'] = fbb_transporter
 
-        if prod_ean:
-            if 'Products' not in values:
-                values['Products'] = {'Product': {}}
-            values['Products']['Product']['EAN'] = prod_ean
-        if prod_annc_qty:
-            if 'Products' not in values:
-                values['Products'] = {'Product': {}}
-            values['Products']['Product']['AnnouncedQuantity'] = prod_annc_qty
+        if isinstance(prod_dict, list):
+            for prod in prod_dict:
+                if isinstance(prod, dict):
+                    if 'Product' in prod:
+                        if 'EAN' in prod.keys() and 'AnnouncedQuantity' in prod.keys():
+                            values['Products'].append(prod['Product'])
 
+        print("values-> {0}".format(values))
         xml = self.create_request_inbound_xml(
             'InboundRequest',
             **values)
