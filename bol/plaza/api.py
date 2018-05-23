@@ -420,7 +420,7 @@ class InboundMethods(MethodGroup):
         return GetSingleInbound.parse(self.api, response)
 
     def create(self, reference=None, time_slot=None, fbb_transporter=None,
-            labelling_service=None, prod_dict=None):
+               labelling_service=None, prod_dict=None):
         # Moved the params to a dict so it can be easy to add/remove parameters
         values = {
             'Reference': reference,
@@ -437,10 +437,10 @@ class InboundMethods(MethodGroup):
             for prod in prod_dict:
                 if isinstance(prod, dict):
                     if 'Product' in prod:
-                        if 'EAN' in prod.keys() and 'AnnouncedQuantity' in prod.keys():
+                        if 'EAN' in prod.keys() and \
+                                'AnnouncedQuantity' in prod.keys():
                             values['Products'].append(prod['Product'])
 
-        print("values-> {0}".format(values))
         xml = self.create_request_inbound_xml(
             'InboundRequest',
             **values)
