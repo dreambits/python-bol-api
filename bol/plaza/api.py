@@ -424,7 +424,8 @@ class InboundMethods(MethodGroup):
 
     def create(self, reference=None, time_slot=None, fbb_transporter=None,
                labelling_service=None, prod_dict=None):
-        # Moved the params to a dict so it can be easy to add/remove parameters
+        # Moved the params to a dict
+        # so it can be easy to add/remove parameters
         values = {
             'Reference': reference,
             'LabellingService': labelling_service,
@@ -450,6 +451,19 @@ class InboundMethods(MethodGroup):
 
         response = self.request('POST', data=xml)
         return ProcessStatus.parse(self.api, response)
+
+    def getDeliveryWindow(self, delivery_date=None, items_to_send=None):
+        params = {}
+
+        if delivery_date:
+            params['delivery-date'] = delivery_date
+
+        if items_to_send:
+            params['items-to-send'] = items_to_send
+
+        response = self.request_inbound('GET', path="delivery-windows",
+                                        params=params)
+        return DeliveryWindowResponse.parse(self.api, response)
 
 
 class InventoryMethods(MethodGroup):
@@ -482,18 +496,6 @@ class InventoryMethods(MethodGroup):
         response = self.api.request('GET', uri, params=params,
                                     data=None)
         return InventoryResponse.parse(self.api, response)
-
-    def getSingleInbound(self, delivery_date=None, items_to_send=None):
-        params = {}
-
-        if delivery_date:
-            params['delivery-date'] = delivery_date
-
-        if items_to_send:
-            params['items-to-send'] = items_to_send
-
-        response = self.request_inbound('GET', params=params)
-        return GetSingleInbound.parse(self.api, response)
 
 
 class PlazaAPI(object):
