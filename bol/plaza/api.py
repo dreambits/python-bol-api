@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 
 import time
@@ -28,6 +29,9 @@ from .models import GetAllInbounds
 
 # for Get Single Bounds method
 from .models import GetSingleInbound
+
+# for Get Delivery Window method
+from .models import DeliveryWindowResponse
 
 
 __all__ = ['PlazaAPI']
@@ -393,8 +397,6 @@ class InboundMethods(MethodGroup):
 
         ElementTree.register_namespace("", PLAZA_API_V1)
 
-        # all_inbound = ElementTree.fromstring(all_inbound_rspn)
-
         allit = list(all_inbound)
 
         inbounds = [x for x in all_inbound.iter()
@@ -405,7 +407,8 @@ class InboundMethods(MethodGroup):
 
         newinbound = ElementTree.Element('{'+PLAZA_API_V1+'}AllInbound')
         # This is hacky solution to add proper namespace.
-        # This needs to be checked properly but only it has been tested against
+        # This needs to be checked properly but
+        # only it has been tested against
         # real data
 
         for x in inbounds:
@@ -479,6 +482,18 @@ class InventoryMethods(MethodGroup):
         response = self.api.request('GET', uri, params=params,
                                     data=None)
         return InventoryResponse.parse(self.api, response)
+
+    def getSingleInbound(self, delivery_date=None, items_to_send=None):
+        params = {}
+
+        if delivery_date:
+            params['delivery-date'] = delivery_date
+
+        if items_to_send:
+            params['items-to-send'] = items_to_send
+
+        response = self.request_inbound('GET', params=params)
+        return GetSingleInbound.parse(self.api, response)
 
 
 class PlazaAPI(object):

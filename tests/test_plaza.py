@@ -192,7 +192,7 @@ CREATE_SHIPMENT_RESPONSE = \
 """
 
 UPDATE_TRANSPORT_RESPONSE = \
-     """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns1:ProcessStatus
      xmlns:ns1="https://plazaapi.bol.com/services/xsd/v2/plazaapi.xsd">
      <ns1:id>0</ns1:id>
@@ -591,3 +591,66 @@ def test_get_all_inbound():
         assert isinstance(inbound.FbbTransporter.Code, str)
         assert inbound.FbbTransporter.Name == "PostNL"
         assert inbound.FbbTransporter.Code == "PostNL"
+
+
+DELIVERY_WINDOW_RESPONSE = """<?xml version="1.0" encoding="UTF-8"
+standalone="yes"?>
+<DeliveryWindow xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+  <TimeSlot>
+    <Start>2017-08-16T07:00:00+02:00</Start>
+    <End>2017-08-16T08:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T08:00:00+02:00</Start>
+    <End>2017-08-16T09:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T09:00:00+02:00</Start>
+    <End>2017-08-16T10:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T10:00:00+02:00</Start>
+    <End>2017-08-16T11:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T11:00:00+02:00</Start>
+    <End>2017-08-16T12:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T12:00:00+02:00</Start>
+    <End>2017-08-16T13:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T13:00:00+02:00</Start>
+    <End>2017-08-16T14:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T14:00:00+02:00</Start>
+    <End>2017-08-16T15:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T15:00:00+02:00</Start>
+    <End>2017-08-16T16:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T16:00:00+02:00</Start>
+    <End>2017-08-16T17:00:00+02:00</End>
+  </TimeSlot>
+</DeliveryWindow>"""
+
+
+def test_get_delivery_window():
+
+    @urlmatch(path=r'/services/rest/inbounds/delivery-windows$')
+    def delivery_window_stub(url, request):
+        return DELIVERY_WINDOW_RESPONSE
+
+    with HTTMock(delivery_window_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=False)
+        param_date = datetime.strptime('30-01-2017', '%d-%m-%Y').date()
+        delivery_window = api.inbounds.getDeliveryWindow(
+            delivery_date=param_date, items_to_send=20)
+
+        time_slot_0 = delivery_window[0]
+        assert isinstance(time_slot_0.Start, datetime)
+        assert isinstance(time_slot_0.End, datetime)
