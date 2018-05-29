@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 
 import time
@@ -7,6 +6,7 @@ import hmac
 import hashlib
 import base64
 from datetime import datetime
+from datetime import date
 import collections
 from enum import Enum
 
@@ -37,6 +37,14 @@ from .models import DeliveryWindowResponse
 __all__ = ['PlazaAPI']
 
 PLAZA_API_V1 = "https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd"
+
+
+def type_exception(_type, _var):
+    raise TypeError("Required {0}, found-> {1} ".format(_type, type(_var)))
+
+
+def key_exception(_var):
+    raise KeyError("Required {0} not found".format(_var))
 
 
 class TransporterCode(Enum):
@@ -419,6 +427,10 @@ class InboundMethods(MethodGroup):
         return GetAllInbounds.parse(self.api, all_inbound)
 
     def getSingleInbound(self, inbound_id=None):
+
+        if isinstance(inbound_id, int):
+            type_exception('inbound_id')
+
         response = self.request_inbound('GET', path=inbound_id)
         return GetSingleInbound.parse(self.api, response)
 
@@ -432,34 +444,61 @@ class InboundMethods(MethodGroup):
         }
 
         if 'Start' in time_slot and 'End' in time_slot:
+            if not isinstance(time_slot['Start'], datetime):
+                type_exception('datetime', time_slot['Start'])
+            if not isinstance(time_slot['End'], datetime):
+                type_exception('datetime', time_slot['End'])
             values['TimeSlot'] = time_slot
 
-        if 'Code' in fbb_transporter and 'Name' in fbb_transporter:
-            values['FbbTransporter'] = fbb_transporter
+        if 'Code' not in fbb_transporter:
+            key_exception('Code')
+        if not isinstance(fbb_transporter['Code'], str):
+            type_exception('str', fbb_transporter['Code'])
+
+        if 'Name' not in fbb_transporter:
+            key_exception('Name')
+        if not isinstance(fbb_transporter['Name'], str):
+            type_exception('str', fbb_transporter['Name'])
+        values['FbbTransporter'] = fbb_transporter
 
         if isinstance(prod_dict, list):
             for prod in prod_dict:
                 if isinstance(prod, dict):
-                    if 'Product' in prod:
-                        if 'EAN' in prod.keys() and \
-                                'AnnouncedQuantity' in prod.keys():
-                            values['Products'].append(prod['Product'])
+                    self.check_product(prod)
+                values['Products'].append(prod['Product'])
 
-        xml = self.create_request_inbound_xml(
-            'InboundRequest',
-            **values)
+        xml = self.create_request_inbound_xml('InboundRequest', **values)
 
         response = self.request('POST', data=xml)
         return ProcessStatus.parse(self.api, response)
 
+    def check_prod(self, prod):
+        if 'Product' not in prod:
+            key_exception('Product')
+
+        if not isinstance(prod['Product'], dict):
+            type_exception("dict", prod['Product'])
+
+        if 'EAN' not in prod['Product'].keys():
+            key_exception('EAN')
+        if 'AnnouncedQuantity' not in prod['Product'].keys():
+            key_exception('AnnouncedQuantity')
+
+        if not isinstance(prod['Product']['EAN'], int):
+            type_exception("int", prod['Product']['EAN'])
+        if not isinstance(prod['Product']['AnnouncedQuantity'], int):
+            type_exception("int", prod['Product']['AnnouncedQuantity'])
+
     def getDeliveryWindow(self, delivery_date=None, items_to_send=None):
         params = {}
 
-        if delivery_date:
-            params['delivery-date'] = delivery_date
+        if not isinstance(delivery_date, date):
+            type_exception("datetime", delivery_date)
+        params['delivery-date'] = delivery_date
 
-        if items_to_send:
-            params['items-to-send'] = items_to_send
+        if not isinstance(items_to_send, int):
+            type_exception("int", items_to_send)
+        params['items-to-send'] = items_to_send
 
         response = self.request_inbound('GET', path="delivery-windows",
                                         params=params)
@@ -475,8 +514,9 @@ class InventoryMethods(MethodGroup):
                      query=None):
         params = {}
 
-        if page:
-            params['page'] = page
+        if not isinstance(page, int):
+            type_exception("int", page)
+        params['page'] = page
 
         if quantity:
             params['quantity'] = quantity
@@ -490,11 +530,8 @@ class InventoryMethods(MethodGroup):
         if query:
             params['query'] = query
 
-        # xml = self.request('GET', params=params)
-
         uri = '/services/rest/{group}'.format(group=self.group)
-        response = self.api.request('GET', uri, params=params,
-                                    data=None)
+        response = self.api.request('GET', uri, params=params, data=None)
         return InventoryResponse.parse(self.api, response)
 
 

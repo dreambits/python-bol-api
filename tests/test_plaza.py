@@ -1,3 +1,5 @@
+import pytest
+
 from decimal import Decimal
 from datetime import datetime
 from dateutil.tz import tzoffset
@@ -646,8 +648,18 @@ def test_get_delivery_window():
         return DELIVERY_WINDOW_RESPONSE
 
     with HTTMock(delivery_window_stub):
-        api = PlazaAPI('api_key', 'api_secret', test=False)
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+
         param_date = datetime.strptime('30-01-2017', '%d-%m-%Y').date()
+
+        with pytest.raises(TypeError):
+            delivery_window = api.inbounds.getDeliveryWindow(
+                delivery_date=param_date)
+
+        with pytest.raises(TypeError):
+            delivery_window = api.inbounds.getDeliveryWindow(
+                items_to_send=20)
+
         delivery_window = api.inbounds.getDeliveryWindow(
             delivery_date=param_date, items_to_send=20)
 
