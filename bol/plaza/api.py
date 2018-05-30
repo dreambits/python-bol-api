@@ -403,12 +403,12 @@ class InboundMethods(MethodGroup):
         # need to handle the structure after modifying xml data
         # as the data is not structured properly
 
-        ElementTree.register_namespace("", PLAZA_API_V1)
+        ElementTree.register_namespace('', PLAZA_API_V1)
 
         allit = list(all_inbound)
 
         inbounds = [x for x in all_inbound.iter()
-                    if x.tag.partition('}')[2] == "Inbound"]
+                    if x.tag.partition('}')[2] == 'Inbound']
 
         for x in inbounds:
             all_inbound.remove(x)
@@ -452,20 +452,21 @@ class InboundMethods(MethodGroup):
 
         if 'Code' not in fbb_transporter:
             key_exception('Code')
-        if not isinstance(fbb_transporter['Code'], str):
+        if not isinstance(fbb_transporter['Code'], (str, unicode)):
             type_exception('str', fbb_transporter['Code'])
 
         if 'Name' not in fbb_transporter:
             key_exception('Name')
-        if not isinstance(fbb_transporter['Name'], str):
+        if not isinstance(fbb_transporter['Name'], (str, unicode)):
             type_exception('str', fbb_transporter['Name'])
         values['FbbTransporter'] = fbb_transporter
 
+        values['Products'] = []
         if isinstance(prod_dict, list):
             for prod in prod_dict:
                 if isinstance(prod, dict):
-                    self.check_product(prod)
-                values['Products'].append(prod['Product'])
+                    self.check_prod(prod)
+                values['Products'].append(prod)
 
         xml = self.create_request_inbound_xml('InboundRequest', **values)
 
@@ -477,7 +478,7 @@ class InboundMethods(MethodGroup):
             key_exception('Product')
 
         if not isinstance(prod['Product'], dict):
-            type_exception("dict", prod['Product'])
+            type_exception('dict', prod['Product'])
 
         if 'EAN' not in prod['Product'].keys():
             key_exception('EAN')
@@ -485,22 +486,22 @@ class InboundMethods(MethodGroup):
             key_exception('AnnouncedQuantity')
 
         if not isinstance(prod['Product']['EAN'], int):
-            type_exception("int", prod['Product']['EAN'])
-        if not isinstance(prod['Product']['AnnouncedQuantity'], int):
-            type_exception("int", prod['Product']['AnnouncedQuantity'])
+            type_exception('int', prod['Product']['EAN'])
+        if not isinstance(prod['Product']['AnnouncedQuantity'], float):
+            type_exception('float', prod['Product']['AnnouncedQuantity'])
 
     def getDeliveryWindow(self, delivery_date=None, items_to_send=None):
         params = {}
 
         if not isinstance(delivery_date, date):
-            type_exception("datetime", delivery_date)
+            type_exception('datetime', delivery_date)
         params['delivery-date'] = delivery_date
 
         if not isinstance(items_to_send, int):
-            type_exception("int", items_to_send)
+            type_exception('int', items_to_send)
         params['items-to-send'] = items_to_send
 
-        response = self.request_inbound('GET', path="delivery-windows",
+        response = self.request_inbound('GET', path='delivery-windows',
                                         params=params)
         return DeliveryWindowResponse.parse(self.api, response)
 
@@ -515,7 +516,7 @@ class InventoryMethods(MethodGroup):
         params = {}
 
         if not isinstance(page, int):
-            type_exception("int", page)
+            type_exception('int', page)
         params['page'] = page
 
         if quantity:
