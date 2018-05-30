@@ -1,3 +1,5 @@
+import pytest
+
 from decimal import Decimal
 from datetime import datetime
 from dateutil.tz import tzoffset
@@ -192,7 +194,7 @@ CREATE_SHIPMENT_RESPONSE = \
 """
 
 UPDATE_TRANSPORT_RESPONSE = \
-     """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns1:ProcessStatus
      xmlns:ns1="https://plazaapi.bol.com/services/xsd/v2/plazaapi.xsd">
      <ns1:id>0</ns1:id>
@@ -365,3 +367,302 @@ def test_update_transport():
             track_and_trace='3S123',
             transporter_code=TransporterCode.GLS)
         assert process_status.sellerId == 925853
+
+
+# dreambits testing code
+
+INVENTORY_RESPONSE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<InventoryResponse
+xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+ <TotalCount>144</TotalCount>
+ <TotalPageCount>3</TotalPageCount>
+ <Offers>
+  <Offer>
+   <EAN>9789076174143</EAN>
+   <BSKU>1230000402640</BSKU>
+   <Title>Harry Potter en de gevangene van Azkaban</Title>
+   <Stock>0</Stock>
+   <NCK-Stock>1</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9789076174198</EAN>
+   <BSKU>1230000425793</BSKU>
+   <Title>Harry Potter &amp; de Vuurbeker</Title>
+   <Stock>2</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9789061697664</EAN>
+   <BSKU>1230000889762</BSKU>
+   <Title>Harry Potter en de halfbloed Prins</Title>
+   <Stock>8</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9789061697008</EAN>
+   <BSKU>2950000418559</BSKU>
+   <Title>Harry Potter en de orde van de Feniks</Title>
+   <Stock>1</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+  <Offer>
+   <EAN>9781781103524</EAN>
+   <BSKU>1230000425830</BSKU>
+   <Title>Harry Potter en de Relieken van de Dood</Title>
+   <Stock>20</Stock>
+   <NCK-Stock>0</NCK-Stock>
+  </Offer>
+ </Offers>
+</InventoryResponse>"""
+
+
+def test_get_inventory():
+
+    @urlmatch(path=r'/services/rest/inventory')
+    def inventory_stub(url, request):
+        return INVENTORY_RESPONSE
+
+    with HTTMock(inventory_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+        inventory = api.inventory.getInventory(page=1, quantity="0-250",
+                                               state="saleable",
+                                               query="0042491966861")
+
+        assert inventory.TotalCount == 144
+        offer = inventory.Offers[0]
+        assert type(offer.EAN) == str
+        assert getattr(offer, "NCK-Stock") == "1"
+
+
+SINGLE_BOUND_RESPONSE = """<?xml version="1.0" encoding="UTF-8"
+standalone="yes"?>
+<Inbound xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+  <Id>1124284930</Id>
+  <Reference>FBB20170726</Reference>
+  <CreationDate>2017-07-26T10:58:17.079+02:00</CreationDate>
+  <State>ArrivedAtWH</State>
+  <LabellingService>false</LabellingService>
+  <AnnouncedBSKUs>69</AnnouncedBSKUs>
+  <AnnouncedQuantity>237</AnnouncedQuantity>
+  <ReceivedBSKUs>69</ReceivedBSKUs>
+  <ReceivedQuantity>240</ReceivedQuantity>
+  <Products>
+    <Product>
+      <EAN>4034398404139</EAN>
+      <BSKU>2950002126612</BSKU>
+      <AnnouncedQuantity>6</AnnouncedQuantity>
+      <ReceivedQuantity>6</ReceivedQuantity>
+      <State>Announced</State>
+  </Product>
+  <Product>
+      <EAN>4034398400902</EAN>
+      <BSKU>2950002125622</BSKU>
+      <AnnouncedQuantity>8</AnnouncedQuantity>
+      <ReceivedQuantity>8</ReceivedQuantity>
+      <State>Announced</State>
+  </Product>
+  <Product>
+      <EAN>4034398209925</EAN>
+      <BSKU>2950002126148</BSKU>
+      <AnnouncedQuantity>3</AnnouncedQuantity>
+      <ReceivedQuantity>3</ReceivedQuantity>
+      <State>Announced</State>
+  </Product>
+  <Product>
+      <EAN>4034398400964</EAN>
+      <BSKU>2950002126896</BSKU>
+      <AnnouncedQuantity>1</AnnouncedQuantity>
+      <ReceivedQuantity>1</ReceivedQuantity>
+      <State>Announced</State>
+    </Product>
+  </Products>
+  <StateTransitions>
+    <InboundState>
+      <State>ArrivedAtWH</State>
+      <StateDate>2017-07-28T09:26:23.371+02:00</StateDate>
+    </InboundState>
+    <InboundState>
+      <State>PreAnnounced</State>
+      <StateDate>2017-07-26T11:16:10.757+02:00</StateDate>
+    </InboundState>
+    <InboundState>
+      <State>Draft</State>
+      <StateDate>2017-07-26T10:58:17.925+02:00</StateDate>
+    </InboundState>
+  </StateTransitions>
+  <TimeSlot>
+    <Start>2017-07-28T06:00:00.000+02:00</Start>
+    <End>2017-07-28T19:00:00.000+02:00</End>
+  </TimeSlot>
+  <FbbTransporter>
+    <Name>PostNL</Name>
+    <Code>PostNL</Code>
+  </FbbTransporter>
+</Inbound>"""
+
+
+def test_get_single_inbound():
+
+    @urlmatch(path=r'/services/rest/inbounds/1124284930$')
+    def single_inbound_stub(url, request):
+        return SINGLE_BOUND_RESPONSE
+
+    with HTTMock(single_inbound_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+        single_inbound = api.inbounds.getSingleInbound(inbound_id="1124284930")
+
+        assert isinstance(single_inbound.LabellingService, bool)
+        product = single_inbound.Products[0]
+        assert isinstance(product.AnnouncedQuantity, int)
+        assert not isinstance(product.AnnouncedQuantity, str)
+        assert not isinstance(product.AnnouncedQuantity, str)
+        assert single_inbound.FbbTransporter.Name == "PostNL"
+        assert single_inbound.FbbTransporter.Code == "PostNL"
+        inboundStat = single_inbound.StateTransitions[0]
+        assert inboundStat.State == "ArrivedAtWH"
+
+
+ALL_BOUND_RESPONSE = """<?xml version="1.0" encoding="UTF-8"
+standalone="yes"?>
+<Inbounds xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+  <TotalCount>4</TotalCount>
+  <TotalPageCount>1</TotalPageCount>
+      <Inbound>
+        <Id>1124284930</Id>
+        <Reference>FBB20170726</Reference>
+        <CreationDate>2017-07-26T10:58:17.079+02:00</CreationDate>
+        <State>ArrivedAtWH</State>
+        <LabellingService>false</LabellingService>
+        <AnnouncedBSKUs>69</AnnouncedBSKUs>
+        <AnnouncedQuantity>237</AnnouncedQuantity>
+        <ReceivedBSKUs>69</ReceivedBSKUs>
+        <ReceivedQuantity>240</ReceivedQuantity>
+        <TimeSlot>
+          <Start>2017-07-28T06:00:00.000+02:00</Start>
+          <End>2017-07-28T19:00:00.000+02:00</End>
+        </TimeSlot>
+        <FbbTransporter>
+          <Name>PostNL</Name>
+          <Code>PostNL</Code>
+        </FbbTransporter>
+      </Inbound>
+      <Inbound>
+        <Id>1124284929</Id>
+        <Reference>FBB20170712</Reference>
+        <CreationDate>2017-07-12T21:08:02.433+02:00</CreationDate>
+        <State>ArrivedAtWH</State>
+        <LabellingService>false</LabellingService>
+        <AnnouncedBSKUs>85</AnnouncedBSKUs>
+        <AnnouncedQuantity>204</AnnouncedQuantity>
+        <ReceivedBSKUs>90</ReceivedBSKUs>
+        <ReceivedQuantity>203</ReceivedQuantity>
+        <TimeSlot>
+          <Start>2017-07-17T06:00:00.000+02:00</Start>
+          <End>2017-07-17T19:00:00.000+02:00</End>
+        </TimeSlot>
+        <FbbTransporter>
+          <Name>PostNL</Name>
+          <Code>PostNL</Code>
+        </FbbTransporter>
+      </Inbound>
+</Inbounds>"""
+
+
+def test_get_all_inbound():
+
+    @urlmatch(path=r'/services/rest/inbounds$')
+    def all_inbound_stub(url, request):
+        return ALL_BOUND_RESPONSE
+
+    with HTTMock(all_inbound_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+        all_inbound = api.inbounds.getAllInbounds(page=1)
+
+        inbound = all_inbound.AllInbound[0]
+        assert isinstance(inbound.Reference, str)
+        assert isinstance(inbound.State, str)
+        assert inbound.State == "ArrivedAtWH"
+        assert inbound.Id == "1124284930"
+        assert isinstance(inbound.LabellingService, bool)
+        assert not inbound.LabellingService
+        assert inbound.AnnouncedBSKUs == 69
+        assert inbound.AnnouncedQuantity == 237
+        assert inbound.ReceivedBSKUs == 69
+        assert inbound.ReceivedQuantity == 240
+        assert isinstance(inbound.FbbTransporter.Name, str)
+        assert isinstance(inbound.FbbTransporter.Code, str)
+        assert inbound.FbbTransporter.Name == "PostNL"
+        assert inbound.FbbTransporter.Code == "PostNL"
+
+
+DELIVERY_WINDOW_RESPONSE = """<?xml version="1.0" encoding="UTF-8"
+standalone="yes"?>
+<DeliveryWindow xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
+  <TimeSlot>
+    <Start>2017-08-16T07:00:00+02:00</Start>
+    <End>2017-08-16T08:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T08:00:00+02:00</Start>
+    <End>2017-08-16T09:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T09:00:00+02:00</Start>
+    <End>2017-08-16T10:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T10:00:00+02:00</Start>
+    <End>2017-08-16T11:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T11:00:00+02:00</Start>
+    <End>2017-08-16T12:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T12:00:00+02:00</Start>
+    <End>2017-08-16T13:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T13:00:00+02:00</Start>
+    <End>2017-08-16T14:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T14:00:00+02:00</Start>
+    <End>2017-08-16T15:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T15:00:00+02:00</Start>
+    <End>2017-08-16T16:00:00+02:00</End>
+  </TimeSlot>
+  <TimeSlot>
+    <Start>2017-08-16T16:00:00+02:00</Start>
+    <End>2017-08-16T17:00:00+02:00</End>
+  </TimeSlot>
+</DeliveryWindow>"""
+
+
+def test_get_delivery_window():
+
+    @urlmatch(path=r'/services/rest/inbounds/delivery-windows$')
+    def delivery_window_stub(url, request):
+        return DELIVERY_WINDOW_RESPONSE
+
+    with HTTMock(delivery_window_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+
+        param_date = datetime.strptime('30-01-2017', '%d-%m-%Y').date()
+
+        with pytest.raises(TypeError):
+            delivery_window = api.inbounds.getDeliveryWindow(
+                delivery_date=param_date)
+
+        with pytest.raises(TypeError):
+            delivery_window = api.inbounds.getDeliveryWindow(
+                items_to_send=20)
+
+        delivery_window = api.inbounds.getDeliveryWindow(
+            delivery_date=param_date, items_to_send=20)
+
+        time_slot_0 = delivery_window[0]
+        assert isinstance(time_slot_0.Start, datetime)
+        assert isinstance(time_slot_0.End, datetime)
