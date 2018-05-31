@@ -377,7 +377,6 @@ class GetAllInbound(Model):
         AnnouncedQuantity = IntegerField()
         ReceivedBSKUs = IntegerField()
         ReceivedQuantity = IntegerField()
-        EAN = IntegerField()
         TimeSlot = ModelField(TimeSlot)
         FbbTransporter = ModelField(FbbTransporter)
 

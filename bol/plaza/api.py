@@ -428,8 +428,8 @@ class InboundMethods(MethodGroup):
 
     def getSingleInbound(self, inbound_id=None):
 
-        if isinstance(inbound_id, int):
-            type_exception('inbound_id')
+        if not isinstance(inbound_id, int):
+            type_exception('int', inbound_id)
 
         response = self.request_inbound('GET', path=inbound_id)
         return GetSingleInbound.parse(self.api, response)
