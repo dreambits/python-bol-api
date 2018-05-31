@@ -347,3 +347,126 @@ class DeleteBulkRequest(ModelList):
 
     class Meta:
         item_type = RetailerOfferIdentifier()
+
+
+# models used for 'GetAllInbounds' method for fbb-endpoints ::
+# GetAllInbounds, GetAllInbound, TimeSlot, FbbTransporter
+class FbbTransporter(Model):
+
+    class Meta:
+        Name = TextField()
+        Code = TextField()
+
+
+class TimeSlot(Model):
+
+    class Meta:
+        Start = DateTimeField()
+        End = DateTimeField()
+
+
+class GetAllInbound(Model):
+
+    class Meta:
+        ID = IntegerField()
+        Reference = TextField()
+        CreationDate = DateTimeField()
+        State = TextField()
+        LabellingService = BooleanField()
+        AnnouncedBSKUs = IntegerField()
+        AnnouncedQuantity = IntegerField()
+        ReceivedBSKUs = IntegerField()
+        ReceivedQuantity = IntegerField()
+        EAN = IntegerField()
+        TimeSlot = ModelField(TimeSlot)
+        FbbTransporter = ModelField(FbbTransporter)
+
+
+class GetAllInboundList(ModelList):
+
+    class Meta:
+        item_type = GetAllInbound
+
+
+class GetAllInbounds(Model):
+
+    class Meta:
+        TotalCount = IntegerField()
+        TotalPageCount = IntegerField()
+        AllInbound = ModelField(GetAllInboundList)
+
+
+# models used for 'GetSingleInbound' method for fbb-endpoints ::
+# GetAllInbounds, GetAllInbound, SingleBoundProducts, SingleBoundProduct,
+# StateTransitions, StateTransition,
+# existing classes: TimeSlot, FbbTransporter
+
+
+class InboundState(Model):
+
+    class Meta:
+        State = TextField()
+        StateDate = DateTimeField()
+
+
+class StateTransitions(ModelList):
+
+    class Meta:
+        item_type = InboundState()
+
+
+class SingleBoundProduct(Model):
+
+    class Meta:
+        EAN = TextField()
+        State = TextField()
+        BSKUs = TextField()
+        AnnouncedQuantity = IntegerField()
+        ReceivedQuantity = IntegerField()
+
+
+class SingleBoundProducts(ModelList):
+
+    class Meta:
+        item_type = SingleBoundProduct()
+
+
+class GetSingleInbound(GetAllInbound):
+
+    class Meta(GetAllInbound.Meta):
+        Products = ModelField(SingleBoundProducts)
+        StateTransitions = ModelField(StateTransitions)
+
+
+# models used for 'Get Inventory' method for fbb-endpoints ::
+# InventoryResponse, InventoryOffers, InventoryOffer
+class InventoryOffer(Model):
+
+    class Meta:
+        EAN = TextField()
+        BSKU = TextField()
+        Title = TextField()
+        Stock = IntegerField()
+        # NCK_Stock = IntegerField()
+
+
+class InventoryOffers(ModelList):
+
+    class Meta:
+        item_type = InventoryOffer
+
+
+class InventoryResponse(Model):
+
+    class Meta:
+        TotalCount = IntegerField()
+        TotalPageCount = IntegerField()
+        Offers = ModelField(InventoryOffers)
+
+
+# models used for 'Get Delivery Window' method for fbb-endpoints ::
+# DeliveryWindowResponse
+class DeliveryWindowResponse(ModelList):
+
+    class Meta:
+        item_type = TimeSlot

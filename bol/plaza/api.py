@@ -6,6 +6,7 @@ import hmac
 import hashlib
 import base64
 from datetime import datetime
+from datetime import date
 import collections
 from enum import Enum
 
@@ -20,8 +21,30 @@ from .models import Orders, Payments, Shipments, ProcessStatus
 from .models import PurchasableShippingLabels, ReturnItems
 from .models import OffersResponse, OfferFile  # DeleteBulkRequest
 
+# for get Inventory method
+from .models import InventoryResponse
+
+# for Get All Bounds method
+from .models import GetAllInbounds
+
+# for Get Single Bounds method
+from .models import GetSingleInbound
+
+# for Get Delivery Window method
+from .models import DeliveryWindowResponse
+
 
 __all__ = ['PlazaAPI']
+
+PLAZA_API_V1 = "https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd"
+
+
+def type_exception(_type, _var):
+    raise TypeError("Required {0}, found-> {1} ".format(_type, type(_var)))
+
+
+def key_exception(_var):
+    raise KeyError("Required {0} not found".format(_var))
 
 
 class TransporterCode(Enum):
@@ -82,6 +105,15 @@ class MethodGroup(object):
                                accept=accept)
         return xml
 
+    def request_inbound(self, method, path='', params={}, data=None,
+                        accept="application/xml"):
+        uri = '/services/rest/{group}/{path}'.format(
+            group=self.group,
+            path=path)
+        xml = self.api.request(method, uri, params=params, data=data,
+                               accept=accept)
+        return xml
+
     def create_request_xml(self, root, **kwargs):
         elements = self._create_request_xml_elements(1, **kwargs)
         xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -95,6 +127,15 @@ class MethodGroup(object):
         elements = self._create_request_xml_elements(1, **kwargs)
         xml = """<?xml version="1.0" encoding="UTF-8"?>
 <{root} xmlns="https://plazaapi.bol.com/offers/xsd/api-2.0.xsd">
+{elements}
+</{root}>
+""".format(root=root, elements=elements)
+        return xml
+
+    def create_request_inbound_xml(self, root, **kwargs):
+        elements = self._create_request_xml_elements(1, **kwargs)
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<{root} xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
 {elements}
 </{root}>
 """.format(root=root, elements=elements)
@@ -368,6 +409,152 @@ class OffersMethods(MethodGroup):
             print("Got into Exception \n{0}".format(traceback.print_exc()))
 
 
+class InboundMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(InboundMethods, self).__init__(api, 'inbounds')
+
+    def getAllInbounds(self, page=None):
+        uri = '/services/rest/{group}'.format(
+            group=self.group)
+        all_inbound = self.api.request('GET', uri)
+
+        # need to handle the structure after modifying xml data
+        # as the data is not structured properly
+
+        ElementTree.register_namespace('', PLAZA_API_V1)
+
+        allit = list(all_inbound)
+
+        inbounds = [x for x in all_inbound.iter()
+                    if x.tag.partition('}')[2] == 'Inbound']
+
+        for x in inbounds:
+            all_inbound.remove(x)
+
+        newinbound = ElementTree.Element('{'+PLAZA_API_V1+'}AllInbound')
+        # This is hacky solution to add proper namespace.
+        # This needs to be checked properly but
+        # only it has been tested against
+        # real data
+
+        for x in inbounds:
+            newinbound.append(x)
+
+        all_inbound.append(newinbound)
+
+        return GetAllInbounds.parse(self.api, all_inbound)
+
+    def getSingleInbound(self, inbound_id=None):
+
+        if isinstance(inbound_id, int):
+            type_exception('inbound_id')
+
+        response = self.request_inbound('GET', path=inbound_id)
+        return GetSingleInbound.parse(self.api, response)
+
+    def create(self, reference=None, time_slot=None, fbb_transporter=None,
+               labelling_service=None, prod_dict=None):
+        # Moved the params to a dict
+        # so it can be easy to add/remove parameters
+        values = {
+            'Reference': reference,
+            'LabellingService': labelling_service,
+        }
+
+        if 'Start' in time_slot and 'End' in time_slot:
+            if not isinstance(time_slot['Start'], datetime):
+                type_exception('datetime', time_slot['Start'])
+            if not isinstance(time_slot['End'], datetime):
+                type_exception('datetime', time_slot['End'])
+            values['TimeSlot'] = time_slot
+
+        if 'Code' not in fbb_transporter:
+            key_exception('Code')
+        if not isinstance(fbb_transporter['Code'], (str, unicode)):
+            type_exception('str', fbb_transporter['Code'])
+
+        if 'Name' not in fbb_transporter:
+            key_exception('Name')
+        if not isinstance(fbb_transporter['Name'], (str, unicode)):
+            type_exception('str', fbb_transporter['Name'])
+        values['FbbTransporter'] = fbb_transporter
+
+        values['Products'] = []
+        if isinstance(prod_dict, list):
+            for prod in prod_dict:
+                if isinstance(prod, dict):
+                    self.check_prod(prod)
+                values['Products'].append(prod)
+
+        xml = self.create_request_inbound_xml('InboundRequest', **values)
+
+        response = self.request('POST', data=xml)
+        return ProcessStatus.parse(self.api, response)
+
+    def check_prod(self, prod):
+        if 'Product' not in prod:
+            key_exception('Product')
+
+        if not isinstance(prod['Product'], dict):
+            type_exception('dict', prod['Product'])
+
+        if 'EAN' not in prod['Product'].keys():
+            key_exception('EAN')
+        if 'AnnouncedQuantity' not in prod['Product'].keys():
+            key_exception('AnnouncedQuantity')
+
+        if not isinstance(prod['Product']['EAN'], int):
+            type_exception('int', prod['Product']['EAN'])
+        if not isinstance(prod['Product']['AnnouncedQuantity'], float):
+            type_exception('float', prod['Product']['AnnouncedQuantity'])
+
+    def getDeliveryWindow(self, delivery_date=None, items_to_send=None):
+        params = {}
+
+        if not isinstance(delivery_date, date):
+            type_exception('datetime', delivery_date)
+        params['delivery-date'] = delivery_date
+
+        if not isinstance(items_to_send, int):
+            type_exception('int', items_to_send)
+        params['items-to-send'] = items_to_send
+
+        response = self.request_inbound('GET', path='delivery-windows',
+                                        params=params)
+        return DeliveryWindowResponse.parse(self.api, response)
+
+
+class InventoryMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(InventoryMethods, self).__init__(api, 'inventory')
+
+    def getInventory(self, page=None, quantity=None, stock=None, state=None,
+                     query=None):
+        params = {}
+
+        if not isinstance(page, int):
+            type_exception('int', page)
+        params['page'] = page
+
+        if quantity:
+            params['quantity'] = quantity
+
+        if stock:
+            params['stock'] = stock
+
+        if state:
+            params['state'] = state
+
+        if query:
+            params['query'] = query
+
+        uri = '/services/rest/{group}'.format(group=self.group)
+        response = self.api.request('GET', uri, params=params, data=None)
+        return InventoryResponse.parse(self.api, response)
+
+
 class PlazaAPI(object):
 
     def __init__(self, public_key, private_key, test=False, timeout=None,
@@ -388,6 +575,8 @@ class PlazaAPI(object):
         self.session = session or requests.Session()
         self.return_items = ReturnItemsMethods(self)
         self.offers = OffersMethods(self)
+        self.inbounds = InboundMethods(self)
+        self.inventory = InventoryMethods(self)
 
     def request(self, method, uri, params={},
                 data=None, accept="application/xml"):
