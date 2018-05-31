@@ -203,7 +203,8 @@ class OrderMethods(MethodGroup):
         if fulfilment_method:
             params['fulfilment-method'] = fulfilment_method
 
-        xml = self.request('GET', params=params, accept=accept)
+        xml = self.request('GET', params=params,
+                           accept="application/vnd.orders-v2.1+xml")
         return Orders.parse(self.api, xml)
 
 
@@ -245,7 +246,8 @@ class ShipmentMethods(MethodGroup):
         if fulfilment_method:
             params['fulfilment-method'] = fulfilment_method
 
-        xml = self.request('GET', params=params, accept=accept)
+        xml = self.request('GET', params=params,
+                           accept="application/vnd.shipments-v2.1+xml")
         return Shipments.parse(self.api, xml)
 
     def create(self, order_item_id, date_time, expected_delivery_date,
