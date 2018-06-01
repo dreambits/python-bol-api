@@ -493,8 +493,8 @@ class InboundMethods(MethodGroup):
     def getDeliveryWindow(self, delivery_date=None, items_to_send=None):
         params = {}
 
-        if not isinstance(delivery_date, date):
-            type_exception('datetime', delivery_date)
+        if not isinstance(delivery_date, str):
+            type_exception('str', delivery_date)
         params['delivery-date'] = delivery_date
 
         if not isinstance(items_to_send, int):
