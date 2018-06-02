@@ -133,7 +133,8 @@ class MethodGroup(object):
         return xml
 
     def create_request_inbound_xml(self, root, **kwargs):
-        elements = self._create_request_xml_elements(1, **kwargs)
+        elements = self._create_request_xml_elements_for_create_inbound(
+            1, **kwargs)
         xml = """<?xml version="1.0" encoding="UTF-8"?>
 <{root} xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
 {elements}
@@ -141,7 +142,61 @@ class MethodGroup(object):
 """.format(root=root, elements=elements)
         return xml
 
+    def _create_request_xml_elements_for_create_inbound(self, indent, **kwargs):
+        '''
+        this function was copied from #_create_request_ixml_elements
+        to maintain proper structure for specially #create_request_inbound_xml
+        '''
+        # sort to make output deterministic
+        kwargs = collections.OrderedDict(sorted(kwargs.items()))
+        xml = ''
+        for tag, value in kwargs.items():
+            if value is not None:
+                prefix = ' ' * 4 * indent
+                if not isinstance(value, list):
+                    if isinstance(value, dict):
+                        text = '\n{}\n{}'.format(
+                            self._create_request_xml_elements(
+                                indent + 1, **value),
+                            prefix)
+                    elif isinstance(value, datetime):
+                        text = value.isoformat()
+                    else:
+                        text = str(value)
+                    # TODO: Escape! For now this will do I am only dealing
+                    # with track & trace codes and simplistic IDs...
+                    if xml:
+                        xml += '\n'
+                    xml += prefix
+                    xml += "<{tag}>{text}</{tag}>".format(
+                        tag=tag,
+                        text=text
+                    )
+                else:
+                    text = ''
+                    for item in value:
+                        if isinstance(item, dict):
+                            text += '\n{}\n{}'.format(
+                                self._create_request_xml_elements(
+                                    indent + 1, **item),
+                                prefix)
+                        else:
+                            text += str(item)
+                        # TODO: Escape! For now this will do I am only dealing
+                        # with track & trace codes and simplistic IDs...
+                    if xml:
+                        xml += '\n'
+                    xml += prefix
+                    xml += "<{tag}>{text}</{tag}>".format(
+                        tag=tag,
+                        text=text
+                    )
+        return xml
+
     def _create_request_xml_elements(self, indent, **kwargs):
+        '''
+        The original one, ... change it at your own risk ...  :)
+        '''
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
         xml = ''
@@ -470,7 +525,7 @@ class InboundMethods(MethodGroup):
 
         xml = self.create_request_inbound_xml('InboundRequest', **values)
 
-        response = self.request('POST', data=xml)
+        response = self.request_inbound('POST', data=xml)
         return ProcessStatus.parse(self.api, response)
 
     def check_prod(self, prod):
