@@ -499,21 +499,22 @@ class InboundMethods(MethodGroup):
         }
 
         if 'Start' in time_slot and 'End' in time_slot:
-            if not isinstance(time_slot['Start'], datetime):
-                type_exception('datetime', time_slot['Start'])
-            if not isinstance(time_slot['End'], datetime):
-                type_exception('datetime', time_slot['End'])
+            if not isinstance(time_slot['Start'], (str, unicode)):
+                type_exception('str', time_slot['Start'])
+            if not isinstance(time_slot['End'], (str, unicode)):
+                type_exception('str', time_slot['End'])
             values['TimeSlot'] = time_slot
 
-        if 'Code' not in fbb_transporter:
-            key_exception('Code')
-        if not isinstance(fbb_transporter['Code'], (str, unicode)):
-            type_exception('str', fbb_transporter['Code'])
+        if 'Code' in time_slot and 'Name' in time_slot:
+            if 'Code' not in fbb_transporter:
+                key_exception('Code')
+            if not isinstance(fbb_transporter['Code'], (str, unicode)):
+                type_exception('str', fbb_transporter['Code'])
 
-        if 'Name' not in fbb_transporter:
-            key_exception('Name')
-        if not isinstance(fbb_transporter['Name'], (str, unicode)):
-            type_exception('str', fbb_transporter['Name'])
+            if 'Name' not in fbb_transporter:
+                key_exception('Name')
+            if not isinstance(fbb_transporter['Name'], (str, unicode)):
+                type_exception('str', fbb_transporter['Name'])
         values['FbbTransporter'] = fbb_transporter
 
         values['Products'] = []
@@ -558,6 +559,8 @@ class InboundMethods(MethodGroup):
 
         response = self.request_inbound('GET', path='delivery-windows',
                                         params=params)
+       
+
         return DeliveryWindowResponse.parse(self.api, response)
 
 
@@ -570,9 +573,10 @@ class InventoryMethods(MethodGroup):
                      query=None):
         params = {}
 
-        if not isinstance(page, int):
-            type_exception('int', page)
-        params['page'] = page
+        if page:
+            if not isinstance(page, int):
+                type_exception('int', page)
+            params['page'] = page
 
         if quantity:
             params['quantity'] = quantity
