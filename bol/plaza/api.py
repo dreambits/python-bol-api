@@ -133,7 +133,8 @@ class MethodGroup(object):
         return xml
 
     def create_request_inbound_xml(self, root, **kwargs):
-        elements = self._create_request_xml_elements(1, **kwargs)
+        elements = self._create_request_xml_elements_for_create_inbound(
+            1, **kwargs)
         xml = """<?xml version="1.0" encoding="UTF-8"?>
 <{root} xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
 {elements}
@@ -141,7 +142,61 @@ class MethodGroup(object):
 """.format(root=root, elements=elements)
         return xml
 
+    def _create_request_xml_elements_for_create_inbound(self, indent, **kwargs):
+        '''
+        this function was copied from #_create_request_ixml_elements
+        to maintain proper structure for specially #create_request_inbound_xml
+        '''
+        # sort to make output deterministic
+        kwargs = collections.OrderedDict(sorted(kwargs.items()))
+        xml = ''
+        for tag, value in kwargs.items():
+            if value is not None:
+                prefix = ' ' * 4 * indent
+                if not isinstance(value, list):
+                    if isinstance(value, dict):
+                        text = '\n{}\n{}'.format(
+                            self._create_request_xml_elements(
+                                indent + 1, **value),
+                            prefix)
+                    elif isinstance(value, datetime):
+                        text = value.isoformat()
+                    else:
+                        text = str(value)
+                    # TODO: Escape! For now this will do I am only dealing
+                    # with track & trace codes and simplistic IDs...
+                    if xml:
+                        xml += '\n'
+                    xml += prefix
+                    xml += "<{tag}>{text}</{tag}>".format(
+                        tag=tag,
+                        text=text
+                    )
+                else:
+                    text = ''
+                    for item in value:
+                        if isinstance(item, dict):
+                            text += '\n{}\n{}'.format(
+                                self._create_request_xml_elements(
+                                    indent + 1, **item),
+                                prefix)
+                        else:
+                            text += str(item)
+                        # TODO: Escape! For now this will do I am only dealing
+                        # with track & trace codes and simplistic IDs...
+                    if xml:
+                        xml += '\n'
+                    xml += prefix
+                    xml += "<{tag}>{text}</{tag}>".format(
+                        tag=tag,
+                        text=text
+                    )
+        return xml
+
     def _create_request_xml_elements(self, indent, **kwargs):
+        '''
+        The original one, ... change it at your own risk ...  :)
+        '''
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
         xml = ''
@@ -447,8 +502,8 @@ class InboundMethods(MethodGroup):
 
     def getSingleInbound(self, inbound_id=None):
 
-        if isinstance(inbound_id, int):
-            type_exception('inbound_id')
+        if not isinstance(inbound_id, int):
+            type_exception('int', inbound_id)
 
         response = self.request_inbound('GET', path=inbound_id)
         return GetSingleInbound.parse(self.api, response)
@@ -463,21 +518,22 @@ class InboundMethods(MethodGroup):
         }
 
         if 'Start' in time_slot and 'End' in time_slot:
-            if not isinstance(time_slot['Start'], datetime):
-                type_exception('datetime', time_slot['Start'])
-            if not isinstance(time_slot['End'], datetime):
-                type_exception('datetime', time_slot['End'])
+            if not isinstance(time_slot['Start'], (str, unicode)):
+                type_exception('str', time_slot['Start'])
+            if not isinstance(time_slot['End'], (str, unicode)):
+                type_exception('str', time_slot['End'])
             values['TimeSlot'] = time_slot
 
-        if 'Code' not in fbb_transporter:
-            key_exception('Code')
-        if not isinstance(fbb_transporter['Code'], (str, unicode)):
-            type_exception('str', fbb_transporter['Code'])
+        if 'Code' in time_slot and 'Name' in time_slot:
+            if 'Code' not in fbb_transporter:
+                key_exception('Code')
+            if not isinstance(fbb_transporter['Code'], (str, unicode)):
+                type_exception('str', fbb_transporter['Code'])
 
-        if 'Name' not in fbb_transporter:
-            key_exception('Name')
-        if not isinstance(fbb_transporter['Name'], (str, unicode)):
-            type_exception('str', fbb_transporter['Name'])
+            if 'Name' not in fbb_transporter:
+                key_exception('Name')
+            if not isinstance(fbb_transporter['Name'], (str, unicode)):
+                type_exception('str', fbb_transporter['Name'])
         values['FbbTransporter'] = fbb_transporter
 
         values['Products'] = []
@@ -489,7 +545,7 @@ class InboundMethods(MethodGroup):
 
         xml = self.create_request_inbound_xml('InboundRequest', **values)
 
-        response = self.request('POST', data=xml)
+        response = self.request_inbound('POST', data=xml)
         return ProcessStatus.parse(self.api, response)
 
     def check_prod(self, prod):
@@ -512,8 +568,8 @@ class InboundMethods(MethodGroup):
     def getDeliveryWindow(self, delivery_date=None, items_to_send=None):
         params = {}
 
-        if not isinstance(delivery_date, date):
-            type_exception('datetime', delivery_date)
+        if not isinstance(delivery_date, str):
+            type_exception('str', delivery_date)
         params['delivery-date'] = delivery_date
 
         if not isinstance(items_to_send, int):
@@ -522,6 +578,8 @@ class InboundMethods(MethodGroup):
 
         response = self.request_inbound('GET', path='delivery-windows',
                                         params=params)
+       
+
         return DeliveryWindowResponse.parse(self.api, response)
 
 
@@ -534,9 +592,10 @@ class InventoryMethods(MethodGroup):
                      query=None):
         params = {}
 
-        if not isinstance(page, int):
-            type_exception('int', page)
-        params['page'] = page
+        if page:
+            if not isinstance(page, int):
+                type_exception('int', page)
+            params['page'] = page
 
         if quantity:
             params['quantity'] = quantity
