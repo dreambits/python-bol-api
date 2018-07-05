@@ -594,6 +594,21 @@ class InboundMethods(MethodGroup):
 
         return response
 
+    def getPickingListDetails(self, inbound_id=None):
+        '''
+        This method returns pdf data of packing list details for given inbound
+        '''
+
+        if not isinstance(inbound_id, int):
+            type_exception('int', inbound_id)
+
+        response = self.request_inbound('GET',
+                                        path='{0}/packinglistdetails'.format(
+                                            inbound_id),
+                                        accept="application/pdf")
+
+        return response
+
 
 class InventoryMethods(MethodGroup):
 
