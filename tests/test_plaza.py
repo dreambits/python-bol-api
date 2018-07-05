@@ -650,7 +650,6 @@ def test_get_delivery_window():
     with HTTMock(delivery_window_stub):
         api = PlazaAPI('api_key', 'api_secret', test=True)
 
-        # param_date = datetime.strptime('30-01-2017', '%d-%m-%Y').date()
         param_date = '30-01-2017'
 
         with pytest.raises(TypeError):
