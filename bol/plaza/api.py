@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import time
 import requests
 import hmac
@@ -578,9 +576,23 @@ class InboundMethods(MethodGroup):
 
         response = self.request_inbound('GET', path='delivery-windows',
                                         params=params)
-       
 
         return DeliveryWindowResponse.parse(self.api, response)
+
+    def getShippingLabel(self, inbound_id=None):
+        '''
+        This method returns pdf data of shipping label for given inbound
+        '''
+
+        if not isinstance(inbound_id, int):
+            type_exception('int', inbound_id)
+
+        response = self.request_inbound('GET',
+                                        path='{0}/shippinglabel'.format(
+                                            inbound_id),
+                                        accept="application/pdf")
+
+        return response
 
 
 class InventoryMethods(MethodGroup):
@@ -662,7 +674,6 @@ x-bol-date:{date}
                        'X-BOL-Date': date,
                        'X-BOL-Authorization': signature,
                        'accept': accept}
-
             request_kwargs = {
                 'method': method,
                 'url': self.url + uri,
