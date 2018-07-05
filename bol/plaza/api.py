@@ -140,7 +140,7 @@ class MethodGroup(object):
 """.format(root=root, elements=elements)
         return xml
 
-    def _create_request_xml_elements_for_create_inbound(self, indent, **kwargs):
+    def create_request_xml_elements_for_create_inbound(self, indent, **kwargs):
         '''
         this function was copied from #_create_request_ixml_elements
         to maintain proper structure for specially #create_request_inbound_xml
