@@ -576,7 +576,6 @@ class InboundMethods(MethodGroup):
 
         response = self.request_inbound('GET', path='delivery-windows',
                                         params=params)
-       
 
         return DeliveryWindowResponse.parse(self.api, response)
 
