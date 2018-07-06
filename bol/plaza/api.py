@@ -594,7 +594,7 @@ class InboundMethods(MethodGroup):
 
         return response
 
-    def getPickingListDetails(self, inbound_id=None):
+    def getPackingListDetails(self, inbound_id=None):
         '''
         This method returns pdf data of packing list details for given inbound
         '''
