@@ -131,7 +131,7 @@ class MethodGroup(object):
         return xml
 
     def create_request_inbound_xml(self, root, **kwargs):
-        elements = self._create_request_xml_elements_for_create_inbound(
+        elements = self.create_request_xml_elements_for_create_inbound(
             1, **kwargs)
         xml = """<?xml version="1.0" encoding="UTF-8"?>
 <{root} xmlns="https://plazaapi.bol.com/services/xsd/v1/plazaapi.xsd">
