@@ -252,7 +252,7 @@ class Item(Model):
         Quantity = TextField()
         ReturnDateAnnouncement = TextField()
         ReturnReason = TextField()
-        customer_details = RI_CustomerDetails
+        CustomerDetails = ModelField(RI_CustomerDetails)
 
 
 class ReturnItems(ModelList):
