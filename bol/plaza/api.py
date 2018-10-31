@@ -82,8 +82,7 @@ class TransporterCode(Enum):
     def to_string(cls, transporter_code):
         if isinstance(transporter_code, TransporterCode):
             transporter_code = transporter_code.value
-        assert transporter_code in map(
-            lambda c: c.value, list(TransporterCode))
+        assert transporter_code in [c.value for c in list(TransporterCode)]
         return transporter_code
 
 
@@ -148,7 +147,7 @@ class MethodGroup(object):
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
         xml = ''
-        for tag, value in kwargs.items():
+        for tag, value in list(kwargs.items()):
             if value is not None:
                 prefix = ' ' * 4 * indent
                 if not isinstance(value, list):
@@ -198,7 +197,7 @@ class MethodGroup(object):
         # sort to make output deterministic
         kwargs = collections.OrderedDict(sorted(kwargs.items()))
         xml = ''
-        for tag, value in kwargs.items():
+        for tag, value in list(kwargs.items()):
             if value is not None:
                 prefix = ' ' * 4 * indent
                 if not isinstance(value, list):
@@ -258,6 +257,7 @@ class OrderMethods(MethodGroup):
 
         xml = self.request('GET', params=params,
                            accept="application/vnd.orders-v2.1+xml")
+        print(xml)
         return Orders.parse(self.api, xml)
 
 
@@ -516,21 +516,21 @@ class InboundMethods(MethodGroup):
         }
 
         if 'Start' in time_slot and 'End' in time_slot:
-            if not isinstance(time_slot['Start'], (str, unicode)):
+            if not isinstance(time_slot['Start'], str):
                 type_exception('str', time_slot['Start'])
-            if not isinstance(time_slot['End'], (str, unicode)):
+            if not isinstance(time_slot['End'], str):
                 type_exception('str', time_slot['End'])
             values['TimeSlot'] = time_slot
 
         if 'Code' in time_slot and 'Name' in time_slot:
             if 'Code' not in fbb_transporter:
                 key_exception('Code')
-            if not isinstance(fbb_transporter['Code'], (str, unicode)):
+            if not isinstance(fbb_transporter['Code'], str):
                 type_exception('str', fbb_transporter['Code'])
 
             if 'Name' not in fbb_transporter:
                 key_exception('Name')
-            if not isinstance(fbb_transporter['Name'], (str, unicode)):
+            if not isinstance(fbb_transporter['Name'], str):
                 type_exception('str', fbb_transporter['Name'])
         values['FbbTransporter'] = fbb_transporter
 
@@ -553,9 +553,10 @@ class InboundMethods(MethodGroup):
         if not isinstance(prod['Product'], dict):
             type_exception('dict', prod['Product'])
 
-        if 'EAN' not in prod['Product'].keys():
+        prod_keys = list(prod['Product'].keys())
+        if 'EAN' not in prod_keys:
             key_exception('EAN')
-        if 'AnnouncedQuantity' not in prod['Product'].keys():
+        if 'AnnouncedQuantity' not in prod_keys:
             key_exception('AnnouncedQuantity')
 
         if not isinstance(prod['Product']['EAN'], int):
@@ -701,24 +702,32 @@ x-bol-date:{date}
 
             resp = self.session.request(**request_kwargs)
 
+            resp_content = resp.content
+            resp_text = resp.text
+
+            if isinstance(resp_content, bytes):
+                resp_content = resp_content.decode(encoding='utf-8')
+            if isinstance(resp_text, bytes):
+                resp_text = resp_text.decode(encoding='utf-8')
+
             if request_kwargs['url'] == 'https://plazaapi.bol.com/offers/v2/':
-                if resp.status_code == 202 and resp.text is not None:
+                if resp.status_code == 202 and resp_text is not None:
                     return True
                 else:
-                    tree = ElementTree.fromstring(resp.content)
+                    tree = ElementTree.fromstring(resp_content)
                     return tree
 
             if 'https://plazaapi.bol.com/offers/v2/export/' in request_kwargs[
                     'url']:
                 if accept == "text/csv":
-                    return resp.text
+                    return resp_text
 
             resp.raise_for_status()
 
             if accept == "application/pdf":
-                return resp.content
+                return resp_content
             else:
-                tree = ElementTree.fromstring(resp.content)
+                tree = ElementTree.fromstring(resp_content)
                 return tree
         except Exception:
             print("Got into Exception \n{0}".format(traceback.print_exc()))
