@@ -3,16 +3,14 @@ import requests
 import hmac
 import hashlib
 import base64
-from datetime import datetime
-from datetime import date
 import collections
-from enum import Enum
-
 import traceback
 
-
+from datetime import datetime, date
+from enum import Enum
 from xml.etree import ElementTree
 
+# custom Method Models From parent repository
 from .models import Orders, Payments, Shipments, ProcessStatus
 
 # custom Method Models For DreamBits
@@ -553,9 +551,10 @@ class InboundMethods(MethodGroup):
         if not isinstance(prod['Product'], dict):
             type_exception('dict', prod['Product'])
 
-        if 'EAN' not in prod['Product'].keys():
+        prod_keys = prod['Product'].keys()
+        if 'EAN' not in prod_keys:
             key_exception('EAN')
-        if 'AnnouncedQuantity' not in prod['Product'].keys():
+        if 'AnnouncedQuantity' not in prod_keys:
             key_exception('AnnouncedQuantity')
 
         if not isinstance(prod['Product']['EAN'], int):
@@ -701,24 +700,27 @@ x-bol-date:{date}
 
             resp = self.session.request(**request_kwargs)
 
+            resp_content = resp.content
+            resp_text = resp.text
+
             if request_kwargs['url'] == 'https://plazaapi.bol.com/offers/v2/':
-                if resp.status_code == 202 and resp.text is not None:
+                if resp.status_code == 202 and resp_text is not None:
                     return True
                 else:
-                    tree = ElementTree.fromstring(resp.content)
+                    tree = ElementTree.fromstring(resp_content)
                     return tree
 
             if 'https://plazaapi.bol.com/offers/v2/export/' in request_kwargs[
                     'url']:
                 if accept == "text/csv":
-                    return resp.text
+                    return resp_text
 
             resp.raise_for_status()
 
             if accept == "application/pdf":
-                return resp.content
+                return resp_content
             else:
-                tree = ElementTree.fromstring(resp.content)
+                tree = ElementTree.fromstring(resp_content)
                 return tree
         except Exception:
             print("Got into Exception \n{0}".format(traceback.print_exc()))

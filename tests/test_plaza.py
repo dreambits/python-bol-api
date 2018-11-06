@@ -231,13 +231,13 @@ def test_orders():
         order = orders[0]
         assert order.OrderId == '123'
 
-        assert order.CustomerDetails.BillingDetails.SalutationCode == '02'
+        assert order.CustomerDetails.BillingDetails.SalutationCode == 2
         assert order.CustomerDetails.BillingDetails.Firstname == 'Jans'
         assert order.CustomerDetails.BillingDetails.Surname == 'Janssen'
         assert (
             order.CustomerDetails.BillingDetails.Streetname ==
             'Billingstraat')
-        assert order.CustomerDetails.BillingDetails.Housenumber == '1'
+        assert order.CustomerDetails.BillingDetails.Housenumber == 1
         assert order.CustomerDetails.BillingDetails.HousenumberExtended == 'a'
         assert (
             order.CustomerDetails.BillingDetails.AddressSupplement ==
@@ -251,13 +251,13 @@ def test_orders():
             '67890')
         assert order.CustomerDetails.BillingDetails.Company == 'Bol.com'
 
-        assert order.CustomerDetails.ShipmentDetails.SalutationCode == '01'
+        assert order.CustomerDetails.ShipmentDetails.SalutationCode == 1
         assert order.CustomerDetails.ShipmentDetails.Firstname == 'Jan'
         assert order.CustomerDetails.ShipmentDetails.Surname == 'Janssen'
         assert (
             order.CustomerDetails.ShipmentDetails.Streetname ==
             'Shipmentstraat')
-        assert order.CustomerDetails.ShipmentDetails.Housenumber == '42'
+        assert order.CustomerDetails.ShipmentDetails.Housenumber == 42
         assert (
             order.CustomerDetails.ShipmentDetails.HousenumberExtended == 'bis')
 
