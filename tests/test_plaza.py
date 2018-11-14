@@ -231,13 +231,13 @@ def test_orders():
         order = orders[0]
         assert order.OrderId == '123'
 
-        assert order.CustomerDetails.BillingDetails.SalutationCode == '02'
+        assert order.CustomerDetails.BillingDetails.SalutationCode == 2
         assert order.CustomerDetails.BillingDetails.Firstname == 'Jans'
         assert order.CustomerDetails.BillingDetails.Surname == 'Janssen'
         assert (
             order.CustomerDetails.BillingDetails.Streetname ==
             'Billingstraat')
-        assert order.CustomerDetails.BillingDetails.Housenumber == '1'
+        assert order.CustomerDetails.BillingDetails.Housenumber == 1
         assert order.CustomerDetails.BillingDetails.HousenumberExtended == 'a'
         assert (
             order.CustomerDetails.BillingDetails.AddressSupplement ==
@@ -251,13 +251,13 @@ def test_orders():
             '67890')
         assert order.CustomerDetails.BillingDetails.Company == 'Bol.com'
 
-        assert order.CustomerDetails.ShipmentDetails.SalutationCode == '01'
+        assert order.CustomerDetails.ShipmentDetails.SalutationCode == 1
         assert order.CustomerDetails.ShipmentDetails.Firstname == 'Jan'
         assert order.CustomerDetails.ShipmentDetails.Surname == 'Janssen'
         assert (
             order.CustomerDetails.ShipmentDetails.Streetname ==
             'Shipmentstraat')
-        assert order.CustomerDetails.ShipmentDetails.Housenumber == '42'
+        assert order.CustomerDetails.ShipmentDetails.Housenumber == 42
         assert (
             order.CustomerDetails.ShipmentDetails.HousenumberExtended == 'bis')
 
@@ -666,3 +666,87 @@ def test_get_delivery_window():
         time_slot_0 = delivery_window[0]
         assert isinstance(time_slot_0.Start, datetime)
         assert isinstance(time_slot_0.End, datetime)
+
+
+# original orderId is 4012345678
+RI_str_1 = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ReturnItems xmlns="https://plazaapi.bol.com/services/xsd/v2/plazaapi.xsd">
+ <Item>
+   <ReturnNumber>31234567</ReturnNumber>
+    <OrderId>4123456789</OrderId>
+    <ShipmentId>0</ShipmentId>
+    <EAN>9781781103524</EAN>
+    <Title>Harry Potter en de Relieken van de Dood</Title>
+    <Quantity>1</Quantity>
+    <ReturnDateAnnouncement>2016-11-14+01:00</ReturnDateAnnouncement>
+    <ReturnReason>Niet naar verwachting</ReturnReason>
+    <CustomerDetails>
+       <SalutationCode>02</SalutationCode>
+       <FirstName>Jane</FirstName>
+       <Surname>Doe</Surname>
+       <Streetname>Mainstreet</Streetname>
+       <Housenumber>77</Housenumber>
+       <HousenumberExtended>BIS</HousenumberExtended>
+       <ZipCode>1234 AA</ZipCode>
+       <City>AMSTERDAM</City>
+       <CountryCode>NL</CountryCode>
+       <Email>example@example.com</Email>
+       <DeliveryPhoneNumber>0612345678</DeliveryPhoneNumber>
+       <Company>ACME</Company>
+    </CustomerDetails>
+ </Item>
+</ReturnItems>"""
+
+RI_str_2 = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ReturnItems xmlns="https://plazaapi.bol.com/services/xsd/v2/plazaapi.xsd">
+ <Item>
+   <ReturnNumber>31234568</ReturnNumber>
+    <OrderId>4123456790</OrderId>
+    <ShipmentId>0</ShipmentId>
+    <EAN>9781781103524</EAN>
+    <Title>Harry Potter en de Relieken van de Dood</Title>
+    <Quantity>1</Quantity>
+    <ReturnDateAnnouncement>2016-11-14+01:00</ReturnDateAnnouncement>
+    <ReturnReason>Niet naar verwachting</ReturnReason>
+    <CustomerDetails>
+       <SalutationCode>02</SalutationCode>
+       <FirstName>Jane</FirstName>
+       <Surname>Doe</Surname>
+       <Streetname>Mainstreet</Streetname>
+       <Housenumber>77</Housenumber>
+       <HousenumberExtended>BIS</HousenumberExtended>
+       <ZipCode>1234 AA</ZipCode>
+       <City>AMSTERDAM</City>
+       <CountryCode>NL</CountryCode>
+       <Email>example@example.com</Email>
+       <DeliveryPhoneNumber>0612345678</DeliveryPhoneNumber>
+       <Company>ACME</Company>
+    </CustomerDetails>
+ </Item>
+</ReturnItems>"""
+
+UNHANDLED_RETUERN_ITEMS_RESPONSE = [RI_str_1, RI_str_2]
+
+
+def test_get_unhandled_return_items():
+
+    return_no = 0
+
+    @urlmatch(path=r'/services/rest/return-items/v2/unhandled')
+    def unhandled_return_items_stub(url, request):
+        return UNHANDLED_RETUERN_ITEMS_RESPONSE[return_no]
+
+    with HTTMock(unhandled_return_items_stub):
+        api = PlazaAPI('api_key', 'api_secret', test=True)
+
+        unhandled_return_items_0 = api.return_items.getUnhandled()
+
+        return_items_0 = unhandled_return_items_0[0]
+        assert return_items_0.ReturnNumber, 31234567
+        assert return_items_0.OrderId == 4123456789
+        assert return_items_0.ShipmentId == 0
+        assert return_items_0.EAN == '9781781103524'
+        return_items_0_customer = return_items_0.CustomerDetails
+        assert return_items_0_customer.FirstName == "Jane"
+        assert return_items_0_customer.Surname == "Doe"
+        assert return_items_0_customer.ZipCode == "1234 AA"

@@ -79,16 +79,31 @@ class ModelList(list, Model):
         return ml
 
 
-class BillingDetails(Model):
+class CustomerDetailsBase(Model):
 
     class Meta:
-        pass
+        SalutationCode = IntegerField()
+        Surname = TextField()
+        Streetname = TextField()
+        Housenumber = IntegerField()
+        HousenumberExtended = TextField()
+        ZipCode = TextField()
+        City = TextField()
+        CountryCode = TextField()
+        Email = TextField()
+        Company = TextField()
+
+
+class BillingDetails(CustomerDetailsBase):
+
+    class Meta(CustomerDetailsBase.Meta):
+        Firstname = TextField()
 
 
 class ShipmentDetails(Model):
 
-    class Meta:
-        pass
+    class Meta(CustomerDetailsBase.Meta):
+        Firstname = TextField()
 
 
 class CustomerDetails(Model):
@@ -224,21 +239,11 @@ class PurchasableShippingLabels(ModelList):
         item_type = Labels
 
 
-class RI_CustomerDetails(Model):
+class RI_CustomerDetails(CustomerDetailsBase):
 
-    class Meta:
-        SalutationCode = IntegerField()
+    class Meta(CustomerDetailsBase.Meta):
         FirstName = TextField()
-        Surname = TextField()
-        Streetname = TextField()
-        Housenumber = IntegerField()
-        HousenumberExtended = TextField()
-        ZipCode = TextField()
-        City = TextField()
-        CountryCode = TextField()
-        Email = TextField()
         DeliveryPhoneNumber = IntegerField()
-        Company = TextField()
 
 
 class Item(Model):
