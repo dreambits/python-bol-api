@@ -79,6 +79,14 @@ class ModelList(list, Model):
         return ml
 
 
+class serviceError(Model):
+
+    class Meta:
+        TraceId = TextField()
+        ErrorMessage = TextField()
+        ErrorCode = TextField()
+
+
 class CustomerDetailsBase(Model):
 
     class Meta:
