@@ -265,6 +265,12 @@ class ReturnItems(ModelList):
     class Meta:
         item_type = Item
 
+class ReturnItemStatusUpdate(Model):
+
+    class Meta:
+        StatusReason = TextField()
+        QuantityReturned = IntegerField()
+
 
 class ProcessStatusLinks(Model):
 

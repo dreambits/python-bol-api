@@ -378,15 +378,30 @@ class ReturnItemsMethods(MethodGroup):
         super(ReturnItemsMethods, self).__init__(api, 'return-items')
 
     def getUnhandled(self):
-        xml = self.request('GET', path="/unhandled", accept="application/xml")
-        return ReturnItems.parse(self.api, xml)
+        try:
+            xml = self.request('GET', path="/unhandled", accept="application/xml")
+            return ReturnItems.parse(self.api, xml)
+        except:
+            print("Got into Exception \n")
+            traceback.print_exc()
 
-    def getHandle(self, orderId, status_reason, qty_return):
-        xml = self.request('PUT', '/{}/handle'.format(orderId), params={
-            'StatusReason': status_reason,
-            'QuantityReturned': qty_return
-        })
-        return ProcessStatus.parse(self.api, xml)
+    def handleReturnItem(self, returnNumber, status_reason, qty_return, params=None):
+        try:
+            xml = self.create_request_xml(
+                'ReturnItemStatusUpdate',
+                StatusReason=status_reason,
+                QuantityReturned=qty_return
+                )
+            uri = '/services/rest/{group}/{version}{path}'.format(
+                group=self.group,
+                version=self.api.version,
+                path='/{}/handle'.format(returnNumber))
+            response = self.api.request('PUT', uri, params=params,
+                                        data=xml, accept="application/xml")
+            return ProcessStatus.parse(self.api, response)
+        except:
+            print("Got into Exception \n")
+            traceback.print_exc()
 
 
 class OffersMethods(MethodGroup):
