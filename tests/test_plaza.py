@@ -753,34 +753,43 @@ def test_get_unhandled_return_items():
 
 
 RI_handle_str_1 = """<?xml version="1.0" encoding="UTF-8"?>
-<ns1:ProcessStatus xmlns:ns1="https://plazaapi.bol.com/services/xsd/v2/plazaapi.xsd">
+<ns1:ProcessStatus
+xmlns:ns1="https://plazaapi.bol.com/services/xsd/v2/plazaapi.xsd">
    <ns1:id>112748417</ns1:id>
    <ns1:sellerId>999849</ns1:sellerId>
    <ns1:entityId>65380525</ns1:entityId>
    <ns1:eventType>HANDLE_RETURN_ITEM</ns1:eventType>
-   <ns1:description>Handle the return item with returnNumber 65380525</ns1:description>
+   <ns1:description>Handle the return item with returnNumber 65380525
+</ns1:description>
    <ns1:status>PENDING</ns1:status>
    <ns1:createTimestamp>2019-02-19T09:08:36.629+01:00</ns1:createTimestamp>
    <ns1:Links>
-      <ns1:link ns1:rel="self" ns1:href="https://plazaapi.bol.com/services/rest/process-status/v2/112748417" ns1:method="GET" />
+      <ns1:link
+ns1:rel="self"
+ns1:href="https://plazaapi.bol.com/services/rest/process-status/v2/112748417"
+ns1:method="GET" />
    </ns1:Links>
 </ns1:ProcessStatus>"""
 
-HANDLED_RETUERN_ITEMS_RESPONSE = [RI_handle_str_1]
+HANDLE_RETUERN_ITEMS_RESPONSE = [RI_handle_str_1]
 
-def test_get_handled_return_items():
+
+def test_handle_return_items():
 
     return_no = 0
 
     @urlmatch(path=r'/services/rest/return-items/v2/65380525/handle$')
-    def handled_return_items_stub(url, request):
-        return HANDLED_RETUERN_ITEMS_RESPONSE[return_no]
+    def handle_return_items_stub(url, request):
+        return HANDLE_RETUERN_ITEMS_RESPONSE[return_no]
 
-    with HTTMock(handled_return_items_stub):
+    with HTTMock(handle_return_items_stub):
         api = PlazaAPI('api_key', 'api_secret', test=True)
 
-        handled_return_item_process = api.return_items.handleReturnItem(65380525, 'FAILS_TO_MATCH_RETURN_CONDITIONS', 2 )
+        handle_return_item_process = api.return_items.handleReturnItem(
+            65380525,
+            'FAILS_TO_MATCH_RETURN_CONDITIONS',
+            2)
 
-        assert handled_return_item_process.id, 112748417
-        assert handled_return_item_process.eventType == 'HANDLE_RETURN_ITEM'
-        assert handled_return_item_process.status == 'PENDING'
+        assert handle_return_item_process.id, 112748417
+        assert handle_return_item_process.eventType == 'HANDLE_RETURN_ITEM'
+        assert handle_return_item_process.status == 'PENDING'
