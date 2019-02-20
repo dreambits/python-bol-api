@@ -381,12 +381,19 @@ class ReturnItemsMethods(MethodGroup):
         xml = self.request('GET', path="/unhandled", accept="application/xml")
         return ReturnItems.parse(self.api, xml)
 
-    def getHandle(self, orderId, status_reason, qty_return):
-        xml = self.request('PUT', '/{}/handle'.format(orderId), params={
-            'StatusReason': status_reason,
-            'QuantityReturned': qty_return
-        })
-        return ProcessStatus.parse(self.api, xml)
+    def handleReturnItem(self, return_no, status_reason, qty, params={}):
+        xml = self.create_request_xml(
+            'ReturnItemStatusUpdate',
+            StatusReason=status_reason,
+            QuantityReturned=qty
+            )
+        uri = '/services/rest/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path='/{}/handle'.format(return_no))
+        response = self.api.request('PUT', uri, params=params,
+                                    data=xml, accept="application/xml")
+        return ProcessStatus.parse(self.api, response)
 
 
 class OffersMethods(MethodGroup):
