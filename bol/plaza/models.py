@@ -61,7 +61,7 @@ class Model(object):
     def parse(cls, api, xml):
         m = cls()
         m.xml = xml
-        for element in xml.getchildren():
+        for element in list(xml):
             tag = element.tag.partition('}')[2]
             field = getattr(m.Meta, tag, TextField())
             setattr(m, tag, field.parse(api, element, m))
@@ -74,21 +74,36 @@ class ModelList(list, Model):
     def parse(cls, api, xml):
         ml = cls()
         ml.xml = xml
-        for element in xml.getchildren():
+        for element in list(xml):
             ml.append(ml.Meta.item_type.parse(api, element))
         return ml
 
 
-class BillingDetails(Model):
+class CustomerDetailsBase(Model):
 
     class Meta:
-        pass
+        SalutationCode = IntegerField()
+        Surname = TextField()
+        Streetname = TextField()
+        Housenumber = IntegerField()
+        HousenumberExtended = TextField()
+        ZipCode = TextField()
+        City = TextField()
+        CountryCode = TextField()
+        Email = TextField()
+        Company = TextField()
+
+
+class BillingDetails(CustomerDetailsBase):
+
+    class Meta(CustomerDetailsBase.Meta):
+        Firstname = TextField()
 
 
 class ShipmentDetails(Model):
 
-    class Meta:
-        pass
+    class Meta(CustomerDetailsBase.Meta):
+        Firstname = TextField()
 
 
 class CustomerDetails(Model):
@@ -224,21 +239,11 @@ class PurchasableShippingLabels(ModelList):
         item_type = Labels
 
 
-class RI_CustomerDetails(Model):
+class RI_CustomerDetails(CustomerDetailsBase):
 
-    class Meta:
-        SalutationCode = IntegerField()
+    class Meta(CustomerDetailsBase.Meta):
         FirstName = TextField()
-        Surname = TextField()
-        Streetname = TextField()
-        Housenumber = IntegerField()
-        HousenumberExtended = TextField()
-        ZipCode = TextField()
-        City = TextField()
-        CountryCode = TextField()
-        Email = TextField()
         DeliveryPhoneNumber = IntegerField()
-        Company = TextField()
 
 
 class Item(Model):
@@ -259,6 +264,13 @@ class ReturnItems(ModelList):
 
     class Meta:
         item_type = Item
+
+
+class ReturnItemStatusUpdate(Model):
+
+    class Meta:
+        StatusReason = TextField()
+        QuantityReturned = IntegerField()
 
 
 class ProcessStatusLinks(Model):

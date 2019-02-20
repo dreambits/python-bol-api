@@ -381,12 +381,19 @@ class ReturnItemsMethods(MethodGroup):
         xml = self.request('GET', path="/unhandled", accept="application/xml")
         return ReturnItems.parse(self.api, xml)
 
-    def getHandle(self, orderId, status_reason, qty_return):
-        xml = self.request('PUT', '/{}/handle'.format(orderId), params={
-            'StatusReason': status_reason,
-            'QuantityReturned': qty_return
-        })
-        return ProcessStatus.parse(self.api, xml)
+    def handleReturnItem(self, return_no, status_reason, qty, params={}):
+        xml = self.create_request_xml(
+            'ReturnItemStatusUpdate',
+            StatusReason=status_reason,
+            QuantityReturned=qty
+            )
+        uri = '/services/rest/{group}/{version}{path}'.format(
+            group=self.group,
+            version=self.api.version,
+            path='/{}/handle'.format(return_no))
+        response = self.api.request('PUT', uri, params=params,
+                                    data=xml, accept="application/xml")
+        return ProcessStatus.parse(self.api, response)
 
 
 class OffersMethods(MethodGroup):
@@ -701,24 +708,27 @@ x-bol-date:{date}
 
             resp = self.session.request(**request_kwargs)
 
+            resp_content = resp.content
+            resp_text = resp.text
+
             if request_kwargs['url'] == 'https://plazaapi.bol.com/offers/v2/':
-                if resp.status_code == 202 and resp.text is not None:
+                if resp.status_code == 202 and resp_text is not None:
                     return True
                 else:
-                    tree = ElementTree.fromstring(resp.content)
+                    tree = ElementTree.fromstring(resp_content)
                     return tree
 
             if 'https://plazaapi.bol.com/offers/v2/export/' in request_kwargs[
                     'url']:
                 if accept == "text/csv":
-                    return resp.text
+                    return resp_text
 
             resp.raise_for_status()
 
             if accept == "application/pdf":
-                return resp.content
+                return resp_content
             else:
-                tree = ElementTree.fromstring(resp.content)
+                tree = ElementTree.fromstring(resp_content)
                 return tree
         except Exception:
             print("Got into Exception \n{0}".format(traceback.print_exc()))
