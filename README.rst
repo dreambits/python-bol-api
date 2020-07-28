@@ -5,6 +5,9 @@ python-bol-api
 .. image:: https://travis-ci.org/dreambits/python-bol-api.svg?branch=master
     :target: https://travis-ci.org/dreambits/python-bol-api
 
+.. image:: https://badge.fury.io/py/python-bol-api.png
+   :target: http://badge.fury.io/py/python-bol-api
+
 .. image:: https://badge.fury.io/py/python-bol-api-latest.svg
     :target: https://badge.fury.io/py/python-bol-api-latest
 
@@ -15,7 +18,11 @@ A Python wrapper for the bol.com API forked from https://github.com/pennersr/pyt
 This is currently under development but stable to be used.
 We are adding more and more features as the api has changed a lot from the time this version was created in original project
 
-Soon to be release in PyPi and GenFury
+.. image:: https://pennersr.github.io/img/emacs-badge.svg
+   :target: https://www.gnu.org/software/emacs/
+
+A Python wrapper for the bol.com API. Currently rather incomplete, as
+it offers only those methods required for my own projects so far.
 
 
 Open API
@@ -81,6 +88,44 @@ Create a shipment::
         track_and_trace="5678901234")
     >>> status.eventType
     "CONFIRM_SHPMENT"
+
+
+Retailer API
+============
+
+Supports the BOL API V3, documented here: https://developers.bol.com/apiv3authentication/
+
+Instantiate the API::
+
+    >>> from bol.retailer.api import RetailerAPI
+    >>> api = RetailerAPI()
+
+Authenticate::
+
+    >>> api.login('client_id', 'client_secret')
+
+Invoke a method::
+
+    >>> orders = api.orders.list()
+    >>> order = api.orders.get(orders[0].orderId))
+
+Fields are derived 1:1 from the bol.com API, including lower-CamelCase
+conventions::
+
+    >>> order.customerDetails.shipmentDetails.streetName
+    'Billingstraat'
+
+Fields are properly typed::
+
+    >>> repr(order.dateTimeOrderPlace)
+    datetime.datetime(2020, 2, 12, 16, 6, 17, tzinfo=tzoffset(None, 3600))
+    >>> repr(order.orderItems[0].offerPrice)
+    Decimal('106.52')
+
+Access the underlying raw (unparsed) data at any time::
+
+    >>> order.raw_data
+    >>> order.raw_content
 
 
 Running the tests
