@@ -10,7 +10,11 @@ from .models import (
     ProcessStatuses,
     Shipment,
     Shipments,
+    PurchasableShippingLabels,
+    OffersResponse,
 )
+
+from .constants import TransporterCode
 
 __all__ = ["RetailerAPI"]
 
@@ -114,6 +118,15 @@ class ProcessStatusMethods(MethodGroup):
         resp = self.request("GET", params=params)
         return ProcessStatuses.parse(self.api, resp.text)
 
+    def getById(self, process_id):
+        resp = self.request("GET", path=str(process_id))
+        return ProcessStatus.parse(self.api, resp.text)
+
+    def getByIds(self, process_ids):
+        if not type(process_ids) is list:
+            return {}
+        resp = self.request("POST", params=process_ids)
+        return ProcessStatus.parse(self.api, resp.text)
 
 class InvoiceMethods(MethodGroup):
     def __init__(self, api):
@@ -138,6 +151,101 @@ class InvoiceMethods(MethodGroup):
         return InvoiceSpecification.parse(self.api, resp.text)
 
 
+class TransportMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(TransportMethods, self).__init__(api, 'transports')
+
+    def update(self, id, transporter_code, track_and_trace):
+        transporter_code = TransporterCode.to_string(transporter_code)
+        payload = {
+            'transporterCode': transporter_code,
+            'trackAndTrace': track_and_trace,
+        }
+        response = self.request('PUT', '/{}'.format(id), json=payload)
+        return ProcessStatus.parse(self.api, response)
+
+    def getSingle(self, transportId, file_location):
+        content = self.request('GET', '/{}/shipping-label'.format(
+            transportId),
+            params={}, data=None, accept="application/pdf")
+
+        with open(file_location, 'wb') as f:
+            f.write(content)
+
+
+class PurchasableShippingLabelsMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(PurchasableShippingLabelsMethods, self).__init__(
+            api,
+            'purchasable-shippinglabels')
+
+    def get(self, order_itemid):
+        resp = self.request('GET', path=order_itemid)
+        return PurchasableShippingLabels.parse(self.api, resp.text)
+
+
+class OffersMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(OffersMethods, self).__init__(api, 'offers')
+
+    def createSingleOffer(self, data):
+        first_level_fields = ['ean','condition','pricing','stock','fulfilment']
+        second_level_fields = {
+            'condition': ['name'],
+            'pricing': { 'bundlePrices' : [] },
+            'stock': ['amount', 'managedByRetailer'],
+            'fulfilment': ['type'],
+        }
+
+        # Keeping the validation part out of scope for now and just make request
+        # And handle response
+        response = self.request('POST', json=data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def updateProduct(self, offer_id, data):
+        if "fulfilment" not in data:
+            # We handle basic validation here as not having fulfilment in data
+            # will give error from bol side
+            return "{'error': 'Insufficient data provided'}"
+
+        response = self.request('PUT', path='/{}'.format(offer_id), json=data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def updateProductPrice(self, offer_id, data):
+        response = self.request('PUT', path='/{}/price'.format(offer_id), json=data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def updateProductStock(self, offer_id, data):
+        response = self.request('PUT', path='/{}/stock'.format(offer_id), json=data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getSingleOffer(self, offer_id):
+        response = self.request('GET', path=str(offer_id))
+        return OffersResponse.parse(self.api, response.text)
+
+    def requestExportFile(self):
+        payload = {
+            'format': 'CSV'
+        }
+        response = self.request('POST', path='export', json=payload)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getOffersFile(self, export_id):
+        headers = {
+            "accept": "application/vnd.retailer.v3+csv"
+        }
+        response = self.request('GET', path='export/{}'.format(export_id),
+                                    headers=headers)
+        return response
+
+    def deleteOffers(self, offer_id):
+        response = self.request('DELETE', path='/{}'.format(offer_id))
+        return ProcessStatus.parse(self.api, response.text)
+
+
 class RetailerAPI(object):
     def __init__(
         self,
@@ -158,6 +266,8 @@ class RetailerAPI(object):
         self.shipments = ShipmentMethods(self)
         self.invoices = InvoiceMethods(self)
         self.process_status = ProcessStatusMethods(self)
+        self.offers = OffersMethods(self)
+        self.labels = PurchasableShippingLabelsMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
 

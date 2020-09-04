@@ -201,3 +201,56 @@ class InvoiceSpecification(ModelList):
     class Meta:
         item_type = InvoiceSpecificationItem
         items_key = "invoiceSpecification"
+
+class Labels(Model):
+
+    class Meta:
+        #transporterCode = TextField()
+        #labelType = TextField()
+        #maxWeight = TextField()
+        #maxDimensions = TextField()
+        retailPrice = DecimalField()
+        purchasePrice = DecimalField()
+        discount = DecimalField()
+        #shippingLabelCode = TextField()
+
+class PurchasableShippingLabels(ModelList):
+
+    class Meta:
+        items_key = "purchasableShippingLabels"
+        item_type = Labels
+
+class Fulfilment(Model):
+
+    class Meta:
+        pass
+
+class Store(Model):
+
+    class Meta:
+        pass
+
+class Stock(Model):
+
+    class Meta:
+        pass
+
+class Condition(Model):
+
+    class Meta:
+        pass
+
+class Prices(ModelList):
+
+    class Meta:
+        items_key = "bundlePrices"
+        item_type = Price
+
+class OffersResponse(Model):
+
+    class Meta:
+        pricing = ModelField(Prices)
+        fulfilment = ModelField(Fulfilment)
+        store = ModelField(Store)
+        stock = ModelField(Stock)
+        condition = ModelField(Condition)
