@@ -12,6 +12,7 @@ from .models import (
     Shipments,
     PurchasableShippingLabels,
     OffersResponse,
+    ReturnItems
 )
 
 from .constants import TransporterCode
@@ -246,6 +247,19 @@ class OffersMethods(MethodGroup):
         return ProcessStatus.parse(self.api, response.text)
 
 
+class ReturnsMethods(MethodGroup):
+    def __init__(self, api):
+        super(ReturnsMethods, self).__init__(api, "returns")
+
+    def get(self, page=1):
+        params = {}
+        if page != 1:
+            params["page"] = page
+        resp = self.request("GET", params=params)
+        print(resp.text)
+        return ReturnItems.parse(self.api, resp.text)
+
+
 class RetailerAPI(object):
     def __init__(
         self,
@@ -268,6 +282,7 @@ class RetailerAPI(object):
         self.process_status = ProcessStatusMethods(self)
         self.offers = OffersMethods(self)
         self.labels = PurchasableShippingLabelsMethods(self)
+        self.returns = ReturnsMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
 
@@ -340,9 +355,16 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
+            content_header = ""
+            if "returns" in url:
+                content_header = "application/vnd.retailer.v4+json"
+            else:
+                content_header = "application/vnd.retailer.v3+json"
+
             request_kwargs["headers"].update({
-                "content-type": "application/vnd.retailer.v3+json"
+                "content-type": content-header
             })
+
         resp = self.session.request(**request_kwargs)
         resp.raise_for_status()
         return resp

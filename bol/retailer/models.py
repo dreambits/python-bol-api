@@ -254,3 +254,14 @@ class OffersResponse(Model):
         store = ModelField(Store)
         stock = ModelField(Stock)
         condition = ModelField(Condition)
+
+class ReturnItem(Model):
+
+    class Meta:
+        pass
+
+class ReturnItems(ModelList):
+
+    class Meta:
+        items_key = 'returns'
+        item_type = ReturnItem
