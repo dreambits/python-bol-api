@@ -255,6 +255,12 @@ class OffersResponse(Model):
         stock = ModelField(Stock)
         condition = ModelField(Condition)
 
+class SingleReturnItem(Model):
+
+    class Meta:
+        customerDetails = ModelField(CustomerDetails)
+
+
 class ReturnItem(Model):
 
     class Meta:

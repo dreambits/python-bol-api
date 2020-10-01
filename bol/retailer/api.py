@@ -12,7 +12,8 @@ from .models import (
     Shipments,
     PurchasableShippingLabels,
     OffersResponse,
-    ReturnItems
+    ReturnItems,
+    SingleReturnItem,
 )
 
 from .constants import TransporterCode
@@ -256,8 +257,11 @@ class ReturnsMethods(MethodGroup):
         if page != 1:
             params["page"] = page
         resp = self.request("GET", params=params)
-        print(resp.text)
         return ReturnItems.parse(self.api, resp.text)
+
+    def getSingle(self, rmaId):
+        resp = self.request("GET", path=rmaId)
+        return SingleReturnItem.parse(self.api, resp.text)
 
 
 class RetailerAPI(object):
