@@ -213,15 +213,15 @@ class OffersMethods(MethodGroup):
             # will give error from bol side
             return "{'error': 'Insufficient data provided'}"
 
-        response = self.request('PUT', path='/{}'.format(offer_id), json=data)
+        response = self.request('PUT', path='{}'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
 
     def updateProductPrice(self, offer_id, data):
-        response = self.request('PUT', path='/{}/price'.format(offer_id), json=data)
+        response = self.request('PUT', path='{}/price'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
 
     def updateProductStock(self, offer_id, data):
-        response = self.request('PUT', path='/{}/stock'.format(offer_id), json=data)
+        response = self.request('PUT', path='{}/stock'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
 
     def getSingleOffer(self, offer_id):
@@ -360,13 +360,13 @@ class RetailerAPI(object):
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
             content_header = ""
-            if "returns" in url:
+            if "returns" in uri:
                 content_header = "application/vnd.retailer.v4+json"
             else:
                 content_header = "application/vnd.retailer.v3+json"
 
             request_kwargs["headers"].update({
-                "content-type": content-header
+                "content-type": content_header
             })
 
         resp = self.session.request(**request_kwargs)
