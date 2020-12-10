@@ -260,8 +260,13 @@ class ReturnsMethods(MethodGroup):
         return ReturnItems.parse(self.api, resp.text)
 
     def getSingle(self, rmaId):
-        resp = self.request("GET", path=rmaId)
+        resp = self.request("GET", path=str(rmaId))
         return SingleReturnItem.parse(self.api, resp.text)
+
+    def handleReturnItem(self, return_no, status_reason, qty):
+        payload = {"handlingResult": status_reason, "quantityReturned": qty}
+        response = self.request("PUT", path=str(return_no), json=payload)
+        return ProcessStatus.parse(self.api, response.text)
 
 
 class RetailerAPI(object):
@@ -359,11 +364,7 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = ""
-            if "returns" in uri:
-                content_header = "application/vnd.retailer.v4+json"
-            else:
-                content_header = "application/vnd.retailer.v3+json"
+            content_header = "application/vnd.retailer.v3+json"
 
             request_kwargs["headers"].update({
                 "content-type": content_header
