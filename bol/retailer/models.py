@@ -130,10 +130,10 @@ class OrderItems(ModelList):
 
 class Order(Model):
     class Meta:
-        customerDetails = ModelField(CustomerDetails)
         orderItems = ModelField(OrderItems)
         dateTimeOrderPlaced = DateTimeField()
-
+        shipmentDetails = ModelField(ShipmentDetails)
+        billingDetails = ModelField(BillingDetails)
 
 class Orders(ModelList):
     class Meta:

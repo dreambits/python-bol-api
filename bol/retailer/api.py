@@ -82,9 +82,16 @@ class OrderMethods(MethodGroup):
         return ProcessStatus.parse(self.api, resp.text)
 
     def cancel_order_item(self, order_item_id, reason_code):
-        payload = {"reasonCode": reason_code}
+        payload = {
+            "orderItems": [
+                {
+                "orderItemId": order_item_id,
+                "reasonCode": reason_code
+                }
+            ]
+        }
         resp = self.request(
-            "PUT", path="{}/cancellation".format(order_item_id), json=payload
+            "PUT", path="cancellation", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
 
