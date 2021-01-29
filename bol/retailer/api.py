@@ -344,7 +344,7 @@ class RetailerAPI(object):
         self.session.headers.update(
             {
                 "Authorization": "Bearer " + access_token,
-                "Accept": "application/vnd.retailer.v3+json",
+                "Accept": "application/vnd.retailer.v4+json",
             }
         )
 
@@ -364,7 +364,7 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = "application/vnd.retailer.v3+json"
+            content_header = "application/vnd.retailer.v4+json"
 
             request_kwargs["headers"].update({
                 "content-type": content_header
