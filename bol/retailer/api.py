@@ -59,25 +59,32 @@ class OrderMethods(MethodGroup):
         self,
         order_item_id,
         shipment_reference=None,
-        shipping_label_code=None,
+        shipping_label_id=None,
         transporter_code=None,
         track_and_trace=None,
     ):
         payload = {}
+        orderItems = [
+            {
+                "orderItems" : order_item_id
+            }
+        ]
+        payload["orderItems"] = orderItems
         if shipment_reference:
             payload["shipmentReference"] = shipment_reference
-        if shipping_label_code:
-            payload["shippingLabelCode"] = shipping_label_code
-        if transporter_code:
-            payload.setdefault("transport", {})[
-                "transporterCode"
-            ] = transporter_code
-        if track_and_trace:
-            payload.setdefault("transport", {})[
-                "trackAndTrace"
-            ] = track_and_trace
+        if shipping_label_id:
+            payload["shippingLabelId"] = shipping_label_id
+        else :
+            if transporter_code:
+                payload.setdefault("transport", {})[
+                    "transporterCode"
+                ] = transporter_code
+            if track_and_trace:
+                payload.setdefault("transport", {})[
+                    "trackAndTrace"
+                ] = track_and_trace
         resp = self.request(
-            "PUT", path="{}/shipment".format(order_item_id), json=payload
+            "PUT", path="shipment", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
 

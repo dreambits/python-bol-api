@@ -114,24 +114,50 @@ class Price(Model):
         PriceAmount = DecimalField()
         BaseQuantity = DecimalField()
 
+class Fulfilment(Model):
+
+    class Meta:
+        pass
+        latestDeliveryDate = DateField()
+        expiryDate = DateField()
+        exactDeliveryDate = DateField()
+
+class Offer(Model):
+
+    class Meta:
+        pass
+
+class Product(Model):
+
+    class Meta:
+        pass
+
+class additionalService(Model):
+    class Meta:
+        pass
+
+class additionalServices(ModelList):
+    class Meta:
+        item_type = additionalService
 
 class OrderItem(Model):
     class Meta:
+        fulfilment = ModelField(Fulfilment)
+        offer = ModelField(Offer)
+        product = ModelField(Product)
+        additionalServices = ModelField(additionalServices)
         offerPrice = DecimalField()
         transactionFee = DecimalField()
-        latestDeliveryDate = DateField()
-        expiryDate = DateField()
 
 
 class OrderItems(ModelList):
     class Meta:
         item_type = OrderItem
 
-
 class Order(Model):
     class Meta:
         orderItems = ModelField(OrderItems)
-        dateTimeOrderPlaced = DateTimeField()
+        orderPlacedDateTime = DateTimeField()
         shipmentDetails = ModelField(ShipmentDetails)
         billingDetails = ModelField(BillingDetails)
 
@@ -169,10 +195,18 @@ class Shipments(ModelList):
         item_type = Shipment
         items_key = "shipments"
 
+class Link(Model):
+    class Meta:
+        pass
+
+class Links(ModelList):
+    class Meta:
+        item_type = Link
 
 class ProcessStatus(Model):
     class Meta:
         createTimestamp = DateTimeField()
+        links = ModelField(Links)
 
 
 class ProcessStatuses(ModelList):
@@ -219,11 +253,6 @@ class PurchasableShippingLabels(ModelList):
     class Meta:
         items_key = "purchasableShippingLabels"
         item_type = Labels
-
-class Fulfilment(Model):
-
-    class Meta:
-        pass
 
 class Store(Model):
 
