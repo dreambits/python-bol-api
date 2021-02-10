@@ -109,18 +109,26 @@ class CustomerDetails(Model):
         billingDetails = ModelField(BillingDetails)
 
 
-class Price(Model):
+# class Price(Model):
+#     class Meta:
+#         PriceAmount = DecimalField()
+#         BaseQuantity = DecimalField()
+
+class PickUpPoint(Model):
     class Meta:
-        PriceAmount = DecimalField()
-        BaseQuantity = DecimalField()
+        pass
+
+class PickUpPoints(ModelList):
+    class Meta:
+        item_type = PickUpPoint
 
 class Fulfilment(Model):
 
     class Meta:
-        pass
         latestDeliveryDate = DateField()
         expiryDate = DateField()
         exactDeliveryDate = DateField()
+        pickUpPoints = ModelField(PickUpPoints)
 
 class Offer(Model):
 
@@ -254,10 +262,20 @@ class PurchasableShippingLabels(ModelList):
         items_key = "purchasableShippingLabels"
         item_type = Labels
 
-class Store(Model):
+class Visible(Model):
 
     class Meta:
         pass
+
+class Visibles(ModelList):
+
+    class Meta:
+        item_type = Visible
+
+class Store(Model):
+
+    class Meta:
+        visible = ModelField(Visibles)
 
 class Stock(Model):
 
@@ -269,11 +287,32 @@ class Condition(Model):
     class Meta:
         pass
 
-class Prices(ModelList):
+class BundlePrice(Model):
 
     class Meta:
-        items_key = "bundlePrices"
-        item_type = Price
+        unitPrice = DecimalField()
+
+class BundlePrices(ModelList):
+
+    class Meta:
+        item_type = BundlePrice
+
+class Prices(Model):
+
+    class Meta:
+        # items_key = "bundlePrices"
+        # item_type = Price
+        bundlePrices = ModelField(BundlePrices)
+
+class NotPublishableReason(Model):
+
+    class Meta:
+        pass
+
+class NotPublishableReasons(ModelList):
+
+    class Meta:
+        item_type = NotPublishableReason
 
 class OffersResponse(Model):
 
@@ -283,6 +322,7 @@ class OffersResponse(Model):
         store = ModelField(Store)
         stock = ModelField(Stock)
         condition = ModelField(Condition)
+        notPublishableReasons = ModelField(NotPublishableReasons)
 
 class SingleReturnItem(Model):
 

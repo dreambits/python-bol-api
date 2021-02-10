@@ -251,14 +251,14 @@ class OffersMethods(MethodGroup):
 
     def getOffersFile(self, export_id):
         headers = {
-            "accept": "application/vnd.retailer.v3+csv"
+            "accept": "application/vnd.retailer.v4+csv"
         }
         response = self.request('GET', path='export/{}'.format(export_id),
                                     headers=headers)
         return response
 
     def deleteOffers(self, offer_id):
-        response = self.request('DELETE', path='/{}'.format(offer_id))
+        response = self.request('DELETE', path='{}'.format(offer_id))
         return ProcessStatus.parse(self.api, response.text)
 
 
