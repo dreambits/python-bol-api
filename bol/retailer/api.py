@@ -213,7 +213,7 @@ class OffersMethods(MethodGroup):
             'condition': ['name'],
             'pricing': { 'bundlePrices' : [] },
             'stock': ['amount', 'managedByRetailer'],
-            'fulfilment': ['type'],
+            'fulfilment': ['method'],
         }
 
         # Keeping the validation part out of scope for now and just make request
@@ -358,7 +358,7 @@ class RetailerAPI(object):
         self.session.headers.update(
             {
                 "Authorization": "Bearer " + access_token,
-                "Accept": "application/vnd.retailer.v4+json",
+                "Accept": "application/vnd.retailer.v5+json",
             }
         )
 
@@ -378,7 +378,7 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = "application/vnd.retailer.v4+json"
+            content_header = "application/vnd.retailer.v5+json"
 
             request_kwargs["headers"].update({
                 "content-type": content_header
