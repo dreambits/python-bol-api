@@ -251,7 +251,7 @@ class OffersMethods(MethodGroup):
 
     def getOffersFile(self, export_id):
         headers = {
-            "accept": "application/vnd.retailer.v4+csv"
+            "accept": "application/vnd.retailer.v5+csv"
         }
         response = self.request('GET', path='export/{}'.format(export_id),
                                     headers=headers)
