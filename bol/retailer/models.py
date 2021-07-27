@@ -109,11 +109,6 @@ class CustomerDetails(Model):
         billingDetails = ModelField(BillingDetails)
 
 
-# class Price(Model):
-#     class Meta:
-#         PriceAmount = DecimalField()
-#         BaseQuantity = DecimalField()
-
 class PickUpPoint(Model):
     class Meta:
         pass
@@ -247,14 +242,9 @@ class InvoiceSpecification(ModelList):
 class Labels(Model):
 
     class Meta:
-        #transporterCode = TextField()
-        #labelType = TextField()
-        #maxWeight = TextField()
-        #maxDimensions = TextField()
         retailPrice = DecimalField()
         purchasePrice = DecimalField()
         discount = DecimalField()
-        #shippingLabelCode = TextField()
 
 class PurchasableShippingLabels(ModelList):
 
@@ -262,20 +252,20 @@ class PurchasableShippingLabels(ModelList):
         items_key = "purchasableShippingLabels"
         item_type = Labels
 
-class Visible(Model):
+class VisibleCountryCode(Model):
 
     class Meta:
         pass
 
-class Visibles(ModelList):
+class VisibleCountriesCodes(ModelList):
 
     class Meta:
-        item_type = Visible
+        item_type = VisibleCountryCode
 
 class Store(Model):
 
     class Meta:
-        visible = ModelField(Visibles)
+        visible = ModelField(VisibleCountriesCodes)
 
 class Stock(Model):
 
@@ -300,8 +290,6 @@ class BundlePrices(ModelList):
 class Prices(Model):
 
     class Meta:
-        # items_key = "bundlePrices"
-        # item_type = Price
         bundlePrices = ModelField(BundlePrices)
 
 class NotPublishableReason(Model):
