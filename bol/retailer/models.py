@@ -318,10 +318,42 @@ class SingleReturnItem(Model):
         customerDetails = ModelField(CustomerDetails)
 
 
-class ReturnItem(Model):
+class ProcessingResult(Model):
+
+    class Meta:
+        processingDateTime = DateTimeField()
+
+
+class ProcessingResults(ModelList):
+
+    class Meta:
+        item_type = ProcessingResult
+
+
+class ReturnReason(Model):
 
     class Meta:
         pass
+
+
+class ReturnItemsDetail(Model):
+
+    class Meta:
+        returnReason = ModelField(ReturnReason)
+        processingResults = ModelField(ProcessingResults)
+
+
+class ReturnItemsDetails(ModelList):
+
+    class Meta:
+        item_type = ReturnItemsDetail
+
+
+class ReturnItem(Model):
+
+    class Meta:
+        returnItems = ModelField(ReturnItemsDetails)
+        registrationDateTime = DateTimeField()
 
 class ReturnItems(ModelList):
 
