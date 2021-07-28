@@ -103,12 +103,6 @@ class ShipmentDetails(Model):
         pass
 
 
-class CustomerDetails(Model):
-    class Meta:
-        shipmentDetails = ModelField(ShipmentDetails)
-        billingDetails = ModelField(BillingDetails)
-
-
 class PickUpPoint(Model):
     class Meta:
         pass
@@ -312,11 +306,6 @@ class OffersResponse(Model):
         condition = ModelField(Condition)
         notPublishableReasons = ModelField(NotPublishableReasons)
 
-class SingleReturnItem(Model):
-
-    class Meta:
-        customerDetails = ModelField(CustomerDetails)
-
 
 class ProcessingResult(Model):
 
@@ -336,11 +325,17 @@ class ReturnReason(Model):
         pass
 
 
+class CustomerDetails(Model):
+    class Meta:
+        pass
+
+
 class ReturnItemsDetail(Model):
 
     class Meta:
         returnReason = ModelField(ReturnReason)
         processingResults = ModelField(ProcessingResults)
+        customerDetails = ModelField(CustomerDetails)
 
 
 class ReturnItemsDetails(ModelList):
@@ -349,11 +344,19 @@ class ReturnItemsDetails(ModelList):
         item_type = ReturnItemsDetail
 
 
+class SingleReturnItem(Model):
+
+    class Meta:
+        registrationDateTime = DateTimeField()
+        returnItems = ModelField(ReturnItemsDetails)
+
+
 class ReturnItem(Model):
 
     class Meta:
         returnItems = ModelField(ReturnItemsDetails)
         registrationDateTime = DateTimeField()
+
 
 class ReturnItems(ModelList):
 
