@@ -273,8 +273,12 @@ class ReturnsMethods(MethodGroup):
         resp = self.request("GET", params=params)
         return ReturnItems.parse(self.api, resp.text)
 
-    def getSingle(self, rmaId):
-        resp = self.request("GET", path=str(rmaId))
+    def create_return(self, data):
+        response = self.request('POST', json=data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getSingle(self, returnId):
+        resp = self.request("GET", path=str(returnId))
         return SingleReturnItem.parse(self.api, resp.text)
 
     def handleReturnItem(self, rmaId, status_reason, qty):
