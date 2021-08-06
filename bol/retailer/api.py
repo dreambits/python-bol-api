@@ -266,8 +266,11 @@ class ReturnsMethods(MethodGroup):
     def __init__(self, api):
         super(ReturnsMethods, self).__init__(api, "returns")
 
-    def get(self, page=1):
-        params = {}
+    def get(self, page=1, handled=False, fulfilment_method="FBR"):
+        params = {
+                "handled": handled,
+                "fulfilment-method":fulfilment_method
+            }
         if page != 1:
             params["page"] = page
         resp = self.request("GET", params=params)
