@@ -141,7 +141,14 @@ class ProcessStatusMethods(MethodGroup):
     def getByIds(self, process_ids):
         if not type(process_ids) is list:
             return {}
-        resp = self.request("POST", params=process_ids)
+        process_id_dict = {}
+        process_id_list = []
+        for process_id in process_ids:
+            process_dict = {}
+            process_dict["processStatusId"] = process_id
+            process_id_list.append(process_dict)
+        process_id_dict["processStatusQueries"] = process_id_list
+        resp = self.request("POST", json=process_id_dict)
         return ProcessStatus.parse(self.api, resp.text)
 
 class InvoiceMethods(MethodGroup):
