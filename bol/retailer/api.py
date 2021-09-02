@@ -149,7 +149,7 @@ class ProcessStatusMethods(MethodGroup):
             process_id_list.append(process_dict)
         process_id_dict["processStatusQueries"] = process_id_list
         resp = self.request("POST", json=process_id_dict)
-        return ProcessStatus.parse(self.api, resp.text)
+        return ProcessStatuses.parse(self.api, resp.text)
 
 class InvoiceMethods(MethodGroup):
     def __init__(self, api):
