@@ -141,13 +141,12 @@ class ProcessStatusMethods(MethodGroup):
     def getByIds(self, process_ids):
         if not type(process_ids) is list:
             return {}
-        process_id_dict = {}
-        process_id_list = []
+        process_id_dict = {
+               "processStatusQueries" : []
+        }
+        process_statuses = process_id_dict["processStatusQueries"]
         for process_id in process_ids:
-            process_dict = {}
-            process_dict["processStatusId"] = process_id
-            process_id_list.append(process_dict)
-        process_id_dict["processStatusQueries"] = process_id_list
+            process_statuses.append({"processStatusId" : process_id})
         resp = self.request("POST", json=process_id_dict)
         return ProcessStatuses.parse(self.api, resp.text)
 
