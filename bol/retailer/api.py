@@ -66,7 +66,7 @@ class OrderMethods(MethodGroup):
         payload = {}
         orderItems = [
             {
-                "orderItems" : order_item_id
+                "orderItemId" : order_item_id
             }
         ]
         payload["orderItems"] = orderItems
