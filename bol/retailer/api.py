@@ -59,32 +59,46 @@ class OrderMethods(MethodGroup):
         self,
         order_item_id,
         shipment_reference=None,
-        shipping_label_code=None,
+        shipping_label_id=None,
         transporter_code=None,
         track_and_trace=None,
     ):
         payload = {}
+        orderItems = [
+            {
+                "orderItemId": order_item_id
+            }
+        ]
+        payload["orderItems"] = orderItems
         if shipment_reference:
             payload["shipmentReference"] = shipment_reference
-        if shipping_label_code:
-            payload["shippingLabelCode"] = shipping_label_code
-        if transporter_code:
-            payload.setdefault("transport", {})[
-                "transporterCode"
-            ] = transporter_code
-        if track_and_trace:
-            payload.setdefault("transport", {})[
-                "trackAndTrace"
-            ] = track_and_trace
+        if shipping_label_id:
+            payload["shippingLabelId"] = shipping_label_id
+        else:
+            if transporter_code:
+                payload.setdefault("transport", {})[
+                    "transporterCode"
+                ] = transporter_code
+            if track_and_trace:
+                payload.setdefault("transport", {})[
+                    "trackAndTrace"
+                ] = track_and_trace
         resp = self.request(
-            "PUT", path="{}/shipment".format(order_item_id), json=payload
+            "PUT", path="shipment", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
 
     def cancel_order_item(self, order_item_id, reason_code):
-        payload = {"reasonCode": reason_code}
+        payload = {
+            "orderItems": [
+                {
+                    "orderItemId": order_item_id,
+                    "reasonCode": reason_code
+                }
+            ]
+        }
         resp = self.request(
-            "PUT", path="{}/cancellation".format(order_item_id), json=payload
+            "PUT", path="cancellation", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
 
@@ -127,8 +141,15 @@ class ProcessStatusMethods(MethodGroup):
     def getByIds(self, process_ids):
         if not type(process_ids) is list:
             return {}
-        resp = self.request("POST", params=process_ids)
-        return ProcessStatus.parse(self.api, resp.text)
+        process_id_dict = {
+            "processStatusQueries": []
+        }
+        process_statuses = process_id_dict["processStatusQueries"]
+        for process_id in process_ids:
+            process_statuses.append({"processStatusId": process_id})
+        resp = self.request("POST", json=process_id_dict)
+        return ProcessStatuses.parse(self.api, resp.text)
+
 
 class InvoiceMethods(MethodGroup):
     def __init__(self, api):
@@ -194,15 +215,16 @@ class OffersMethods(MethodGroup):
         super(OffersMethods, self).__init__(api, 'offers')
 
     def createSingleOffer(self, data):
-        first_level_fields = ['ean','condition','pricing','stock','fulfilment']
+        first_level_fields = ['ean', 'condition',
+                              'pricing', 'stock', 'fulfilment']
         second_level_fields = {
             'condition': ['name'],
-            'pricing': { 'bundlePrices' : [] },
+            'pricing': {'bundlePrices': []},
             'stock': ['amount', 'managedByRetailer'],
-            'fulfilment': ['type'],
+            'fulfilment': ['method'],
         }
 
-        # Keeping the validation part out of scope for now and just make request
+        # Keeping the validation part out of scope for now & just make request
         # And handle response
         response = self.request('POST', json=data)
         return ProcessStatus.parse(self.api, response.text)
@@ -217,11 +239,13 @@ class OffersMethods(MethodGroup):
         return ProcessStatus.parse(self.api, response.text)
 
     def updateProductPrice(self, offer_id, data):
-        response = self.request('PUT', path='{}/price'.format(offer_id), json=data)
+        response = self.request(
+            'PUT', path='{}/price'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
 
     def updateProductStock(self, offer_id, data):
-        response = self.request('PUT', path='{}/stock'.format(offer_id), json=data)
+        response = self.request(
+            'PUT', path='{}/stock'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
 
     def getSingleOffer(self, offer_id):
@@ -237,14 +261,14 @@ class OffersMethods(MethodGroup):
 
     def getOffersFile(self, export_id):
         headers = {
-            "accept": "application/vnd.retailer.v3+csv"
+            "accept": "application/vnd.retailer.v5+csv"
         }
         response = self.request('GET', path='export/{}'.format(export_id),
-                                    headers=headers)
+                                headers=headers)
         return response
 
     def deleteOffers(self, offer_id):
-        response = self.request('DELETE', path='/{}'.format(offer_id))
+        response = self.request('DELETE', path='{}'.format(offer_id))
         return ProcessStatus.parse(self.api, response.text)
 
 
@@ -252,15 +276,22 @@ class ReturnsMethods(MethodGroup):
     def __init__(self, api):
         super(ReturnsMethods, self).__init__(api, "returns")
 
-    def get(self, page=1):
-        params = {}
+    def get(self, page=1, handled=False, fulfilment_method="FBR"):
+        params = {
+            "handled": handled,
+            "fulfilment-method": fulfilment_method
+        }
         if page != 1:
             params["page"] = page
         resp = self.request("GET", params=params)
         return ReturnItems.parse(self.api, resp.text)
 
-    def getSingle(self, rmaId):
-        resp = self.request("GET", path=str(rmaId))
+    def create_return(self, data):
+        response = self.request('POST', json=data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getSingle(self, returnId):
+        resp = self.request("GET", path=str(returnId))
         return SingleReturnItem.parse(self.api, resp.text)
 
     def handleReturnItem(self, rmaId, status_reason, qty):
@@ -344,7 +375,7 @@ class RetailerAPI(object):
         self.session.headers.update(
             {
                 "Authorization": "Bearer " + access_token,
-                "Accept": "application/vnd.retailer.v3+json",
+                "Accept": "application/vnd.retailer.v5+json",
             }
         )
 
@@ -364,7 +395,7 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = "application/vnd.retailer.v3+json"
+            content_header = "application/vnd.retailer.v5+json"
 
             request_kwargs["headers"].update({
                 "content-type": content_header

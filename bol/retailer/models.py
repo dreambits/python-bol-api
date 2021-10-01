@@ -103,24 +103,55 @@ class ShipmentDetails(Model):
         pass
 
 
-class CustomerDetails(Model):
+class PickUpPoint(Model):
     class Meta:
-        shipmentDetails = ModelField(ShipmentDetails)
-        billingDetails = ModelField(BillingDetails)
+        pass
 
 
-class Price(Model):
+class PickUpPoints(ModelList):
     class Meta:
-        PriceAmount = DecimalField()
-        BaseQuantity = DecimalField()
+        item_type = PickUpPoint
+
+
+class Fulfilment(Model):
+
+    class Meta:
+        latestDeliveryDate = DateField()
+        expiryDate = DateField()
+        exactDeliveryDate = DateField()
+        pickUpPoints = ModelField(PickUpPoints)
+
+
+class Offer(Model):
+
+    class Meta:
+        pass
+
+
+class Product(Model):
+
+    class Meta:
+        pass
+
+
+class additionalService(Model):
+    class Meta:
+        pass
+
+
+class additionalServices(ModelList):
+    class Meta:
+        item_type = additionalService
 
 
 class OrderItem(Model):
     class Meta:
+        fulfilment = ModelField(Fulfilment)
+        offer = ModelField(Offer)
+        product = ModelField(Product)
+        additionalServices = ModelField(additionalServices)
         offerPrice = DecimalField()
         transactionFee = DecimalField()
-        latestDeliveryDate = DateField()
-        expiryDate = DateField()
 
 
 class OrderItems(ModelList):
@@ -130,9 +161,10 @@ class OrderItems(ModelList):
 
 class Order(Model):
     class Meta:
-        customerDetails = ModelField(CustomerDetails)
         orderItems = ModelField(OrderItems)
-        dateTimeOrderPlaced = DateTimeField()
+        orderPlacedDateTime = DateTimeField()
+        shipmentDetails = ModelField(ShipmentDetails)
+        billingDetails = ModelField(BillingDetails)
 
 
 class Orders(ModelList):
@@ -170,9 +202,20 @@ class Shipments(ModelList):
         items_key = "shipments"
 
 
+class Link(Model):
+    class Meta:
+        pass
+
+
+class Links(ModelList):
+    class Meta:
+        item_type = Link
+
+
 class ProcessStatus(Model):
     class Meta:
         createTimestamp = DateTimeField()
+        links = ModelField(Links)
 
 
 class ProcessStatuses(ModelList):
@@ -202,17 +245,14 @@ class InvoiceSpecification(ModelList):
         item_type = InvoiceSpecificationItem
         items_key = "invoiceSpecification"
 
+
 class Labels(Model):
 
     class Meta:
-        #transporterCode = TextField()
-        #labelType = TextField()
-        #maxWeight = TextField()
-        #maxDimensions = TextField()
         retailPrice = DecimalField()
         purchasePrice = DecimalField()
         discount = DecimalField()
-        #shippingLabelCode = TextField()
+
 
 class PurchasableShippingLabels(ModelList):
 
@@ -220,31 +260,66 @@ class PurchasableShippingLabels(ModelList):
         items_key = "purchasableShippingLabels"
         item_type = Labels
 
-class Fulfilment(Model):
+
+class VisibleCountryCode(Model):
 
     class Meta:
         pass
+
+
+class VisibleCountriesCodes(ModelList):
+
+    class Meta:
+        item_type = VisibleCountryCode
+
 
 class Store(Model):
 
     class Meta:
-        pass
+        visible = ModelField(VisibleCountriesCodes)
+
 
 class Stock(Model):
 
     class Meta:
         pass
 
+
 class Condition(Model):
 
     class Meta:
         pass
 
-class Prices(ModelList):
+
+class BundlePrice(Model):
 
     class Meta:
-        items_key = "bundlePrices"
-        item_type = Price
+        unitPrice = DecimalField()
+
+
+class BundlePrices(ModelList):
+
+    class Meta:
+        item_type = BundlePrice
+
+
+class Prices(Model):
+
+    class Meta:
+        bundlePrices = ModelField(BundlePrices)
+
+
+class NotPublishableReason(Model):
+
+    class Meta:
+        pass
+
+
+class NotPublishableReasons(ModelList):
+
+    class Meta:
+        item_type = NotPublishableReason
+
 
 class OffersResponse(Model):
 
@@ -254,17 +329,59 @@ class OffersResponse(Model):
         store = ModelField(Store)
         stock = ModelField(Stock)
         condition = ModelField(Condition)
+        notPublishableReasons = ModelField(NotPublishableReasons)
+
+
+class ProcessingResult(Model):
+
+    class Meta:
+        processingDateTime = DateTimeField()
+
+
+class ProcessingResults(ModelList):
+
+    class Meta:
+        item_type = ProcessingResult
+
+
+class ReturnReason(Model):
+
+    class Meta:
+        pass
+
+
+class CustomerDetails(Model):
+    class Meta:
+        pass
+
+
+class ReturnItemsDetail(Model):
+
+    class Meta:
+        returnReason = ModelField(ReturnReason)
+        processingResults = ModelField(ProcessingResults)
+        customerDetails = ModelField(CustomerDetails)
+
+
+class ReturnItemsDetails(ModelList):
+
+    class Meta:
+        item_type = ReturnItemsDetail
+
 
 class SingleReturnItem(Model):
 
     class Meta:
-        customerDetails = ModelField(CustomerDetails)
+        registrationDateTime = DateTimeField()
+        returnItems = ModelField(ReturnItemsDetails)
 
 
 class ReturnItem(Model):
 
     class Meta:
-        pass
+        returnItems = ModelField(ReturnItemsDetails)
+        registrationDateTime = DateTimeField()
+
 
 class ReturnItems(ModelList):
 
