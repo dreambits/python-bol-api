@@ -224,7 +224,7 @@ class OffersMethods(MethodGroup):
             'fulfilment': ['method'],
         }
 
-        # Keeping the validation part out of scope for now and just make request
+        # Keeping the validation part out of scope for now & just make request
         # And handle response
         response = self.request('POST', json=data)
         return ProcessStatus.parse(self.api, response.text)

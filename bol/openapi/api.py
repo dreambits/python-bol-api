@@ -34,7 +34,11 @@ class CatalogMethods(MethodGroup):
         '"Harry Potter"'.
         """
         path = 'search/'
-        return self.request('GET', path, {'q': query, 'offset': offset, 'limit': limit})
+        return self.request('GET', path, {
+            'q': query,
+            'offset': offset,
+            'limit': limit
+        })
 
 
 class OpenAPI(object):
