@@ -27,14 +27,14 @@ class CatalogMethods(MethodGroup):
         path = 'products/' + ','.join(product_ids)
         return self.request('GET', path)
 
-    def search(self, query,offset = 0,limit=10):
+    def search(self, query, offset=0, limit=10):
         """
         query might be 'Harry Potter', 'an_EAN' or 'an_ISBN'.
         For exact search, use extra quotation marks, for example:
         '"Harry Potter"'.
         """
         path = 'search/'
-        return self.request('GET', path, {'q': query,'offset':offset, 'limit': limit})
+        return self.request('GET', path, {'q': query, 'offset': offset, 'limit': limit})
 
 
 class OpenAPI(object):

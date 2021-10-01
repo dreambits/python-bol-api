@@ -66,7 +66,7 @@ class OrderMethods(MethodGroup):
         payload = {}
         orderItems = [
             {
-                "orderItemId" : order_item_id
+                "orderItemId": order_item_id
             }
         ]
         payload["orderItems"] = orderItems
@@ -74,7 +74,7 @@ class OrderMethods(MethodGroup):
             payload["shipmentReference"] = shipment_reference
         if shipping_label_id:
             payload["shippingLabelId"] = shipping_label_id
-        else :
+        else:
             if transporter_code:
                 payload.setdefault("transport", {})[
                     "transporterCode"
@@ -92,8 +92,8 @@ class OrderMethods(MethodGroup):
         payload = {
             "orderItems": [
                 {
-                "orderItemId": order_item_id,
-                "reasonCode": reason_code
+                    "orderItemId": order_item_id,
+                    "reasonCode": reason_code
                 }
             ]
         }
@@ -142,13 +142,14 @@ class ProcessStatusMethods(MethodGroup):
         if not type(process_ids) is list:
             return {}
         process_id_dict = {
-               "processStatusQueries" : []
+            "processStatusQueries": []
         }
         process_statuses = process_id_dict["processStatusQueries"]
         for process_id in process_ids:
-            process_statuses.append({"processStatusId" : process_id})
+            process_statuses.append({"processStatusId": process_id})
         resp = self.request("POST", json=process_id_dict)
         return ProcessStatuses.parse(self.api, resp.text)
+
 
 class InvoiceMethods(MethodGroup):
     def __init__(self, api):
@@ -214,10 +215,11 @@ class OffersMethods(MethodGroup):
         super(OffersMethods, self).__init__(api, 'offers')
 
     def createSingleOffer(self, data):
-        first_level_fields = ['ean','condition','pricing','stock','fulfilment']
+        first_level_fields = ['ean', 'condition',
+                              'pricing', 'stock', 'fulfilment']
         second_level_fields = {
             'condition': ['name'],
-            'pricing': { 'bundlePrices' : [] },
+            'pricing': {'bundlePrices': []},
             'stock': ['amount', 'managedByRetailer'],
             'fulfilment': ['method'],
         }
@@ -237,11 +239,13 @@ class OffersMethods(MethodGroup):
         return ProcessStatus.parse(self.api, response.text)
 
     def updateProductPrice(self, offer_id, data):
-        response = self.request('PUT', path='{}/price'.format(offer_id), json=data)
+        response = self.request(
+            'PUT', path='{}/price'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
 
     def updateProductStock(self, offer_id, data):
-        response = self.request('PUT', path='{}/stock'.format(offer_id), json=data)
+        response = self.request(
+            'PUT', path='{}/stock'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
 
     def getSingleOffer(self, offer_id):
@@ -260,7 +264,7 @@ class OffersMethods(MethodGroup):
             "accept": "application/vnd.retailer.v5+csv"
         }
         response = self.request('GET', path='export/{}'.format(export_id),
-                                    headers=headers)
+                                headers=headers)
         return response
 
     def deleteOffers(self, offer_id):
@@ -274,9 +278,9 @@ class ReturnsMethods(MethodGroup):
 
     def get(self, page=1, handled=False, fulfilment_method="FBR"):
         params = {
-                "handled": handled,
-                "fulfilment-method":fulfilment_method
-            }
+            "handled": handled,
+            "fulfilment-method": fulfilment_method
+        }
         if page != 1:
             params["page"] = page
         resp = self.request("GET", params=params)

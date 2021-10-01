@@ -107,9 +107,11 @@ class PickUpPoint(Model):
     class Meta:
         pass
 
+
 class PickUpPoints(ModelList):
     class Meta:
         item_type = PickUpPoint
+
 
 class Fulfilment(Model):
 
@@ -119,23 +121,28 @@ class Fulfilment(Model):
         exactDeliveryDate = DateField()
         pickUpPoints = ModelField(PickUpPoints)
 
+
 class Offer(Model):
 
     class Meta:
         pass
+
 
 class Product(Model):
 
     class Meta:
         pass
 
+
 class additionalService(Model):
     class Meta:
         pass
 
+
 class additionalServices(ModelList):
     class Meta:
         item_type = additionalService
+
 
 class OrderItem(Model):
     class Meta:
@@ -151,12 +158,14 @@ class OrderItems(ModelList):
     class Meta:
         item_type = OrderItem
 
+
 class Order(Model):
     class Meta:
         orderItems = ModelField(OrderItems)
         orderPlacedDateTime = DateTimeField()
         shipmentDetails = ModelField(ShipmentDetails)
         billingDetails = ModelField(BillingDetails)
+
 
 class Orders(ModelList):
     class Meta:
@@ -192,13 +201,16 @@ class Shipments(ModelList):
         item_type = Shipment
         items_key = "shipments"
 
+
 class Link(Model):
     class Meta:
         pass
 
+
 class Links(ModelList):
     class Meta:
         item_type = Link
+
 
 class ProcessStatus(Model):
     class Meta:
@@ -233,6 +245,7 @@ class InvoiceSpecification(ModelList):
         item_type = InvoiceSpecificationItem
         items_key = "invoiceSpecification"
 
+
 class Labels(Model):
 
     class Meta:
@@ -240,61 +253,73 @@ class Labels(Model):
         purchasePrice = DecimalField()
         discount = DecimalField()
 
+
 class PurchasableShippingLabels(ModelList):
 
     class Meta:
         items_key = "purchasableShippingLabels"
         item_type = Labels
 
+
 class VisibleCountryCode(Model):
 
     class Meta:
         pass
+
 
 class VisibleCountriesCodes(ModelList):
 
     class Meta:
         item_type = VisibleCountryCode
 
+
 class Store(Model):
 
     class Meta:
         visible = ModelField(VisibleCountriesCodes)
+
 
 class Stock(Model):
 
     class Meta:
         pass
 
+
 class Condition(Model):
 
     class Meta:
         pass
+
 
 class BundlePrice(Model):
 
     class Meta:
         unitPrice = DecimalField()
 
+
 class BundlePrices(ModelList):
 
     class Meta:
         item_type = BundlePrice
+
 
 class Prices(Model):
 
     class Meta:
         bundlePrices = ModelField(BundlePrices)
 
+
 class NotPublishableReason(Model):
 
     class Meta:
         pass
 
+
 class NotPublishableReasons(ModelList):
 
     class Meta:
         item_type = NotPublishableReason
+
 
 class OffersResponse(Model):
 
