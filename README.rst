@@ -2,8 +2,8 @@
 python-bol-api
 ==============
 
-.. image:: https://travis-ci.org/dreambits/python-bol-api.svg?branch=master
-    :target: https://travis-ci.org/dreambits/python-bol-api
+.. image:: https://app.travis-ci.com/dreambits/python-bol-api.svg?branch=master
+    :target: https://app.travis-ci.com/dreambits/python-bol-api
 
 .. image:: https://badge.fury.io/py/python-bol-api.png
    :target: http://badge.fury.io/py/python-bol-api
