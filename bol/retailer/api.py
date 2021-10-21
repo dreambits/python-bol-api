@@ -212,11 +212,11 @@ class PurchasableShippingLabelsMethods(MethodGroup):
             response = self.request("POST", path="delivery-options", json=payload)
             return PurchasableShippingLabels.parse(self.api, response.text)
 
-    def createShippingLabel(self, orderitems_list, offer_id):
-        if orderitems_list and isinstance(orderitems_list, list) and offer_id:
+    def createShippingLabel(self, orderitems_list, label_id):
+        if orderitems_list and isinstance(orderitems_list, list) and label_id:
             payload = {
                 "orderItems" : orderitems_list,
-                "shippingLabelOfferId" : offer_id
+                "shippingLabelOfferId" : label_id
             }
             response = self.request("POST", json=payload)
             return ProcessStatus.parse(self.api, response.text)
