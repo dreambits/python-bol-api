@@ -3,6 +3,10 @@ from setuptools import setup, find_packages
 
 import bol
 
+def readme():
+    with open('README.rst') as f:
+        return f.read()
+
 # Dynamically calculate the version based on actistream.VERSION.
 VERSION = bol.__version__
 IS_PY2 = sys.version_info[0] < 3
@@ -17,7 +21,7 @@ setup(name='python-bol-api-latest',
       version=VERSION,
       description="Wrapper for the bol.com API",
       classifiers=[
-          'Development Status :: 5 - Stable',
+          'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
           'Intended Audience :: System Administrators',
           'Operating System :: OS Independent',
@@ -35,6 +39,8 @@ setup(name='python-bol-api-latest',
       author='Raymond Penners, Dreambits Technologies Pvt. Ltd.',
       author_email='office@dreambits.in',
       url='https://dreambits.in',
+      long_description=readme(),
+      long_description_content_file="text/x-rst",
       license='',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,

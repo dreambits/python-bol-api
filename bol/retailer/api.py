@@ -1,4 +1,6 @@
+import json
 import requests
+from requests.models import Response
 
 from .models import (
     Invoice,
@@ -14,6 +16,10 @@ from .models import (
     OffersResponse,
     ReturnItems,
     SingleReturnItem,
+    Replenishment,
+    Replenishments,
+    TimeSlots,
+    Inventories
 )
 
 from .constants import TransporterCode
@@ -42,12 +48,14 @@ class OrderMethods(MethodGroup):
     def __init__(self, api):
         super(OrderMethods, self).__init__(api, "orders")
 
-    def list(self, fulfilment_method=None, page=None):
+    def list(self, fulfilment_method=None, page=None, status=None):
         params = {}
         if fulfilment_method:
             params["fulfilment-method"] = fulfilment_method
         if page is not None:
             params["page"] = page
+        if status:
+            params["status"] = status
         resp = self.request("GET", params=params)
         return Orders.parse(self.api, resp.text)
 
@@ -202,12 +210,31 @@ class PurchasableShippingLabelsMethods(MethodGroup):
     def __init__(self, api):
         super(PurchasableShippingLabelsMethods, self).__init__(
             api,
-            'purchasable-shippinglabels')
+            'shipping-labels')
 
-    def get(self, order_itemid):
-        resp = self.request('GET', path=order_itemid)
-        return PurchasableShippingLabels.parse(self.api, resp.text)
+    def getDeliveryOptions(self, orderitems_list):
+        if orderitems_list and isinstance(orderitems_list, list):
+            payload = {
+                "orderItems" : orderitems_list
+                }
+            response = self.request("POST", path="delivery-options", json=payload)
+            return PurchasableShippingLabels.parse(self.api, response.text)
 
+    def createShippingLabel(self, orderitems_list, label_id):
+        if orderitems_list and isinstance(orderitems_list, list) and label_id:
+            payload = {
+                "orderItems" : orderitems_list,
+                "shippingLabelOfferId" : label_id
+            }
+            response = self.request("POST", json=payload)
+            return ProcessStatus.parse(self.api, response.text)
+
+    def getShippingLabel(self, shipping_label_id):
+        headers = {
+            "accept": "application/vnd.retailer.v5+pdf"
+        }
+        response = self.request('GET', path=str(shipping_label_id), headers=headers)
+        return response
 
 class OffersMethods(MethodGroup):
 
@@ -299,6 +326,67 @@ class ReturnsMethods(MethodGroup):
         response = self.request("PUT", path=str(rmaId), json=payload)
         return ProcessStatus.parse(self.api, response.text)
 
+class ReplenishmentMethods(MethodGroup):
+    def __init__(self, api):
+        super(ReplenishmentMethods, self).__init__(api, "replenishments")
+
+    def get(self, **params):
+        response = self.request("GET", params=params)
+        return Replenishments.parse(self.api, response.text)
+
+    def create(self, params):
+        response = self.request("POST", json=params)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getpickupTimeSlots(self,address, numberOfLoadCarriers):
+        params = {
+            "address" : address,
+            "numberOfLoadCarriers" : numberOfLoadCarriers
+        }
+        response = self.request("POST", path="pickup-time-slots", json=params)
+        return TimeSlots.parse(self.api, response.text)
+
+    def getProductLabels(self, labelFormat, products):
+        params = {
+            "labelFormat" : labelFormat,
+            "products" : products
+        }
+
+        headers = {
+            "accept": "application/vnd.retailer.v5+pdf"
+        }
+        response = self.request("POST", path="product-labels", headers=headers, json=params)
+        return response
+
+    def getById(self, replenishment_id):
+        response = self.request("GET", path=str(replenishment_id))
+        return Replenishment.parse(self.api, response.text)
+
+    def update(self, replenishment_id, **param):
+        response = self.request("PUT", path=str(replenishment_id), json=param)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getLoadCarrierLabels(self, replenishment_id, label_type="WAREHOUSE"):
+        headers = {
+            "accept": "application/vnd.retailer.v5+pdf"
+        }
+        response = self.request("GET", path='{}/load-carrier-labels'.format(replenishment_id), headers=headers, json=label_type)
+        return response
+
+    def getPickList(self, replenishment_id):
+        headers = {
+            "accept": "application/vnd.retailer.v5+pdf"
+        }
+        response = self.request("GET", path='{}/pick-list'.format(replenishment_id), headers=headers)
+        return response
+
+class InventoryMethods(MethodGroup):
+    def __init__(self, api):
+        super(InventoryMethods, self).__init__(api, "inventory")
+
+    def get(self, params={}):
+        response = self.request("GET", params=params)
+        return Inventories.parse(self.api, response.text)
 
 class RetailerAPI(object):
     def __init__(
@@ -323,6 +411,8 @@ class RetailerAPI(object):
         self.offers = OffersMethods(self)
         self.labels = PurchasableShippingLabelsMethods(self)
         self.returns = ReturnsMethods(self)
+        self.replenishments = ReplenishmentMethods(self)
+        self.inventory = InventoryMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
 
