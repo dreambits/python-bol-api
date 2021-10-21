@@ -246,18 +246,34 @@ class InvoiceSpecification(ModelList):
         items_key = "invoiceSpecification"
 
 
+class LabelPrice(Model):
+    class Meta:
+        totalPrice = DecimalField()
+
+
+class PackageRestrictions(Model):
+    class Meta:
+        pass
+
+
+class HandoverDetails(Model):
+    class Meta:
+        latestHandoverDateTime = DateTimeField()
+
+
 class Labels(Model):
 
     class Meta:
-        retailPrice = DecimalField()
-        purchasePrice = DecimalField()
-        discount = DecimalField()
+        validUntilDate = DateField()
+        labelPrice = ModelField(LabelPrice)
+        packageRestrictions = ModelField(PackageRestrictions)
+        handoverDetails = ModelField(HandoverDetails)
 
 
 class PurchasableShippingLabels(ModelList):
 
     class Meta:
-        items_key = "purchasableShippingLabels"
+        items_key = "deliveryOptions"
         item_type = Labels
 
 

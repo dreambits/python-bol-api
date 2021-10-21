@@ -202,12 +202,31 @@ class PurchasableShippingLabelsMethods(MethodGroup):
     def __init__(self, api):
         super(PurchasableShippingLabelsMethods, self).__init__(
             api,
-            'purchasable-shippinglabels')
+            'shipping-labels')
 
-    def get(self, order_itemid):
-        resp = self.request('GET', path=order_itemid)
-        return PurchasableShippingLabels.parse(self.api, resp.text)
+    def getDeliveryOptions(self, orderitems_list):
+        if orderitems_list and isinstance(orderitems_list, list):
+            payload = {
+                "orderItems" : orderitems_list
+                }
+            response = self.request("POST", path="delivery-options", json=payload)
+            return PurchasableShippingLabels.parse(self.api, response.text)
 
+    def createShippingLabel(self, orderitems_list, offer_id):
+        if orderitems_list and isinstance(orderitems_list, list) and offer_id:
+            payload = {
+                "orderItems" : orderitems_list,
+                "shippingLabelOfferId" : offer_id
+            }
+            response = self.request("POST", json=payload)
+            return ProcessStatus.parse(self.api, response.text)
+
+    def getShippingLabel(self, shipping_label_id):
+        headers = {
+            "accept": "application/vnd.retailer.v5+pdf"
+        }
+        response = self.request('GET', path=str(shipping_label_id), headers=headers)
+        return response
 
 class OffersMethods(MethodGroup):
 
