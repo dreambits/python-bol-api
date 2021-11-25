@@ -404,3 +404,86 @@ class ReturnItems(ModelList):
     class Meta:
         items_key = 'returns'
         item_type = ReturnItem
+
+
+class Line(Model):
+    class Meta:
+        pass
+
+
+class Lines(ModelList):
+    class Meta:
+        item_type = Line
+
+class InvalidLine(Model):
+    class Meta:
+        pass
+
+
+class InvalidLines(ModelList):
+    class Meta:
+        item_type = InvalidLine
+
+class DestinationWarehouse(Model):
+    class Meta:
+        pass
+
+class DeliveryInformation(Model):
+    class Meta:
+        destinationWarehouse = ModelField(DestinationWarehouse)
+        expectedDeliveryDate = DateField()
+
+class Address(Model):
+    class Meta:
+        pass
+
+class PickupAppointment(Model):
+    class Meta:
+        address = ModelField(Address)
+
+class TimeSlot(Model):
+    class Meta:
+        fromDateTime = DateTimeField()
+        untilDateTime = DateTimeField()
+
+
+class TimeSlots(ModelList):
+    class Meta:
+        item_type = TimeSlot
+        items_key = "timeSlots"
+
+class LoadCarrier(Model):
+    class Meta:
+        transportStateUpdateDateTime = DateTimeField()
+
+
+class LoadCarriers(ModelList):
+    class Meta:
+        item_type = LoadCarrier
+
+class StateTransition(Model):
+    class Meta:
+        stateDateTime = DateTimeField()
+
+
+class StateTransitions(ModelList):
+    class Meta:
+        item_type = StateTransition
+
+class Replenishment(Model):
+    class Meta:
+        lines = ModelField(Lines)
+        invalidLines = ModelField(InvalidLines)
+        creationDateTime = DateTimeField()
+        deliveryInformation = ModelField(DeliveryInformation)
+        pickupAppointment = ModelField(PickupAppointment)
+        pickupTimeSlot = ModelField(TimeSlot)
+        pickupDateTime = DateTimeField()
+        loadCarriers = ModelField(LoadCarriers)
+        stateTransitions = ModelField(StateTransitions)
+
+class Replenishments(ModelList):
+    class Meta:
+        item_type = Replenishment
+        items_key = "replenishments"
+
