@@ -19,7 +19,8 @@ from .models import (
     SingleReturnItem,
     Replenishment,
     Replenishments,
-    TimeSlots
+    TimeSlots,
+    Inventories
 )
 
 from .constants import TransporterCode
@@ -48,12 +49,14 @@ class OrderMethods(MethodGroup):
     def __init__(self, api):
         super(OrderMethods, self).__init__(api, "orders")
 
-    def list(self, fulfilment_method=None, page=None):
+    def list(self, fulfilment_method=None, page=None, status=None):
         params = {}
         if fulfilment_method:
             params["fulfilment-method"] = fulfilment_method
         if page is not None:
             params["page"] = page
+        if status:
+            params["status"] = status
         resp = self.request("GET", params=params)
         return Orders.parse(self.api, resp.text)
 
@@ -378,6 +381,13 @@ class ReplenishmentMethods(MethodGroup):
         response = self.request("GET", path='{}/pick-list'.format(replenishment_id), headers=headers)
         return response
 
+class InventoryMethods(MethodGroup):
+    def __init__(self, api):
+        super(InventoryMethods, self).__init__(api, "inventory")
+
+    def get(self, params={}):
+        response = self.request("GET", params=params)
+        return Inventories.parse(self.api, response.text)
 
 class RetailerAPI(object):
     def __init__(
@@ -403,6 +413,7 @@ class RetailerAPI(object):
         self.labels = PurchasableShippingLabelsMethods(self)
         self.returns = ReturnsMethods(self)
         self.replenishments = ReplenishmentMethods(self)
+        self.inventory = InventoryMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
 
