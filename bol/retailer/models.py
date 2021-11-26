@@ -487,3 +487,11 @@ class Replenishments(ModelList):
         item_type = Replenishment
         items_key = "replenishments"
 
+class Inventory(Model):
+    class Meta:
+        pass
+
+class Inventories(ModelList):
+    class Meta:
+        item_type = Inventory
+        items_key = "inventory"
