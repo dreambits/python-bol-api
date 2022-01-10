@@ -338,7 +338,7 @@ class ReplenishmentMethods(MethodGroup):
         response = self.request("POST", json=params)
         return ProcessStatus.parse(self.api, response.text)
 
-    def pickupTimeSlots(self,address, numberOfLoadCarriers):
+    def getpickupTimeSlots(self,address, numberOfLoadCarriers):
         params = {
             "address" : address,
             "numberOfLoadCarriers" : numberOfLoadCarriers
