@@ -191,7 +191,7 @@ class Transport(Model):
 
 class Shipment(Model):
     class Meta:
-        shipmentDate = DateTimeField()
+        shipmentDateTime = DateTimeField()
         shipmentItems = ModelField(ShipmentItems)
         transport = ModelField(Transport)
 
@@ -270,7 +270,7 @@ class Labels(Model):
         handoverDetails = ModelField(HandoverDetails)
 
 
-class PurchasableShippingLabels(ModelList):
+class ShippingLabels(ModelList):
 
     class Meta:
         items_key = "deliveryOptions"

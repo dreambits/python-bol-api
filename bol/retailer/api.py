@@ -12,7 +12,7 @@ from .models import (
     ProcessStatuses,
     Shipment,
     Shipments,
-    PurchasableShippingLabels,
+    ShippingLabels,
     OffersResponse,
     ReturnItems,
     SingleReturnItem,
@@ -66,7 +66,7 @@ class OrderMethods(MethodGroup):
     def ship_order_item(
         self,
         order_item_id,
-        shipment_reference=None,
+        shipment_reference,
         shipping_label_id=None,
         transporter_code=None,
         track_and_trace=None,
@@ -78,8 +78,7 @@ class OrderMethods(MethodGroup):
             }
         ]
         payload["orderItems"] = orderItems
-        if shipment_reference:
-            payload["shipmentReference"] = shipment_reference
+        payload["shipmentReference"] = shipment_reference
         if shipping_label_id:
             payload["shippingLabelId"] = shipping_label_id
         else:
@@ -118,7 +117,7 @@ class ShipmentMethods(MethodGroup):
     def list(self, fulfilment_method=None, page=None, order_id=None):
         params = {}
         if fulfilment_method:
-            params["fulfilment-method"] = fulfilment_method.value
+            params["fulfilment-method"] = fulfilment_method
         if page is not None:
             params["page"] = page
         if order_id:
@@ -196,19 +195,11 @@ class TransportMethods(MethodGroup):
         response = self.request('PUT', '/{}'.format(id), json=payload)
         return ProcessStatus.parse(self.api, response)
 
-    def getSingle(self, transportId, file_location):
-        content = self.request('GET', '/{}/shipping-label'.format(
-            transportId),
-            params={}, data=None, accept="application/pdf")
 
-        with open(file_location, 'wb') as f:
-            f.write(content)
-
-
-class PurchasableShippingLabelsMethods(MethodGroup):
+class ShippingLabelsMethods(MethodGroup):
 
     def __init__(self, api):
-        super(PurchasableShippingLabelsMethods, self).__init__(
+        super(ShippingLabelsMethods, self).__init__(
             api,
             'shipping-labels')
 
@@ -218,7 +209,7 @@ class PurchasableShippingLabelsMethods(MethodGroup):
                 "orderItems" : orderitems_list
                 }
             response = self.request("POST", path="delivery-options", json=payload)
-            return PurchasableShippingLabels.parse(self.api, response.text)
+            return ShippingLabels.parse(self.api, response.text)
 
     def createShippingLabel(self, orderitems_list, label_id):
         if orderitems_list and isinstance(orderitems_list, list) and label_id:
@@ -409,7 +400,7 @@ class RetailerAPI(object):
         self.invoices = InvoiceMethods(self)
         self.process_status = ProcessStatusMethods(self)
         self.offers = OffersMethods(self)
-        self.labels = PurchasableShippingLabelsMethods(self)
+        self.labels = ShippingLabelsMethods(self)
         self.returns = ReturnsMethods(self)
         self.replenishments = ReplenishmentMethods(self)
         self.inventory = InventoryMethods(self)
