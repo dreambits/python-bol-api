@@ -39,15 +39,10 @@ JSON data is returned "as is":
     >>> data['products'][0]['ean']
     u'0093155141650'
 
-Plaza API
-=========
-
-Plaza API is removed in the latest release v1.0 as it is now not supported by Bol.com
-
 Retailer API
 ============
 
-Supports the BOL API V5, documented here: https://api.bol.com/retailer/public/Retailer-API/selling-on-bolcom-processflow.html
+Supports the BOL Api v6, documented here: https://api.bol.com/retailer/public/Retailer-API/selling-on-bolcom-processflow.html
 
 Instantiate the API::
 
@@ -71,7 +66,7 @@ conventions::
 
 Fields are properly typed::
 
-    >>> repr(order.dateTimeOrderPlace)
+    >>> repr(order.orderPlacedDateTime)
     datetime.datetime(2020, 2, 12, 16, 6, 17, tzinfo=tzoffset(None, 3600))
     >>> repr(order.orderItems[0].offerPrice)
     Decimal('106.52')
