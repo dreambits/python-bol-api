@@ -496,9 +496,21 @@ class Inventories(ModelList):
         item_type = Inventory
         items_key = "inventory"
 
-class RejectedAttributes(Model):
+class RejectionError(Model):
     class Meta:
         pass
+
+class RejectionErrors(ModelList):
+    class Meta:
+        item_type = RejectionError
+
+class RejectedAttribute(Model):
+    class Meta:
+        rejectionErrors = ModelField(RejectionErrors)
+
+class RejectedAttributes(ModelList):
+    class Meta:
+        item_type = RejectedAttribute
 
 class ProductContent(Model):
     class Meta:
