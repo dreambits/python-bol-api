@@ -19,7 +19,8 @@ from .models import (
     Replenishment,
     Replenishments,
     TimeSlots,
-    Inventories
+    Inventories,
+    ProductContents
 )
 
 from .constants import TransporterCode
@@ -379,6 +380,34 @@ class InventoryMethods(MethodGroup):
         response = self.request("GET", params=params)
         return Inventories.parse(self.api, response.text)
 
+class ProductContentMethods(MethodGroup):
+
+    def __init__(self,api):
+        super(ProductContentMethods, self).__init__(api, "content")
+
+    def sendContent(self, language, content):
+        supported_languages = ["nl","nl-BE","fr","fr-BE"]
+        if language not in supported_languages:
+            raise ValueError("Unsupported language. Only nl, nl-BE, fr, fr-BE are supported")
+
+        if type(content) is dict:
+           content = [content]
+        elif type(content) is not list:
+            raise ValueError("Incorrect type of content sent")
+
+        final_data = {
+            "language": language,
+            "productContents": content
+        }
+
+        response = self.request("POST",path="product",json=final_data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getValidationReport(self, uploadId):
+        response = self.request("GET", path="validation-report/{}".format(uploadId))
+        return ProductContents.parse(self.api, response.text)
+
+
 class RetailerAPI(object):
     def __init__(
         self,
@@ -404,6 +433,7 @@ class RetailerAPI(object):
         self.returns = ReturnsMethods(self)
         self.replenishments = ReplenishmentMethods(self)
         self.inventory = InventoryMethods(self)
+        self.product_content = ProductContentMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
 
