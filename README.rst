@@ -42,7 +42,7 @@ JSON data is returned "as is":
 Retailer API
 ============
 
-Supports the BOL Api v6, documented here: https://api.bol.com/retailer/public/Retailer-API/selling-on-bolcom-processflow.html
+Supports the BOL Api v7, documented here: https://api.bol.com/retailer/public/Retailer-API/selling-on-bolcom-processflow.html
 
 Instantiate the API::
 
