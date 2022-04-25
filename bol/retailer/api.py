@@ -29,17 +29,14 @@ __all__ = ["RetailerAPI"]
 
 
 class MethodGroup(object):
-    def __init__(self, api, group, base_type=False):
+    def __init__(self, api, group, base_type="retailer"):
         self.api = api
         self.group = group
         self.base_type = base_type
 
     def request(self, method, path="", params={}, **kwargs):
         uri = path
-        if not self.base_type:
-            base = "retailer-demo" if self.api.demo else "retailer"
-        else:
-            base = "shared-demo" if self.api.demo else "shared"
+        base = self.base_type+"-demo" if self.api.demo else self.base_type
 
         uri = "/{base}/{group}{path}".format(
             base=base,
