@@ -23,8 +23,6 @@ from .models import (
     ProductContents
 )
 
-from .constants import TransporterCode
-
 __all__ = ["RetailerAPI"]
 
 
@@ -166,6 +164,10 @@ class InvoiceMethods(MethodGroup):
 
     def list(self, period_start=None, period_end=None):
         params = {}
+        if period_start:
+            params.update({'period-start-date':period_start})
+        if period_end:
+            params.update({'period-end-date':period_end})
         resp = self.request("GET", params=params)
         return Invoices.parse(self.api, resp.text)
 
@@ -188,14 +190,13 @@ class TransportMethods(MethodGroup):
     def __init__(self, api):
         super(TransportMethods, self).__init__(api, 'transports')
 
-    def update(self, id, transporter_code, track_and_trace):
-        transporter_code = TransporterCode.to_string(transporter_code)
+    def update(self, transport_id, transporter_code, track_and_trace):
         payload = {
             'transporterCode': transporter_code,
             'trackAndTrace': track_and_trace,
         }
-        response = self.request('PUT', '/{}'.format(id), json=payload)
-        return ProcessStatus.parse(self.api, response)
+        response = self.request('PUT', '{}'.format(transport_id), json=payload)
+        return ProcessStatus.parse(self.api, response.text)
 
 
 class ShippingLabelsMethods(MethodGroup):
@@ -435,6 +436,7 @@ class RetailerAPI(object):
         self.replenishments = ReplenishmentMethods(self)
         self.inventory = InventoryMethods(self)
         self.product_content = ProductContentMethods(self)
+        self.transports = TransportMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
 
