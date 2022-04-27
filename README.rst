@@ -5,14 +5,11 @@ python-bol-api
 .. image:: https://app.travis-ci.com/dreambits/python-bol-api.svg?branch=master
     :target: https://app.travis-ci.com/dreambits/python-bol-api
 
-.. image:: https://badge.fury.io/py/python-bol-api.png
-   :target: http://badge.fury.io/py/python-bol-api
-
 .. image:: https://badge.fury.io/py/python-bol-api-latest.svg
     :target: https://badge.fury.io/py/python-bol-api-latest
 
-.. image:: https://codecov.io/gh/dreambits/python-bol-api/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/dreambits/python-bol-api
+.. image:: https://static.pepy.tech/personalized-badge/python-bol-api-latest?period=total&units=international_system&left_color=brightgreen&right_color=black&left_text=Downloads
+ :target: https://pepy.tech/project/python-bol-api-latest
 
 A Python wrapper for the bol.com API forked from https://github.com/pennersr/python-bol-api
 This is currently under development but stable to be used.
