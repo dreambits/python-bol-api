@@ -65,18 +65,19 @@ class OrderMethods(MethodGroup):
 
     def ship_order_item(
         self,
-        order_item_list,
+        order_item_id,
         shipment_reference,
         shipping_label_id=None,
         transporter_code=None,
         track_and_trace=None,
     ):
-        if not type(order_item_list) is list:
-            return {}
-        payload = {"orderItems": []}
-        order_items = payload["orderItems"]
-        for order_item in order_item_list:
-            order_items.append({"orderItemId": order_item})
+        payload = {}
+        orderItems = [
+            {
+                "orderItemId": order_item_id
+            }
+        ]
+        payload["orderItems"] = orderItems
         payload["shipmentReference"] = shipment_reference
         if shipping_label_id:
             payload["shippingLabelId"] = shipping_label_id
