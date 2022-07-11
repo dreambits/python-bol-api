@@ -5,14 +5,11 @@ python-bol-api
 .. image:: https://app.travis-ci.com/dreambits/python-bol-api.svg?branch=master
     :target: https://app.travis-ci.com/dreambits/python-bol-api
 
-.. image:: https://badge.fury.io/py/python-bol-api.png
-   :target: http://badge.fury.io/py/python-bol-api
-
 .. image:: https://badge.fury.io/py/python-bol-api-latest.svg
     :target: https://badge.fury.io/py/python-bol-api-latest
 
-.. image:: https://codecov.io/gh/dreambits/python-bol-api/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/dreambits/python-bol-api
+.. image:: https://static.pepy.tech/personalized-badge/python-bol-api-latest?period=total&units=international_system&left_color=brightgreen&right_color=black&left_text=Downloads
+ :target: https://pepy.tech/project/python-bol-api-latest
 
 A Python wrapper for the bol.com API forked from https://github.com/pennersr/python-bol-api
 This is currently under development but stable to be used.
@@ -39,15 +36,10 @@ JSON data is returned "as is":
     >>> data['products'][0]['ean']
     u'0093155141650'
 
-Plaza API
-=========
-
-Plaza API is removed in the latest release v1.0 as it is now not supported by Bol.com
-
 Retailer API
 ============
 
-Supports the BOL API V5, documented here: https://api.bol.com/retailer/public/Retailer-API/selling-on-bolcom-processflow.html
+Supports the BOL Api v7, documented here: https://api.bol.com/retailer/public/Retailer-API/selling-on-bolcom-processflow.html
 
 Instantiate the API::
 
@@ -71,7 +63,7 @@ conventions::
 
 Fields are properly typed::
 
-    >>> repr(order.dateTimeOrderPlace)
+    >>> repr(order.orderPlacedDateTime)
     datetime.datetime(2020, 2, 12, 16, 6, 17, tzinfo=tzoffset(None, 3600))
     >>> repr(order.orderItems[0].offerPrice)
     Decimal('106.52')

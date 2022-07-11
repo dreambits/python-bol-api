@@ -191,7 +191,7 @@ class Transport(Model):
 
 class Shipment(Model):
     class Meta:
-        shipmentDate = DateTimeField()
+        shipmentDateTime = DateTimeField()
         shipmentItems = ModelField(ShipmentItems)
         transport = ModelField(Transport)
 
@@ -270,7 +270,7 @@ class Labels(Model):
         handoverDetails = ModelField(HandoverDetails)
 
 
-class PurchasableShippingLabels(ModelList):
+class ShippingLabels(ModelList):
 
     class Meta:
         items_key = "deliveryOptions"
@@ -495,3 +495,28 @@ class Inventories(ModelList):
     class Meta:
         item_type = Inventory
         items_key = "inventory"
+
+class RejectionError(Model):
+    class Meta:
+        pass
+
+class RejectionErrors(ModelList):
+    class Meta:
+        item_type = RejectionError
+
+class RejectedAttribute(Model):
+    class Meta:
+        rejectionErrors = ModelField(RejectionErrors)
+
+class RejectedAttributes(ModelList):
+    class Meta:
+        item_type = RejectedAttribute
+
+class ProductContent(Model):
+    class Meta:
+        rejectedAttributes = ModelField(RejectedAttributes)
+
+class ProductContents(ModelList):
+    class Meta:
+        item_type = ProductContent
+        items_key = "productContents"

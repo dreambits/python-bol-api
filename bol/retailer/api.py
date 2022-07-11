@@ -12,35 +12,35 @@ from .models import (
     ProcessStatuses,
     Shipment,
     Shipments,
-    PurchasableShippingLabels,
+    ShippingLabels,
     OffersResponse,
     ReturnItems,
     SingleReturnItem,
     Replenishment,
     Replenishments,
     TimeSlots,
-    Inventories
+    Inventories,
+    ProductContents
 )
-
-from .constants import TransporterCode
 
 __all__ = ["RetailerAPI"]
 
 
 class MethodGroup(object):
-    def __init__(self, api, group):
+    def __init__(self, api, group, base_type="retailer"):
         self.api = api
         self.group = group
+        self.base_type = base_type
 
     def request(self, method, path="", params={}, **kwargs):
         uri = path
-        if not uri.startswith("/"):
-            base = "retailer-demo" if self.api.demo else "retailer"
-            uri = "/{base}/{group}{path}".format(
-                base=base,
-                group=self.group,
-                path=("/{}".format(path) if path else ""),
-            )
+        base = self.base_type+"-demo" if self.api.demo else self.base_type
+
+        uri = "/{base}/{group}{path}".format(
+            base=base,
+            group=self.group,
+            path=("/{}".format(path) if path else ""),
+        )
         return self.api.request(method, uri, params=params, **kwargs)
 
 
@@ -66,7 +66,7 @@ class OrderMethods(MethodGroup):
     def ship_order_item(
         self,
         order_item_id,
-        shipment_reference=None,
+        shipment_reference,
         shipping_label_id=None,
         transporter_code=None,
         track_and_trace=None,
@@ -78,8 +78,7 @@ class OrderMethods(MethodGroup):
             }
         ]
         payload["orderItems"] = orderItems
-        if shipment_reference:
-            payload["shipmentReference"] = shipment_reference
+        payload["shipmentReference"] = shipment_reference
         if shipping_label_id:
             payload["shippingLabelId"] = shipping_label_id
         else:
@@ -118,7 +117,7 @@ class ShipmentMethods(MethodGroup):
     def list(self, fulfilment_method=None, page=None, order_id=None):
         params = {}
         if fulfilment_method:
-            params["fulfilment-method"] = fulfilment_method.value
+            params["fulfilment-method"] = fulfilment_method
         if page is not None:
             params["page"] = page
         if order_id:
@@ -133,7 +132,7 @@ class ShipmentMethods(MethodGroup):
 
 class ProcessStatusMethods(MethodGroup):
     def __init__(self, api):
-        super(ProcessStatusMethods, self).__init__(api, "process-status")
+        super(ProcessStatusMethods, self).__init__(api, "process-status", "shared")
 
     def get(self, entity_id, event_type, page=None):
         params = {"entity-id": entity_id, "event-type": event_type}
@@ -165,6 +164,10 @@ class InvoiceMethods(MethodGroup):
 
     def list(self, period_start=None, period_end=None):
         params = {}
+        if period_start:
+            params.update({'period-start-date':period_start})
+        if period_end:
+            params.update({'period-end-date':period_end})
         resp = self.request("GET", params=params)
         return Invoices.parse(self.api, resp.text)
 
@@ -187,28 +190,19 @@ class TransportMethods(MethodGroup):
     def __init__(self, api):
         super(TransportMethods, self).__init__(api, 'transports')
 
-    def update(self, id, transporter_code, track_and_trace):
-        transporter_code = TransporterCode.to_string(transporter_code)
+    def update(self, transport_id, transporter_code, track_and_trace):
         payload = {
             'transporterCode': transporter_code,
             'trackAndTrace': track_and_trace,
         }
-        response = self.request('PUT', '/{}'.format(id), json=payload)
-        return ProcessStatus.parse(self.api, response)
-
-    def getSingle(self, transportId, file_location):
-        content = self.request('GET', '/{}/shipping-label'.format(
-            transportId),
-            params={}, data=None, accept="application/pdf")
-
-        with open(file_location, 'wb') as f:
-            f.write(content)
+        response = self.request('PUT', '{}'.format(transport_id), json=payload)
+        return ProcessStatus.parse(self.api, response.text)
 
 
-class PurchasableShippingLabelsMethods(MethodGroup):
+class ShippingLabelsMethods(MethodGroup):
 
     def __init__(self, api):
-        super(PurchasableShippingLabelsMethods, self).__init__(
+        super(ShippingLabelsMethods, self).__init__(
             api,
             'shipping-labels')
 
@@ -218,7 +212,7 @@ class PurchasableShippingLabelsMethods(MethodGroup):
                 "orderItems" : orderitems_list
                 }
             response = self.request("POST", path="delivery-options", json=payload)
-            return PurchasableShippingLabels.parse(self.api, response.text)
+            return ShippingLabels.parse(self.api, response.text)
 
     def createShippingLabel(self, orderitems_list, label_id):
         if orderitems_list and isinstance(orderitems_list, list) and label_id:
@@ -231,7 +225,7 @@ class PurchasableShippingLabelsMethods(MethodGroup):
 
     def getShippingLabel(self, shipping_label_id):
         headers = {
-            "accept": "application/vnd.retailer.v5+pdf"
+            "accept": "application/vnd.retailer.v7+pdf"
         }
         response = self.request('GET', path=str(shipping_label_id), headers=headers)
         return response
@@ -288,7 +282,7 @@ class OffersMethods(MethodGroup):
 
     def getOffersFile(self, export_id):
         headers = {
-            "accept": "application/vnd.retailer.v5+csv"
+            "accept": "application/vnd.retailer.v7+csv"
         }
         response = self.request('GET', path='export/{}'.format(export_id),
                                 headers=headers)
@@ -353,7 +347,7 @@ class ReplenishmentMethods(MethodGroup):
         }
 
         headers = {
-            "accept": "application/vnd.retailer.v5+pdf"
+            "accept": "application/vnd.retailer.v7+pdf"
         }
         response = self.request("POST", path="product-labels", headers=headers, json=params)
         return response
@@ -368,14 +362,14 @@ class ReplenishmentMethods(MethodGroup):
 
     def getLoadCarrierLabels(self, replenishment_id, label_type="WAREHOUSE"):
         headers = {
-            "accept": "application/vnd.retailer.v5+pdf"
+            "accept": "application/vnd.retailer.v7+pdf"
         }
         response = self.request("GET", path='{}/load-carrier-labels'.format(replenishment_id), headers=headers, json=label_type)
         return response
 
     def getPickList(self, replenishment_id):
         headers = {
-            "accept": "application/vnd.retailer.v5+pdf"
+            "accept": "application/vnd.retailer.v7+pdf"
         }
         response = self.request("GET", path='{}/pick-list'.format(replenishment_id), headers=headers)
         return response
@@ -387,6 +381,34 @@ class InventoryMethods(MethodGroup):
     def get(self, params={}):
         response = self.request("GET", params=params)
         return Inventories.parse(self.api, response.text)
+
+class ProductContentMethods(MethodGroup):
+
+    def __init__(self,api):
+        super(ProductContentMethods, self).__init__(api, "content")
+
+    def sendContent(self, language, content):
+        supported_languages = ["nl","nl-BE","fr","fr-BE"]
+        if language not in supported_languages:
+            raise ValueError("Unsupported language. Only nl, nl-BE, fr, fr-BE are supported")
+
+        if type(content) is dict:
+           content = [content]
+        elif type(content) is not list:
+            raise ValueError("Incorrect type of content sent")
+
+        final_data = {
+            "language": language,
+            "productContents": content
+        }
+
+        response = self.request("POST",path="product",json=final_data)
+        return ProcessStatus.parse(self.api, response.text)
+
+    def getValidationReport(self, uploadId):
+        response = self.request("GET", path="validation-report/{}".format(uploadId))
+        return ProductContents.parse(self.api, response.text)
+
 
 class RetailerAPI(object):
     def __init__(
@@ -409,10 +431,12 @@ class RetailerAPI(object):
         self.invoices = InvoiceMethods(self)
         self.process_status = ProcessStatusMethods(self)
         self.offers = OffersMethods(self)
-        self.labels = PurchasableShippingLabelsMethods(self)
+        self.labels = ShippingLabelsMethods(self)
         self.returns = ReturnsMethods(self)
         self.replenishments = ReplenishmentMethods(self)
         self.inventory = InventoryMethods(self)
+        self.product_content = ProductContentMethods(self)
+        self.transports = TransportMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
 
@@ -465,7 +489,7 @@ class RetailerAPI(object):
         self.session.headers.update(
             {
                 "Authorization": "Bearer " + access_token,
-                "Accept": "application/vnd.retailer.v5+json",
+                "Accept": "application/vnd.retailer.v7+json",
             }
         )
 
@@ -485,7 +509,7 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = "application/vnd.retailer.v5+json"
+            content_header = "application/vnd.retailer.v7+json"
 
             request_kwargs["headers"].update({
                 "content-type": content_header
