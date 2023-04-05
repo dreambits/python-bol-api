@@ -48,7 +48,7 @@ class OrderMethods(MethodGroup):
     def __init__(self, api):
         super(OrderMethods, self).__init__(api, "orders")
 
-    def list(self, fulfilment_method=None, page=None, status=None):
+    def list(self, fulfilment_method=None, page=None, status=None, change_interval_minute=None, latest_change_date=None):
         params = {}
         if fulfilment_method:
             params["fulfilment-method"] = fulfilment_method
@@ -56,6 +56,11 @@ class OrderMethods(MethodGroup):
             params["page"] = page
         if status:
             params["status"] = status
+        if change_interval_minute:
+            params["change-interval-minute"] = change_interval_minute
+        if latest_change_date:
+            params["latest-change-date"] = latest_change_date
+
         resp = self.request("GET", params=params)
         return Orders.parse(self.api, resp.text)
 
