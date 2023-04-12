@@ -152,6 +152,7 @@ class OrderItem(Model):
         additionalServices = ModelField(additionalServices)
         offerPrice = DecimalField()
         transactionFee = DecimalField()
+        latestChangedDateTime = DateTimeField()
 
 
 class OrderItems(ModelList):

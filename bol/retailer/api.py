@@ -48,7 +48,7 @@ class OrderMethods(MethodGroup):
     def __init__(self, api):
         super(OrderMethods, self).__init__(api, "orders")
 
-    def list(self, fulfilment_method=None, page=None, status=None):
+    def list(self, fulfilment_method=None, page=None, status=None, change_interval_minute=None, latest_change_date=None):
         params = {}
         if fulfilment_method:
             params["fulfilment-method"] = fulfilment_method
@@ -56,6 +56,11 @@ class OrderMethods(MethodGroup):
             params["page"] = page
         if status:
             params["status"] = status
+        if change_interval_minute:
+            params["change-interval-minute"] = change_interval_minute
+        if latest_change_date:
+            params["latest-change-date"] = latest_change_date
+
         resp = self.request("GET", params=params)
         return Orders.parse(self.api, resp.text)
 
@@ -225,7 +230,7 @@ class ShippingLabelsMethods(MethodGroup):
 
     def getShippingLabel(self, shipping_label_id):
         headers = {
-            "accept": "application/vnd.retailer.v7+pdf"
+            "accept": "application/vnd.retailer.v8+pdf"
         }
         response = self.request('GET', path=str(shipping_label_id), headers=headers)
         return response
@@ -282,7 +287,7 @@ class OffersMethods(MethodGroup):
 
     def getOffersFile(self, export_id):
         headers = {
-            "accept": "application/vnd.retailer.v7+csv"
+            "accept": "application/vnd.retailer.v8+csv"
         }
         response = self.request('GET', path='export/{}'.format(export_id),
                                 headers=headers)
@@ -347,7 +352,7 @@ class ReplenishmentMethods(MethodGroup):
         }
 
         headers = {
-            "accept": "application/vnd.retailer.v7+pdf"
+            "accept": "application/vnd.retailer.v8+pdf"
         }
         response = self.request("POST", path="product-labels", headers=headers, json=params)
         return response
@@ -362,14 +367,14 @@ class ReplenishmentMethods(MethodGroup):
 
     def getLoadCarrierLabels(self, replenishment_id, label_type="WAREHOUSE"):
         headers = {
-            "accept": "application/vnd.retailer.v7+pdf"
+            "accept": "application/vnd.retailer.v8+pdf"
         }
         response = self.request("GET", path='{}/load-carrier-labels'.format(replenishment_id), headers=headers, json=label_type)
         return response
 
     def getPickList(self, replenishment_id):
         headers = {
-            "accept": "application/vnd.retailer.v7+pdf"
+            "accept": "application/vnd.retailer.v8+pdf"
         }
         response = self.request("GET", path='{}/pick-list'.format(replenishment_id), headers=headers)
         return response
@@ -489,7 +494,7 @@ class RetailerAPI(object):
         self.session.headers.update(
             {
                 "Authorization": "Bearer " + access_token,
-                "Accept": "application/vnd.retailer.v7+json",
+                "Accept": "application/vnd.retailer.v8+json",
             }
         )
 
@@ -509,7 +514,7 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = "application/vnd.retailer.v7+json"
+            content_header = "application/vnd.retailer.v8+json"
 
             request_kwargs["headers"].update({
                 "content-type": content_header
