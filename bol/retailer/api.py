@@ -20,7 +20,8 @@ from .models import (
     Replenishments,
     TimeSlots,
     Inventories,
-    ProductContents
+    ProductContents,
+    Insights
 )
 
 __all__ = ["RetailerAPI"]
@@ -298,6 +299,75 @@ class OffersMethods(MethodGroup):
         return ProcessStatus.parse(self.api, response.text)
 
 
+class InsightsMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(InsightsMethods, self).__init__(api, 'insights')
+
+    def getOfferInsights(self, offer_id=None, period=None, number_of_periods=None, name=None):
+        params = {}
+        if offer_id:
+            params["offer-id"] = offer_id
+        if period:
+            params["period"] = period
+        if number_of_periods:
+            params["number-of-periods"] = number_of_periods
+        if name:
+            params["name"] = ','.join(name)
+
+        resp = self.request("GET", path="offer", params=params)
+        return Insights.parse(self.api, resp.text)
+
+    def getPerformanceIndicators(self, name=None, year=None, week=None):
+        params = {}
+        if name:
+            params["name"] = ','.join(name)
+        if year:
+            params["year"] = year
+        if week:
+            params["week"] = week
+
+        resp = self.request("GET", path="performance/indicator", params=params)
+        return Insights.parse(self.api, resp.text)
+
+    def getProductRanks(self, ean=None, date=None, type=None, page=1):
+        params = {}
+        if ean:
+            params["ean"] = ean
+        if date:
+            params["date"] = date
+        if type:
+            params["type"] = ','.join(type)
+        if page != 1:
+            params["page"] = page
+
+        resp = self.request("GET", path="product-ranks", params=params)
+        return Insights.parse(self.api, resp.text)
+
+    def getSalesForecast(self, offer_id=None, weeks_ahead=None):
+        params = {}
+        if offer_id:
+            params["offer-id"] = offer_id
+        if weeks_ahead:
+            params["weeks-ahead"] = weeks_ahead
+
+        resp = self.request("GET", path="sales-forecast", params=params)
+        return Insights.parse(self.api, resp.text)
+
+    def getSearchTerms(self, search_term=None, period=None, number_of_periods=None, related_search_terms=None):
+        params = {}
+        if search_term:
+            params["search-term"] = search_term
+        if period:
+            params["period"] = period
+        if number_of_periods:
+            params["number-of-periods"] = number_of_periods
+        if related_search_terms:
+            params["related-search-terms"] = related_search_terms
+
+        resp = self.request("GET", path="search-terms", params=params)
+        return Insights.parse(self.api, resp.text)
+
 class ReturnsMethods(MethodGroup):
     def __init__(self, api):
         super(ReturnsMethods, self).__init__(api, "returns")
@@ -444,6 +514,8 @@ class RetailerAPI(object):
         self.transports = TransportMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
+        self.insights = InsightsMethods(self)
+
 
     def login(self, client_id, client_secret):
         data = {

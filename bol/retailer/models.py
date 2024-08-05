@@ -133,6 +133,11 @@ class Product(Model):
     class Meta:
         pass
 
+class Insights(Model):
+
+    class Meta:
+        pass
+
 
 class additionalService(Model):
     class Meta:
