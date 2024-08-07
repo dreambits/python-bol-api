@@ -21,7 +21,11 @@ from .models import (
     TimeSlots,
     Inventories,
     ProductContents,
-    Insights
+    Insights,
+    PerformanceIndicators,
+    ProductRanks,
+    SalesForecast,
+    SearchTerms
 )
 
 __all__ = ["RetailerAPI"]
@@ -323,7 +327,7 @@ class InsightsMethods(MethodGroup):
                 'week': week
             }
             resp = self.request("GET", path="performance/indicator", params=params)
-            return Insights.parse(self.api, resp.text)
+            return PerformanceIndicators.parse(self.api, resp.text)
 
     def getProductRanks(self, ean, date, type=None, page=1):
         if ean and date:
@@ -334,7 +338,7 @@ class InsightsMethods(MethodGroup):
                 params["page"] = page
 
             resp = self.request("GET", path="product-ranks", params=params)
-            return Insights.parse(self.api, resp.text)
+            return ProductRanks.parse(self.api, resp.text)
 
     def getSalesForecast(self, offer_id, weeks_ahead):
         if offer_id and weeks_ahead:
@@ -343,7 +347,7 @@ class InsightsMethods(MethodGroup):
                 "weeks-ahead": weeks_ahead
             }
             resp = self.request("GET", path="sales-forecast", params=params)
-            return Insights.parse(self.api, resp.text)
+            return SalesForecast.parse(self.api, resp.text)
 
     def getSearchTerms(self, search_term, period, number_of_periods, related_search_terms=None):
         if search_term and period and number_of_periods:
@@ -356,7 +360,7 @@ class InsightsMethods(MethodGroup):
                 params["related-search-terms"] = related_search_terms
 
             resp = self.request("GET", path="search-terms", params=params)
-            return Insights.parse(self.api, resp.text)
+            return SearchTerms.parse(self.api, resp.text)
 
 class ReturnsMethods(MethodGroup):
     def __init__(self, api):
