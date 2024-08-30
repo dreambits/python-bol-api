@@ -46,7 +46,7 @@ class OpenAPI(object):
     def __init__(self, api_key, timeout=None, session=None):
         self.api_key = api_key
         self.url = 'https://api.bol.com'
-        self.version = 'v4'
+        self.version = 'v10'
         self.catalog = CatalogMethods(self)
         self.timeout = timeout
         self.session = session or requests.Session()

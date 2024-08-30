@@ -98,7 +98,7 @@ RESPONSE = {
 }
 
 
-@urlmatch(path=r'/catalog/v4/products/1,2$')
+@urlmatch(path=r'/catalog/v10/products/1,2$')
 def products_stub(url, request):
     return {
         'status_code': 200,
