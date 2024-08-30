@@ -20,7 +20,12 @@ from .models import (
     Replenishments,
     TimeSlots,
     Inventories,
-    ProductContents
+    ProductContents,
+    Insights,
+    PerformanceIndicators,
+    ProductRanks,
+    SalesForecast,
+    SearchTerms
 )
 
 __all__ = ["RetailerAPI"]
@@ -230,7 +235,7 @@ class ShippingLabelsMethods(MethodGroup):
 
     def getShippingLabel(self, shipping_label_id):
         headers = {
-            "accept": "application/vnd.retailer.v8+pdf"
+            "accept": "application/vnd.retailer.v10+pdf"
         }
         response = self.request('GET', path=str(shipping_label_id), headers=headers)
         return response
@@ -287,7 +292,7 @@ class OffersMethods(MethodGroup):
 
     def getOffersFile(self, export_id):
         headers = {
-            "accept": "application/vnd.retailer.v8+csv"
+            "accept": "application/vnd.retailer.v10+csv"
         }
         response = self.request('GET', path='export/{}'.format(export_id),
                                 headers=headers)
@@ -297,6 +302,65 @@ class OffersMethods(MethodGroup):
         response = self.request('DELETE', path='{}'.format(offer_id))
         return ProcessStatus.parse(self.api, response.text)
 
+
+class InsightsMethods(MethodGroup):
+
+    def __init__(self, api):
+        super(InsightsMethods, self).__init__(api, 'insights')
+
+    def getOfferInsights(self, offer_id, period, number_of_periods, name):
+        if offer_id and period and number_of_periods and name and isinstance(name, list):
+            params = {
+                'offer-id': offer_id,
+                'period': period,
+                'number-of-periods': number_of_periods,
+                'name': ','.join(name),
+            }
+            resp = self.request("GET", path="offer", params=params)
+            return Insights.parse(self.api, resp.text)
+
+    def getPerformanceIndicators(self, name, year, week):
+        if name and isinstance(name, list) and year and week:
+            params = {
+                'name': ','.join(name),
+                'year': year,
+                'week': week
+            }
+            resp = self.request("GET", path="performance/indicator", params=params)
+            return PerformanceIndicators.parse(self.api, resp.text)
+
+    def getProductRanks(self, ean, date, type=None, page=1):
+        if ean and date:
+            params = {'ean': ean, 'date': date}
+            if type:
+                params["type"] = ','.join(type)
+            if page != 1:
+                params["page"] = page
+
+            resp = self.request("GET", path="product-ranks", params=params)
+            return ProductRanks.parse(self.api, resp.text)
+
+    def getSalesForecast(self, offer_id, weeks_ahead):
+        if offer_id and weeks_ahead:
+            params = {
+                "offer-id": offer_id,
+                "weeks-ahead": weeks_ahead
+            }
+            resp = self.request("GET", path="sales-forecast", params=params)
+            return SalesForecast.parse(self.api, resp.text)
+
+    def getSearchTerms(self, search_term, period, number_of_periods, related_search_terms=None):
+        if search_term and period and number_of_periods:
+            params = {
+                "search-term": search_term,
+                "period": period,
+                "number-of-periods": number_of_periods
+            }
+            if related_search_terms:
+                params["related-search-terms"] = related_search_terms
+
+            resp = self.request("GET", path="search-terms", params=params)
+            return SearchTerms.parse(self.api, resp.text)
 
 class ReturnsMethods(MethodGroup):
     def __init__(self, api):
@@ -352,7 +416,7 @@ class ReplenishmentMethods(MethodGroup):
         }
 
         headers = {
-            "accept": "application/vnd.retailer.v8+pdf"
+            "accept": "application/vnd.retailer.v10+pdf"
         }
         response = self.request("POST", path="product-labels", headers=headers, json=params)
         return response
@@ -367,14 +431,14 @@ class ReplenishmentMethods(MethodGroup):
 
     def getLoadCarrierLabels(self, replenishment_id, label_type="WAREHOUSE"):
         headers = {
-            "accept": "application/vnd.retailer.v8+pdf"
+            "accept": "application/vnd.retailer.v10+pdf"
         }
         response = self.request("GET", path='{}/load-carrier-labels'.format(replenishment_id), headers=headers, json=label_type)
         return response
 
     def getPickList(self, replenishment_id):
         headers = {
-            "accept": "application/vnd.retailer.v8+pdf"
+            "accept": "application/vnd.retailer.v10+pdf"
         }
         response = self.request("GET", path='{}/pick-list'.format(replenishment_id), headers=headers)
         return response
@@ -444,6 +508,8 @@ class RetailerAPI(object):
         self.transports = TransportMethods(self)
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
+        self.insights = InsightsMethods(self)
+
 
     def login(self, client_id, client_secret):
         data = {
@@ -494,7 +560,7 @@ class RetailerAPI(object):
         self.session.headers.update(
             {
                 "Authorization": "Bearer " + access_token,
-                "Accept": "application/vnd.retailer.v8+json",
+                "Accept": "application/vnd.retailer.v10+json",
             }
         )
 
@@ -514,7 +580,7 @@ class RetailerAPI(object):
             # If these headers are not added, the api returns a 400
             # Reference:
             #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = "application/vnd.retailer.v8+json"
+            content_header = "application/vnd.retailer.v10+json"
 
             request_kwargs["headers"].update({
                 "content-type": content_header

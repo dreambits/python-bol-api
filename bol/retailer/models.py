@@ -123,15 +123,125 @@ class Fulfilment(Model):
 
 
 class Offer(Model):
-
     class Meta:
         pass
 
 
 class Product(Model):
-
     class Meta:
         pass
+
+
+class Country(Model):
+    class Meta:
+        pass
+
+
+class Countries(ModelList):
+    class Meta:
+        item_type = Country
+
+
+class PeriodData(Model):
+    class Meta:
+        pass
+
+
+class TotalData(Model):
+    class Meta:
+        pass
+
+
+class Period(Model):
+    class Meta:
+        countries = ModelField(Countries)
+        total = RawField()
+        period = ModelField(PeriodData)
+
+
+class Periods(ModelList):
+    class Meta:
+        item_type = Period
+
+
+class Insight(Model):
+    class Meta:
+        countries = ModelField(Countries)
+        periods = ModelField(Periods)
+
+
+class Insights(ModelList):
+    class Meta:
+        item_type = Insight
+        items_key = "offerInsights"
+
+
+class Score(Model):
+    class Meta:
+        pass
+
+
+class Norm(Model):
+    class Meta:
+        pass
+
+
+class Details(Model):
+    class Meta:
+        period = ModelField(PeriodData)
+        score = ModelField(Score)
+        norm = ModelField(Norm)
+
+
+class PerformanceIndicator(Model):
+    class Meta:
+        details = ModelField(Details)
+
+
+class PerformanceIndicators(ModelList):
+    class Meta:
+        item_type = PerformanceIndicator
+        items_key = "performanceIndicators"
+
+
+class ProductRank(Model):
+    class Meta:
+        pass
+
+
+class ProductRanks(ModelList):
+    class Meta:
+        item_type = ProductRank
+        items_key = "ranks"
+
+
+class SalesForecast(Model):
+    class Meta:
+        countries = ModelField(Countries)
+        periods = ModelField(Periods)
+        total = ModelField(TotalData)
+
+
+class RelatedSearchTerm(Model):
+    class Meta:
+        pass
+
+
+class RelatedSearchTerms(ModelList):
+    class Meta:
+        item_type = RelatedSearchTerm
+
+
+class SearchTermsData(Model):
+    class Meta:
+        countries = ModelField(Countries)
+        periods = ModelField(Periods)
+        relatedSearchTerms = ModelField(RelatedSearchTerms)
+
+
+class SearchTerms(Model):
+    class Meta:
+        searchTerms = ModelField(SearchTermsData)
 
 
 class additionalService(Model):
