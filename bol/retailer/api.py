@@ -37,13 +37,12 @@ class MethodGroup(object):
         self.group = group
         self.base_type = base_type
 
-    def request(self, method, path="", params={}, **kwargs):
+    def request(self, method, override_group=None, path="", params={}, **kwargs):
         uri = path
         base = self.base_type+"-demo" if self.api.demo else self.base_type
-
         uri = "/{base}/{group}{path}".format(
             base=base,
-            group=self.group,
+            group=override_group if override_group else self.group,
             path=("/{}".format(path) if path else ""),
         )
         return self.api.request(method, uri, params=params, **kwargs)
@@ -101,7 +100,7 @@ class OrderMethods(MethodGroup):
                     "trackAndTrace"
                 ] = track_and_trace
         resp = self.request(
-            "PUT", path="shipment", json=payload
+            "POST", override_group="shipments", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
 
@@ -139,6 +138,37 @@ class ShipmentMethods(MethodGroup):
         resp = self.request("GET", path=str(shipment_id))
         return Shipment.parse(self.api, resp.text)
 
+    def create(
+        self,
+        order_item_id,
+        shipment_reference,
+        shipping_label_id=None,
+        transporter_code=None,
+        track_and_trace=None,
+    ):
+        payload = {}
+        orderItems = [
+            {
+                "orderItemId": order_item_id
+            }
+        ]
+        payload["orderItems"] = orderItems
+        payload["shipmentReference"] = shipment_reference
+        if shipping_label_id:
+            payload["shippingLabelId"] = shipping_label_id
+        else:
+            if transporter_code:
+                payload.setdefault("transport", {})[
+                    "transporterCode"
+                ] = transporter_code
+            if track_and_trace:
+                payload.setdefault("transport", {})[
+                    "trackAndTrace"
+                ] = track_and_trace
+        resp = self.request(
+            "POST", json=payload
+        )
+        return ProcessStatus.parse(self.api, resp.text)
 
 class ProcessStatusMethods(MethodGroup):
     def __init__(self, api):
@@ -587,5 +617,6 @@ class RetailerAPI(object):
             })
 
         resp = self.session.request(**request_kwargs)
+        print(resp.text)
         resp.raise_for_status()
         return resp
