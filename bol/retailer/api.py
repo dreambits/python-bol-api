@@ -130,7 +130,7 @@ class ShipmentMethods(MethodGroup):
         if page is not None:
             params["page"] = page
         if order_id:
-            params["order_id"] = order_id
+            params["order-id"] = order_id
         resp = self.request("GET", params=params)
         return Shipments.parse(self.api, resp.text)
 
