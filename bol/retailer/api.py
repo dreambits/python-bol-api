@@ -617,6 +617,5 @@ class RetailerAPI(object):
             })
 
         resp = self.session.request(**request_kwargs)
-        print(resp.text)
         resp.raise_for_status()
         return resp
