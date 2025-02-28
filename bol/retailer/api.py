@@ -37,13 +37,12 @@ class MethodGroup(object):
         self.group = group
         self.base_type = base_type
 
-    def request(self, method, path="", params={}, **kwargs):
+    def request(self, method, override_group=None, path="", params={}, **kwargs):
         uri = path
         base = self.base_type+"-demo" if self.api.demo else self.base_type
-
         uri = "/{base}/{group}{path}".format(
             base=base,
-            group=self.group,
+            group=override_group if override_group else self.group,
             path=("/{}".format(path) if path else ""),
         )
         return self.api.request(method, uri, params=params, **kwargs)
@@ -101,7 +100,7 @@ class OrderMethods(MethodGroup):
                     "trackAndTrace"
                 ] = track_and_trace
         resp = self.request(
-            "PUT", path="shipment", json=payload
+            "POST", override_group="shipments", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
 
@@ -131,14 +130,13 @@ class ShipmentMethods(MethodGroup):
         if page is not None:
             params["page"] = page
         if order_id:
-            params["order_id"] = order_id
+            params["order-id"] = order_id
         resp = self.request("GET", params=params)
         return Shipments.parse(self.api, resp.text)
 
     def get(self, shipment_id):
         resp = self.request("GET", path=str(shipment_id))
         return Shipment.parse(self.api, resp.text)
-
 
 class ProcessStatusMethods(MethodGroup):
     def __init__(self, api):
