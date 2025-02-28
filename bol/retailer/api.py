@@ -138,38 +138,6 @@ class ShipmentMethods(MethodGroup):
         resp = self.request("GET", path=str(shipment_id))
         return Shipment.parse(self.api, resp.text)
 
-    def create(
-        self,
-        order_item_id,
-        shipment_reference,
-        shipping_label_id=None,
-        transporter_code=None,
-        track_and_trace=None,
-    ):
-        payload = {}
-        orderItems = [
-            {
-                "orderItemId": order_item_id
-            }
-        ]
-        payload["orderItems"] = orderItems
-        payload["shipmentReference"] = shipment_reference
-        if shipping_label_id:
-            payload["shippingLabelId"] = shipping_label_id
-        else:
-            if transporter_code:
-                payload.setdefault("transport", {})[
-                    "transporterCode"
-                ] = transporter_code
-            if track_and_trace:
-                payload.setdefault("transport", {})[
-                    "trackAndTrace"
-                ] = track_and_trace
-        resp = self.request(
-            "POST", json=payload
-        )
-        return ProcessStatus.parse(self.api, resp.text)
-
 class ProcessStatusMethods(MethodGroup):
     def __init__(self, api):
         super(ProcessStatusMethods, self).__init__(api, "process-status", "shared")
