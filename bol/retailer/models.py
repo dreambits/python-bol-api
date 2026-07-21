@@ -631,3 +631,13 @@ class ProductContents(ModelList):
     class Meta:
         item_type = ProductContent
         items_key = "productContents"
+        
+class EconomicOperator(Model):
+    class Meta:
+        pass
+
+
+class EconomicOperators(ModelList):
+    class Meta:
+        item_type = EconomicOperator
+        items_key = "operators"

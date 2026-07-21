@@ -25,7 +25,8 @@ from .models import (
     PerformanceIndicators,
     ProductRanks,
     SalesForecast,
-    SearchTerms
+    SearchTerms,
+    EconomicOperators
 )
 
 __all__ = ["RetailerAPI"]
@@ -117,6 +118,20 @@ class OrderMethods(MethodGroup):
             "PUT", path="cancellation", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
+
+class EconomicOperatorMethods(MethodGroup):
+
+    def __init__(self, api):
+        super().__init__(api, "economic-operators")
+
+    def list(self):
+        resp = self.request(
+            "GET",
+            headers={
+                "Accept": "application/vnd.economic-operator.v1+json",
+            },
+        )
+        return EconomicOperators.parse(self.api, resp.text)
 
 
 class ShipmentMethods(MethodGroup):
@@ -507,6 +522,7 @@ class RetailerAPI(object):
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
         self.insights = InsightsMethods(self)
+        self.economic_operators = EconomicOperatorMethods(self)
 
 
     def login(self, client_id, client_secret):
