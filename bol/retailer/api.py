@@ -89,6 +89,8 @@ class OrderMethods(MethodGroup):
                 "orderItemId": order_item_id
             }
         ]
+        if quantity is not None:
+            orderItems[0]["quantity"] = quantity
         payload["orderItems"] = orderItems
         payload["shipmentReference"] = shipment_reference
         if shipping_label_id:
