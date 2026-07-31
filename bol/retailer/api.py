@@ -82,6 +82,7 @@ class OrderMethods(MethodGroup):
         shipping_label_id=None,
         transporter_code=None,
         track_and_trace=None,
+        quantity=None,
     ):
         payload = {}
         orderItems = [
