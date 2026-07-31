@@ -25,7 +25,8 @@ from .models import (
     PerformanceIndicators,
     ProductRanks,
     SalesForecast,
-    SearchTerms
+    SearchTerms,
+    EconomicOperators
 )
 
 __all__ = ["RetailerAPI"]
@@ -52,7 +53,7 @@ class OrderMethods(MethodGroup):
     def __init__(self, api):
         super(OrderMethods, self).__init__(api, "orders")
 
-    def list(self, fulfilment_method=None, page=None, status=None, change_interval_minute=None, latest_change_date=None):
+    def list(self, fulfilment_method=None, page=None, status=None, change_interval_minute=None, latest_change_date=None,vvb_only=None):
         params = {}
         if fulfilment_method:
             params["fulfilment-method"] = fulfilment_method
@@ -64,6 +65,8 @@ class OrderMethods(MethodGroup):
             params["change-interval-minute"] = change_interval_minute
         if latest_change_date:
             params["latest-change-date"] = latest_change_date
+        if vvb_only is not None:
+            params["vvb-only"] = str(vvb_only).lower()
 
         resp = self.request("GET", params=params)
         return Orders.parse(self.api, resp.text)
@@ -79,6 +82,7 @@ class OrderMethods(MethodGroup):
         shipping_label_id=None,
         transporter_code=None,
         track_and_trace=None,
+        quantity=None,
     ):
         payload = {}
         orderItems = [
@@ -86,6 +90,8 @@ class OrderMethods(MethodGroup):
                 "orderItemId": order_item_id
             }
         ]
+        if quantity is not None:
+            orderItems[0]["quantity"] = quantity
         payload["orderItems"] = orderItems
         payload["shipmentReference"] = shipment_reference
         if shipping_label_id:
@@ -117,6 +123,20 @@ class OrderMethods(MethodGroup):
             "PUT", path="cancellation", json=payload
         )
         return ProcessStatus.parse(self.api, resp.text)
+
+class EconomicOperatorMethods(MethodGroup):
+
+    def __init__(self, api):
+        super().__init__(api, "economic-operators")
+
+    def list(self):
+        resp = self.request(
+            "GET",
+            headers={
+                "Accept": "application/vnd.economic-operator.v1+json",
+            },
+        )
+        return EconomicOperators.parse(self.api, resp.text)
 
 
 class ShipmentMethods(MethodGroup):
@@ -507,6 +527,7 @@ class RetailerAPI(object):
         self.session = session or requests.Session()
         self.session.headers.update({"Accept": "application/json"})
         self.insights = InsightsMethods(self)
+        self.economic_operators = EconomicOperatorMethods(self)
 
 
     def login(self, client_id, client_secret):
