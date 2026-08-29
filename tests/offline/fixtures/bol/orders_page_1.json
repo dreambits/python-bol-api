@@ -1,0 +1,192 @@
+{
+  "_note": "orders.list() page 1. Demo returns 2 orders per page, newest first.",
+  "_source": "captured from bol.com live",
+  "body": {
+    "orders": [
+      {
+        "orderId": "C000GUOJ8Q",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "8720849300131",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T18:00:17+02:00",
+            "orderItemId": "9203065392",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T17:59:40+02:00"
+      },
+      {
+        "orderId": "C000DHVF7O",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "8720849300759",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T16:50:16+02:00",
+            "orderItemId": "9318426934",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          },
+          {
+            "cancellationRequest": false,
+            "ean": "8720849307130",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T16:50:16+02:00",
+            "orderItemId": "9390763197",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          },
+          {
+            "cancellationRequest": false,
+            "ean": "8720849307123",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T16:50:16+02:00",
+            "orderItemId": "9294157945",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T16:50:04+02:00"
+      },
+      {
+        "orderId": "C000GIYE7D",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "8720849300506",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T16:27:15+02:00",
+            "orderItemId": "9089297305",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T16:26:57+02:00"
+      },
+      {
+        "orderId": "C000DBDM89",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "8720849300254",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T15:59:45+02:00",
+            "orderItemId": "9530658530",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T15:59:20+02:00"
+      },
+      {
+        "orderId": "C000GLKMJI",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "7081262984447",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T15:53:16+02:00",
+            "orderItemId": "9073131899",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T15:52:50+02:00"
+      },
+      {
+        "orderId": "C000OGHBE7",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "8720849300384",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T15:24:47+02:00",
+            "orderItemId": "9765334272",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T15:24:17+02:00"
+      },
+      {
+        "orderId": "C000LOPH9L",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "8720849300131",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T15:23:15+02:00",
+            "orderItemId": "9233641390",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T15:22:47+02:00"
+      },
+      {
+        "orderId": "C000TQTE5K",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "8720849300490",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T15:11:16+02:00",
+            "orderItemId": "9540606260",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T15:10:49+02:00"
+      },
+      {
+        "orderId": "C000QWMLX8",
+        "orderItems": [
+          {
+            "cancellationRequest": false,
+            "ean": "7081254392663",
+            "fulfilmentMethod": "FBR",
+            "fulfilmentStatus": "OPEN",
+            "latestChangedDateTime": "2026-08-27T15:08:46+02:00",
+            "orderItemId": "9338688788",
+            "quantity": 1,
+            "quantityCancelled": 0,
+            "quantityShipped": 0
+          }
+        ],
+        "orderPlacedDateTime": "2026-08-27T15:08:28+02:00"
+      }
+    ]
+  },
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 16:30:06 GMT",
+    "x-ratelimit-limit": "25",
+    "x-ratelimit-remaining": "24",
+    "x-ratelimit-reset": "54",
+    "x-request-id": "01a0440ea92475778e1a8af037f0609a"
+  },
+  "status": 200
+}

@@ -1,0 +1,12 @@
+{
+  "_note": "a rejected login. This is what the connector must turn into a readable message instead of Odoo's crash dialog (P0-5 finding B2).",
+  "_source": "captured from bol.com live",
+  "body": {
+    "error": "invalid_client"
+  },
+  "headers": {
+    "Content-Type": "application/json;charset=UTF-8",
+    "Date": "Thu, 27 Aug 2026 16:30:07 GMT"
+  },
+  "status": 401
+}

@@ -1,0 +1,29 @@
+{
+  "_synthetic": true,
+  "_note": "offers.getSingleOffer(offer_id). HAND-WRITTEN, not captured. The keys are the ones bol/retailer/models.py:OffersResponse declares a coercion for plus the five createSingleOffer names the library itself lists; it is not a recording of a real answer and asserts nothing about any other field. It exists to prove that getSingleOffer() addresses /retailer/offers/{id} and parses into an OffersResponse.",
+  "status": 200,
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "x-ratelimit-limit": "25",
+    "x-ratelimit-remaining": "24",
+    "x-ratelimit-reset": "54",
+    "x-request-id": "synthetic-offer-get"
+  },
+  "body": {
+    "offerId": "13722de8-8182-d161-5422-4a0a1caab5c8",
+    "ean": "8720849300131",
+    "referenceCode": "SYNTHETIC-REF",
+    "onHoldByRetailer": false,
+    "unknownProductTitle": "Synthetic offer",
+    "pricing": {
+      "bundlePrices": [
+        {"quantity": 1, "unitPrice": 12.95}
+      ]
+    },
+    "stock": {"amount": 5, "correctedStock": 5, "managedByRetailer": true},
+    "fulfilment": {"method": "FBR", "deliveryCode": "24uurs-23"},
+    "condition": {"name": "NEW"},
+    "store": {"productTitle": "Synthetic offer", "visible": []},
+    "notPublishableReasons": []
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "_note": "successful client_credentials login -- note the headers, they are the same set every endpoint returns",
+  "_source": "captured from bol.com live",
+  "body": {
+    "access_token": "REDACTED",
+    "expires_in": 599,
+    "scope": "retailer",
+    "token_type": "Bearer"
+  },
+  "headers": {
+    "Content-Type": "application/json;charset=UTF-8",
+    "Date": "Thu, 27 Aug 2026 16:30:06 GMT"
+  },
+  "status": 200
+}

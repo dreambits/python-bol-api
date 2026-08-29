@@ -42,7 +42,12 @@ setup(name='python-bol-api-latest',
       long_description=readme(),
       long_description_content_file="text/x-rst",
       license='',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      # 'tests.*' as well as 'tests': the exclusion is by exact package
+      # name, so without the wildcard tests/offline -- and its fixtures,
+      # which are recordings of a live account -- would be published to
+      # PyPI with the next release.
+      packages=find_packages(
+          exclude=['ez_setup', 'examples', 'tests', 'tests.*']),
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,

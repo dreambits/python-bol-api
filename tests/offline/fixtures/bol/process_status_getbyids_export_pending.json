@@ -1,0 +1,31 @@
+{
+  "_note": "process_status.getByIds() while still running. This is the batch shape the P1-4 poller calls, not the single-id one.",
+  "_source": "captured from bol.com live",
+  "body": {
+    "processStatuses": [
+      {
+        "createTimestamp": "2026-08-27T23:59:15+02:00",
+        "description": "Create an offer export.",
+        "eventType": "CREATE_OFFER_EXPORT",
+        "links": [
+          {
+            "href": "https://api.bol.com/shared/process-status/01a0453c-0303-73cd-9b90-d84c8e1babe9",
+            "method": "GET",
+            "rel": "self"
+          }
+        ],
+        "processStatusId": "01a0453c-0303-73cd-9b90-d84c8e1babe9",
+        "status": "PENDING"
+      }
+    ]
+  },
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 21:59:16 GMT",
+    "x-ratelimit-limit": "2",
+    "x-ratelimit-remaining": "1",
+    "x-ratelimit-reset": "1",
+    "x-request-id": "01a0453c033f76ac96956d1750b8f08b"
+  },
+  "status": 200
+}

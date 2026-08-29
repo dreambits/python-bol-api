@@ -1,0 +1,32 @@
+{
+  "_note": "process_status.getByIds() returning FAILURE -- captured from a real write (bad-shipment probe). P1-4 dispatches on this.",
+  "_source": "captured from bol.com live",
+  "body": {
+    "processStatuses": [
+      {
+        "createTimestamp": "2026-08-28T00:03:46+02:00",
+        "description": "Create shipment.",
+        "errorMessage": "Request contains unknown order item id(s): [0000000000]. Possible reasons: order item(s) do not exist or order item(s) can not be fulfilled by the retailer (only FBR items can be fulfilled).",
+        "eventType": "CREATE_SHIPMENT",
+        "links": [
+          {
+            "href": "https://api.bol.com/shared/process-status/01a04540-25af-7ac4-8d4a-26411bdb9a8b",
+            "method": "GET",
+            "rel": "self"
+          }
+        ],
+        "processStatusId": "01a04540-25af-7ac4-8d4a-26411bdb9a8b",
+        "status": "FAILURE"
+      }
+    ]
+  },
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 22:03:52 GMT",
+    "x-ratelimit-limit": "2",
+    "x-ratelimit-remaining": "1",
+    "x-ratelimit-reset": "1",
+    "x-request-id": "01a0454039977346ab86b98b0b518106"
+  },
+  "status": 200
+}

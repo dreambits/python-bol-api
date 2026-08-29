@@ -1,0 +1,14 @@
+{
+  "_note": "page 2 -- proves the paginator advances, and is the fixture the page-1-only data loss needs (spec 6.1)",
+  "_source": "captured from bol.com live",
+  "body": {},
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 16:30:06 GMT",
+    "x-ratelimit-limit": "25",
+    "x-ratelimit-remaining": "23",
+    "x-ratelimit-reset": "54",
+    "x-request-id": "01a0440ea9507fa489239ac46f8c4572"
+  },
+  "status": 200
+}

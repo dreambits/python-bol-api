@@ -1,0 +1,29 @@
+{
+  "_synthetic": true,
+  "_note": "orders.get(order_id). HAND-WRITTEN, not captured. The order-item shape is copied from the captured orders_page_1.json, which is evidence; the envelope is not. A real GET /retailer/orders/{id} carries more -- shipmentDetails, billingDetails, pickUpPoint -- and this file asserts NOTHING about those. It exists to prove that orders.get() addresses /retailer/orders/{id} and parses into an Order.",
+  "status": 200,
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "x-ratelimit-limit": "25",
+    "x-ratelimit-remaining": "24",
+    "x-ratelimit-reset": "54",
+    "x-request-id": "synthetic-order-get"
+  },
+  "body": {
+    "orderId": "C000GUOJ8Q",
+    "orderPlacedDateTime": "2026-08-27T17:59:40+02:00",
+    "orderItems": [
+      {
+        "orderItemId": "9203065392",
+        "ean": "8720849300131",
+        "fulfilmentMethod": "FBR",
+        "fulfilmentStatus": "OPEN",
+        "quantity": 1,
+        "quantityShipped": 0,
+        "quantityCancelled": 0,
+        "cancellationRequest": false,
+        "latestChangedDateTime": "2026-08-27T18:00:17+02:00"
+      }
+    ]
+  }
+}

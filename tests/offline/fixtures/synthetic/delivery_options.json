@@ -1,0 +1,20 @@
+{
+  "_synthetic": true,
+  "_note": "labels.getDeliveryOptions(). HAND-WRITTEN, not captured -- no VVB shipping-label response was recorded. The keys are the ones bol/retailer/models.py:Labels declares a coercion for. It exists to prove that getDeliveryOptions() POSTs to /retailer/shipping-labels/delivery-options and parses into a ShippingLabels list; it asserts nothing about what a real delivery option contains.",
+  "status": 200,
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "x-request-id": "synthetic-delivery-options"
+  },
+  "body": {
+    "deliveryOptions": [
+      {
+        "shippingLabelOfferId": "synthetic-label-offer-id",
+        "validUntilDate": "2026-09-30",
+        "labelPrice": {"totalPrice": "5.75"},
+        "packageRestrictions": {"maxWeight": "23kg"},
+        "handoverDetails": {"latestHandoverDateTime": "2026-08-29T17:00:00+02:00"}
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "_note": "the immediate answer to a body-parameter write: accepted and PENDING even though the order item does not exist. bol.com validates body identifiers while processing, not on receipt -- which is why this is the shape that can produce a FAILURE and offers/<uuid>/stock cannot.",
+  "_source": "captured from bol.com live",
+  "body": {
+    "createTimestamp": "2026-08-28T00:03:46+02:00",
+    "description": "Create shipment.",
+    "eventType": "CREATE_SHIPMENT",
+    "links": [
+      {
+        "href": "https://api.bol.com/shared/process-status/01a04540-25af-7ac4-8d4a-26411bdb9a8b",
+        "method": "GET",
+        "rel": "self"
+      }
+    ],
+    "processStatusId": "01a04540-25af-7ac4-8d4a-26411bdb9a8b",
+    "status": "PENDING"
+  },
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 22:03:47 GMT",
+    "x-ratelimit-limit": "25",
+    "x-ratelimit-remaining": "24",
+    "x-ratelimit-reset": "1",
+    "x-request-id": "01a0454025a87b0eb8bef5cdfeb41038"
+  },
+  "status": 202
+}

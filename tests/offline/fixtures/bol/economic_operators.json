@@ -1,0 +1,193 @@
+{
+  "_note": "the one endpoint needing a different Accept header (application/vnd.economic-operator.v1+json)",
+  "_source": "captured from bol.com live",
+  "body": {
+    "operators": [
+      {
+        "address": {
+          "additionalAddressInfo": "XXXXX XXXX XXXXX",
+          "city": "XXXXXXXXX",
+          "country": "IE",
+          "houseNumber": "99",
+          "postalCode": "X99XX",
+          "street": "XXXX XXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXX@XXXXXXXXXX.XXX",
+          "phoneNumber": "+999999999999"
+        },
+        "externalReference": "XXXXXX XXXXXXX",
+        "id": "2d277d3f-3b0b-4e8f-b180-b7f436773e83",
+        "name": "XXXX XXXXXX XXXX XXXXXXX XXX",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "city": "XXXXX",
+          "country": "DE",
+          "houseNumber": "99",
+          "postalCode": "99999",
+          "street": "XX XXXXXXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "X.XXXXXX@XXXXXXXXXXX.XX",
+          "phoneNumber": "+9999999999999999"
+        },
+        "id": "4556f6bf-7621-4c47-9081-9c91bae6570b",
+        "name": "XXXXXX XXXX",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "city": "XXXXXXXX",
+          "country": "NL",
+          "houseNumber": "99",
+          "postalCode": "9999 XX",
+          "street": "XXXXXXXXXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXX@XXXXXXXXXXXXX.XX",
+          "phoneNumber": "+999999999999"
+        },
+        "id": "7f1b82e7-62ec-43bc-91b6-a08730f2aacc",
+        "name": "XXXXXXXXXXXXX XXXXXXXX X.X.",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "city": "XXXXX",
+          "country": "NL",
+          "houseNumber": "99",
+          "postalCode": "9999XX",
+          "street": "XX XXXXXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXX.XX@XXXXXXXXX.XXX",
+          "phoneNumber": "+99999999999"
+        },
+        "id": "b68ed657-d107-4009-9338-a6c7d6124297",
+        "name": "MSA",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "city": "XXXXX X'XXXXX",
+          "country": "IT",
+          "houseNumber": "9",
+          "postalCode": "X-99999",
+          "street": "XXX XXX XXXXXXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXX@XXXX.XX",
+          "phoneNumber": "+9999999999"
+        },
+        "id": "c7973fc7-5e30-4ae5-bd3d-799319977098",
+        "name": "XXXX XXXX XXXXXXXXXX X.X.X.",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "city": "XXXXXXXXX",
+          "country": "ES",
+          "houseNumber": "9",
+          "postalCode": "99999",
+          "street": "XXXXX XXXXXXXXX XXXXXX XXX XXXX\u221a\u00a9X"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXXXXXXXXXXX@XXXXXXXXXXXXXXX.XXX",
+          "phoneNumber": "+99999999999"
+        },
+        "id": "cc324a8c-5af7-4856-9f16-46f8f1759655",
+        "name": "XXXXXX",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "additionalAddressInfo": "",
+          "city": "XXXXXXXXXXX",
+          "country": "NL",
+          "houseNumber": "99X",
+          "postalCode": "9999XX",
+          "street": "XXXXXXXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXXXXXX@XXXXXXXXXXXXXX.XXX",
+          "phoneNumber": "9999999999"
+        },
+        "externalReference": "",
+        "id": "d52e6b10-9372-4a4c-b27b-433fc40ee53c",
+        "name": "XXX XXXXXXXXXXX X.X.",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "additionalAddressInfo": "",
+          "city": "XXXXXXXXXXX",
+          "country": "BE",
+          "houseNumber": "9",
+          "postalCode": "X 9999",
+          "street": "XXX XXXXX XXXXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXX@XXXXXXXXXXXX.XXX",
+          "phoneNumber": "+99999999999"
+        },
+        "externalReference": "",
+        "id": "d6529af1-7813-4e52-a2a8-84643bcbe1fd",
+        "name": "XXXXXXX",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "additionalAddressInfo": "",
+          "city": "XXXXXXXX",
+          "country": "NL",
+          "houseNumber": "99",
+          "postalCode": "99999",
+          "street": "XXXXX XXX XXXX XXXX XXXXX XXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXXXXXX@XXXXXXXX.XXX",
+          "phoneNumber": "+999999999999"
+        },
+        "externalReference": "XXXXXXX",
+        "id": "e09e1d48-afe8-4a0a-91ef-d9c088f766ea",
+        "name": "XXXXXXXX XXXXXXX XXXXXXXXX XXX",
+        "status": "VALID"
+      },
+      {
+        "address": {
+          "additionalAddressInfo": "",
+          "city": "XXXXXXXXX",
+          "country": "IT",
+          "houseNumber": "99",
+          "postalCode": "99999",
+          "street": "XXX XX XXXXXXX"
+        },
+        "contactInformation": {
+          "emailAddress": "XXXXXXX.XXXXXXXX@XXXXX.XXX",
+          "phoneNumber": "+99999999999"
+        },
+        "externalReference": "",
+        "id": "f0769b53-66f1-4b61-922c-4d31b866a103",
+        "name": "XXXXXXXXX X.X.X.",
+        "status": "VALID"
+      }
+    ],
+    "page": {
+      "numberOfPages": 1,
+      "pageNumber": 1,
+      "pageSize": 25,
+      "totalCount": 10
+    }
+  },
+  "headers": {
+    "content-type": "application/vnd.economic-operator.v1+json",
+    "date": "Thu, 27 Aug 2026 16:30:06 GMT",
+    "x-ratelimit-limit": "100",
+    "x-ratelimit-remaining": "99",
+    "x-ratelimit-reset": "53",
+    "x-request-id": "01a0440eab4f75f3b4d7cb185bf652e9"
+  },
+  "status": 200
+}

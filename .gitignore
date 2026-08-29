@@ -6,3 +6,14 @@ build
 .tox
 *~
 /.pytest_cache/
+
+# Credentials — never commit these (added 2026-08-28, P2-1)
+.env
+*.env
+
+# Local scratch and editor state — never part of a release
+.vscode/
+*.egg-info/
+tests.zip
+/test.py
+/test2.py

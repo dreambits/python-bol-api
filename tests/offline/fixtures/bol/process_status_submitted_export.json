@@ -1,0 +1,27 @@
+{
+  "_note": "the immediate answer to a write: a processStatusId and PENDING. Every bol.com write looks like this.",
+  "_source": "captured from bol.com live",
+  "body": {
+    "createTimestamp": "2026-08-27T23:59:15+02:00",
+    "description": "Create an offer export.",
+    "eventType": "CREATE_OFFER_EXPORT",
+    "links": [
+      {
+        "href": "https://api.bol.com/shared/process-status/01a0453c-0303-73cd-9b90-d84c8e1babe9",
+        "method": "GET",
+        "rel": "self"
+      }
+    ],
+    "processStatusId": "01a0453c-0303-73cd-9b90-d84c8e1babe9",
+    "status": "PENDING"
+  },
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 21:59:16 GMT",
+    "x-ratelimit-limit": "9",
+    "x-ratelimit-remaining": "8",
+    "x-ratelimit-reset": "45",
+    "x-request-id": "01a0453c02f77ffb9b57d45e9efa0f50"
+  },
+  "status": 202
+}

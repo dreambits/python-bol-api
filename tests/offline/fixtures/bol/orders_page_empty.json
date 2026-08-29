@@ -1,0 +1,14 @@
+{
+  "_note": "a page past the end -- how the paginator knows to stop",
+  "_source": "captured from bol.com live",
+  "body": {},
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 16:30:06 GMT",
+    "x-ratelimit-limit": "25",
+    "x-ratelimit-remaining": "22",
+    "x-ratelimit-reset": "54",
+    "x-request-id": "01a0440ea9747f5aa41063ceaa5c523e"
+  },
+  "status": 200
+}

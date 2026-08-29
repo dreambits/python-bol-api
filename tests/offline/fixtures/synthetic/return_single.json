@@ -1,0 +1,25 @@
+{
+  "_synthetic": true,
+  "_note": "returns.getSingle(returnId). HAND-WRITTEN, not captured. The returnItems shape is copied from the captured returns_list.json, which is evidence; the single-return envelope is not, and this file asserts nothing about fields a real GET /retailer/returns/{id} may add. It exists to prove that getSingle() addresses /retailer/returns/{id} and parses into a SingleReturnItem.",
+  "status": 200,
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "x-ratelimit-limit": "20",
+    "x-ratelimit-remaining": "19",
+    "x-ratelimit-reset": "54",
+    "x-request-id": "synthetic-return-get"
+  },
+  "body": {
+    "returnId": "998810696",
+    "fulfilmentMethod": "FBR",
+    "registrationDateTime": "2026-08-16T13:57:25+02:00",
+    "returnItems": [
+      {
+        "rmaId": "964219742",
+        "ean": "7081269436475",
+        "expectedQuantity": 1,
+        "handled": false
+      }
+    ]
+  }
+}

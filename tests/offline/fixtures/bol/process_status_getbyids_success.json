@@ -1,0 +1,25 @@
+{
+  "_note": "process_status.getByIds() returning SUCCESS -- captured from a real write (export probe). P1-4 dispatches on this.",
+  "_source": "captured from bol.com live",
+  "body": {
+    "processStatuses": [
+      {
+        "createTimestamp": "2026-08-27T23:59:15+02:00",
+        "description": "Create an offer export.",
+        "entityId": "5e09af3a-3c35-487a-a477-c3c41f23180d",
+        "eventType": "CREATE_OFFER_EXPORT",
+        "processStatusId": "01a0453c-0303-73cd-9b90-d84c8e1babe9",
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 21:59:21 GMT",
+    "x-ratelimit-limit": "2",
+    "x-ratelimit-remaining": "1",
+    "x-ratelimit-reset": "1",
+    "x-request-id": "01a0453c16f67e45978ec7b3daad1e63"
+  },
+  "status": 200
+}

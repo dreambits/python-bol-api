@@ -1,0 +1,14 @@
+{
+  "_note": "inventory.get() -- FBB stock levels",
+  "_source": "captured from bol.com live",
+  "body": {},
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 16:30:07 GMT",
+    "x-ratelimit-limit": "20",
+    "x-ratelimit-remaining": "19",
+    "x-ratelimit-reset": "53",
+    "x-request-id": "01a0440eab267c38b177b0cc9dde0682"
+  },
+  "status": 200
+}

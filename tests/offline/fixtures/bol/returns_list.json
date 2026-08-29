@@ -1,0 +1,654 @@
+{
+  "_note": "returns.get() -- return import",
+  "_source": "captured from bol.com live",
+  "body": {
+    "returns": [
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-16T13:57:25+02:00",
+        "returnId": "998810696",
+        "returnItems": [
+          {
+            "ean": "7081269436475",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C0005NNY5U",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Artikel doet niet wat het belooft",
+              "mainReason": "Klacht over artikel"
+            },
+            "rmaId": "964219742"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-17T12:53:41+02:00",
+        "returnId": "939233962",
+        "returnItems": [
+          {
+            "ean": "7081253886798",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C0004QJ6YH",
+            "returnReason": {
+              "mainReason": "Artikel is defect"
+            },
+            "rmaId": "958926879"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-18T20:48:14+02:00",
+        "returnId": "977435370",
+        "returnItems": [
+          {
+            "ean": "8720849301619",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000MZOTJS",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Anders, namelijk",
+              "mainReason": "Anders"
+            },
+            "rmaId": "962338349"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-20T13:34:51+02:00",
+        "returnId": "980568962",
+        "returnItems": [
+          {
+            "ean": "8720849306638",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000HKP2G5",
+            "returnReason": {
+              "detailedReason": "Pasvorm valt tegen",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "992968251"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-20T17:51:51+02:00",
+        "returnId": "965316766",
+        "returnItems": [
+          {
+            "ean": "8720849306874",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000V82BWS",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Te klein",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "985987305"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-21T19:18:54+02:00",
+        "returnId": "984950718",
+        "returnItems": [
+          {
+            "ean": "8720849306874",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000N2M129",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Anders, namelijk",
+              "mainReason": "Anders"
+            },
+            "rmaId": "933457324"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-22T08:24:53+02:00",
+        "returnId": "995971236",
+        "returnItems": [
+          {
+            "ean": "8720849306867",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000F8BO9N",
+            "returnReason": {
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "979459703"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-22T12:28:59+02:00",
+        "returnId": "978596190",
+        "returnItems": [
+          {
+            "ean": "8720849300131",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000A10JQ4",
+            "returnReason": {
+              "detailedReason": "Te klein",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "996671666"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-22T13:53:24+02:00",
+        "returnId": "903894038",
+        "returnItems": [
+          {
+            "ean": "8720849300506",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000GNJFHS",
+            "returnReason": {
+              "mainReason": "Artikel is defect"
+            },
+            "rmaId": "972638921"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-23T11:30:54+02:00",
+        "returnId": "927412695",
+        "returnItems": [
+          {
+            "ean": "8720849300506",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C0001EK3D4",
+            "returnReason": {
+              "detailedReason": "Meerdere opties/artikelen besteld",
+              "mainReason": "Anders"
+            },
+            "rmaId": "979457003"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-24T07:56:29+02:00",
+        "returnId": "969114384",
+        "returnItems": [
+          {
+            "ean": "8720849306690",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000O0YN7Z",
+            "returnReason": {
+              "detailedReason": "Pasvorm valt tegen",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "920696205"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-25T15:30:11+02:00",
+        "returnId": "950671181",
+        "returnItems": [
+          {
+            "ean": "8720849300056",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000T3MEED",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Anders, namelijk",
+              "mainReason": "Anders"
+            },
+            "rmaId": "969242400"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-25T16:07:25+02:00",
+        "returnId": "913322927",
+        "returnItems": [
+          {
+            "ean": "8720849306973",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000O9781U",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Anders, namelijk",
+              "mainReason": "Anders"
+            },
+            "rmaId": "980216486"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-25T17:35:57+02:00",
+        "returnId": "923409647",
+        "returnItems": [
+          {
+            "ean": "8720849307024",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000SOKOGU",
+            "returnReason": {
+              "detailedReason": "Anders, namelijk",
+              "mainReason": "Anders"
+            },
+            "rmaId": "968499651"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-25T18:05:29+02:00",
+        "returnId": "920584211",
+        "returnItems": [
+          {
+            "ean": "8720849300070",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000P288ZY",
+            "returnReason": {
+              "detailedReason": "Te klein",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "970788374"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-25T18:41:35+02:00",
+        "returnId": "983644353",
+        "returnItems": [
+          {
+            "ean": "8720849300131",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000ZLJDPH",
+            "returnReason": {
+              "detailedReason": "Artikel had ik toch niet nodig",
+              "mainReason": "Verkeerd besteld"
+            },
+            "rmaId": "912127094"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-25T18:50:49+02:00",
+        "returnId": "967185212",
+        "returnItems": [
+          {
+            "ean": "8720849306997",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000WGRMDO",
+            "returnReason": {
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "992126683"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T07:46:05+02:00",
+        "returnId": "953458090",
+        "returnItems": [
+          {
+            "ean": "7081251778996",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000Z093BY",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Artikel had ik toch niet nodig",
+              "mainReason": "Anders"
+            },
+            "rmaId": "991023533"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T07:46:20+02:00",
+        "returnId": "952868023",
+        "returnItems": [
+          {
+            "ean": "8720849306850",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000N841UC",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Te klein",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "944498904"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T10:57:25+02:00",
+        "returnId": "948272051",
+        "returnItems": [
+          {
+            "ean": "8720849306942",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000L2W3ED",
+            "returnReason": {
+              "detailedReason": "Kwaliteit valt tegen",
+              "mainReason": "Anders"
+            },
+            "rmaId": "992292027"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T11:47:41+02:00",
+        "returnId": "994256272",
+        "returnItems": [
+          {
+            "ean": "8720849306690",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000X4OU86",
+            "returnReason": {
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "905702128"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T12:28:35+02:00",
+        "returnId": "925058853",
+        "returnItems": [
+          {
+            "ean": "8720849300506",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000N0G8K8",
+            "returnReason": {
+              "detailedReason": "Kwaliteit valt tegen",
+              "mainReason": "Anders"
+            },
+            "rmaId": "971815158"
+          },
+          {
+            "ean": "8720849300391",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000N0G8K8",
+            "returnReason": {
+              "detailedReason": "Kwaliteit valt tegen",
+              "mainReason": "Anders"
+            },
+            "rmaId": "986697135"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T12:41:30+02:00",
+        "returnId": "963915367",
+        "returnItems": [
+          {
+            "ean": "8720849307062",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000JNQ1XM",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "937757112"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T18:34:44+02:00",
+        "returnId": "973569718",
+        "returnItems": [
+          {
+            "ean": "8720849300506",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000R5W92X",
+            "returnReason": {
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "904685066"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T19:05:00+02:00",
+        "returnId": "959447457",
+        "returnItems": [
+          {
+            "ean": "8720849300506",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000H65LYL",
+            "returnReason": {
+              "detailedReason": "Te klein",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "937353561"
+          },
+          {
+            "ean": "8720849300490",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000H65LYL",
+            "returnReason": {
+              "detailedReason": "Te klein",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "929443449"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-26T19:16:02+02:00",
+        "returnId": "924274174",
+        "returnItems": [
+          {
+            "ean": "8720849306690",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000E90Z5M",
+            "returnReason": {
+              "mainReason": "Geen reden"
+            },
+            "rmaId": "945977780"
+          },
+          {
+            "ean": "8720849306706",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000E90Z5M",
+            "returnReason": {
+              "mainReason": "Geen reden"
+            },
+            "rmaId": "964030808"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-27T11:21:05+02:00",
+        "returnId": "917592943",
+        "returnItems": [
+          {
+            "ean": "8720849306607",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000N9KSFY",
+            "returnReason": {
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "975798937"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-27T11:27:23+02:00",
+        "returnId": "993800041",
+        "returnItems": [
+          {
+            "ean": "8720849306751",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000WFI169",
+            "returnReason": {
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "940265904"
+          },
+          {
+            "ean": "8720849306935",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000WFI169",
+            "returnReason": {
+              "detailedReason": "Te groot",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "926436615"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-27T13:16:52+02:00",
+        "returnId": "969326790",
+        "returnItems": [
+          {
+            "ean": "8720849300667",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000TD0Z8O",
+            "returnReason": {
+              "detailedReason": "Artikel had ik toch niet nodig",
+              "mainReason": "Verkeerd besteld"
+            },
+            "rmaId": "995428644"
+          },
+          {
+            "ean": "8720849300674",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000TD0Z8O",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Artikel had ik toch niet nodig",
+              "mainReason": "Verkeerd besteld"
+            },
+            "rmaId": "964515294"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-27T13:29:10+02:00",
+        "returnId": "942730441",
+        "returnItems": [
+          {
+            "ean": "8423246213461",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000H4NNQ3",
+            "returnReason": {
+              "mainReason": "Geen reden"
+            },
+            "rmaId": "941329457"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-27T15:09:49+02:00",
+        "returnId": "965644503",
+        "returnItems": [
+          {
+            "ean": "8720849300377",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000VI6867",
+            "returnReason": {
+              "detailedReason": "Te klein",
+              "mainReason": "Verkeerde maat of afmeting"
+            },
+            "rmaId": "991887312"
+          }
+        ]
+      },
+      {
+        "fulfilmentMethod": "FBR",
+        "registrationDateTime": "2026-08-27T16:30:52+02:00",
+        "returnId": "972229322",
+        "returnItems": [
+          {
+            "ean": "8720849300490",
+            "expectedQuantity": 1,
+            "handled": false,
+            "orderId": "C000USC1AN",
+            "returnReason": {
+              "customerComments": "[removed: customer free text]",
+              "detailedReason": "Anders, namelijk",
+              "mainReason": "Anders"
+            },
+            "rmaId": "914524072"
+          }
+        ]
+      }
+    ]
+  },
+  "headers": {
+    "content-type": "application/vnd.retailer.v10+json;charset=UTF-8",
+    "date": "Thu, 27 Aug 2026 16:30:07 GMT",
+    "x-ratelimit-limit": "20",
+    "x-ratelimit-remaining": "19",
+    "x-ratelimit-reset": "54",
+    "x-request-id": "01a0440eaa74751ab8bde523e48d3d26"
+  },
+  "status": 200
+}

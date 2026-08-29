@@ -1,7 +1,13 @@
-import json
-import requests
-from requests.models import Response
+# `json`, `requests` and `Response` are no longer used by this module: the HTTP
+# moved to transport.py in 1.6.0. They are kept because they have been
+# importable from `bol.retailer.api` since before that, and removing a name
+# from a published module's namespace is a breaking change for whoever is
+# importing it.
+import json  # noqa: F401
+import requests  # noqa: F401
+from requests.models import Response  # noqa: F401
 
+from .transport import RequestsTransport, build_uri, endpoint_group  # noqa: F401
 from .models import (
     Invoice,
     Invoices,
@@ -29,7 +35,40 @@ from .models import (
     EconomicOperators
 )
 
-__all__ = ["RetailerAPI"]
+__all__ = ["RetailerAPI", "endpoint_group"]
+
+
+def _require(method, argument, value):
+    """Reject a missing required argument by name.
+
+    These guards used to return ``None``, an empty dict, or — in one case — the
+    string ``"{'error': 'Insufficient data provided'}"``, which is truthy, so a
+    caller's ``if response:`` check passed and the next line raised
+    ``AttributeError`` somewhere unrelated. Raising here names the argument at
+    fault at the point the mistake was made.
+    """
+    if not value:
+        raise ValueError(
+            "{}() requires a value for '{}'".format(method, argument)
+        )
+    return value
+
+
+def _require_list(method, argument, value):
+    """Reject a required list argument that is missing or of the wrong type."""
+    if not isinstance(value, list):
+        raise ValueError(
+            "{}() requires '{}' to be a list, got {}".format(
+                method, argument, type(value).__name__
+            )
+        )
+    if not value:
+        raise ValueError(
+            "{}() requires '{}' to be a non-empty list".format(
+                method, argument
+            )
+        )
+    return value
 
 
 class MethodGroup(object):
@@ -38,13 +77,12 @@ class MethodGroup(object):
         self.group = group
         self.base_type = base_type
 
-    def request(self, method, override_group=None, path="", params={}, **kwargs):
-        uri = path
-        base = self.base_type+"-demo" if self.api.demo else self.base_type
-        uri = "/{base}/{group}{path}".format(
-            base=base,
-            group=override_group if override_group else self.group,
-            path=("/{}".format(path) if path else ""),
+    def request(self, method, override_group=None, path="", params=None, **kwargs):
+        uri = build_uri(
+            self.base_type,
+            override_group if override_group else self.group,
+            path,
+            demo=self.api.demo,
         )
         return self.api.request(method, uri, params=params, **kwargs)
 
@@ -174,8 +212,11 @@ class ProcessStatusMethods(MethodGroup):
         return ProcessStatus.parse(self.api, resp.text)
 
     def getByIds(self, process_ids):
-        if not type(process_ids) is list:
-            return {}
+        if not isinstance(process_ids, list):
+            raise ValueError(
+                "getByIds() requires 'process_ids' to be a list, got "
+                "{}".format(type(process_ids).__name__)
+            )
         process_id_dict = {
             "processStatusQueries": []
         }
@@ -223,7 +264,8 @@ class TransportMethods(MethodGroup):
             'transporterCode': transporter_code,
             'trackAndTrace': track_and_trace,
         }
-        response = self.request('PUT', '{}'.format(transport_id), json=payload)
+        response = self.request(
+            'PUT', path='{}'.format(transport_id), json=payload)
         return ProcessStatus.parse(self.api, response.text)
 
 
@@ -235,21 +277,22 @@ class ShippingLabelsMethods(MethodGroup):
             'shipping-labels')
 
     def getDeliveryOptions(self, orderitems_list):
-        if orderitems_list and isinstance(orderitems_list, list):
-            payload = {
-                "orderItems" : orderitems_list
-                }
-            response = self.request("POST", path="delivery-options", json=payload)
-            return ShippingLabels.parse(self.api, response.text)
+        _require_list("getDeliveryOptions", "orderitems_list", orderitems_list)
+        payload = {
+            "orderItems" : orderitems_list
+            }
+        response = self.request("POST", path="delivery-options", json=payload)
+        return ShippingLabels.parse(self.api, response.text)
 
     def createShippingLabel(self, orderitems_list, label_id):
-        if orderitems_list and isinstance(orderitems_list, list) and label_id:
-            payload = {
-                "orderItems" : orderitems_list,
-                "shippingLabelOfferId" : label_id
-            }
-            response = self.request("POST", json=payload)
-            return ProcessStatus.parse(self.api, response.text)
+        _require_list("createShippingLabel", "orderitems_list", orderitems_list)
+        _require("createShippingLabel", "label_id", label_id)
+        payload = {
+            "orderItems" : orderitems_list,
+            "shippingLabelOfferId" : label_id
+        }
+        response = self.request("POST", json=payload)
+        return ProcessStatus.parse(self.api, response.text)
 
     def getShippingLabel(self, shipping_label_id):
         headers = {
@@ -280,9 +323,10 @@ class OffersMethods(MethodGroup):
 
     def updateProduct(self, offer_id, data):
         if "fulfilment" not in data:
-            # We handle basic validation here as not having fulfilment in data
-            # will give error from bol side
-            return "{'error': 'Insufficient data provided'}"
+            # Caught here rather than at bol.com, which answers 400 for it.
+            raise ValueError(
+                "updateProduct() requires a value for 'fulfilment' in data"
+            )
 
         response = self.request('PUT', path='{}'.format(offer_id), json=data)
         return ProcessStatus.parse(self.api, response.text)
@@ -327,58 +371,67 @@ class InsightsMethods(MethodGroup):
         super(InsightsMethods, self).__init__(api, 'insights')
 
     def getOfferInsights(self, offer_id, period, number_of_periods, name):
-        if offer_id and period and number_of_periods and name and isinstance(name, list):
-            params = {
-                'offer-id': offer_id,
-                'period': period,
-                'number-of-periods': number_of_periods,
-                'name': ','.join(name),
-            }
-            resp = self.request("GET", path="offer", params=params)
-            return Insights.parse(self.api, resp.text)
+        _require("getOfferInsights", "offer_id", offer_id)
+        _require("getOfferInsights", "period", period)
+        _require("getOfferInsights", "number_of_periods", number_of_periods)
+        _require_list("getOfferInsights", "name", name)
+        params = {
+            'offer-id': offer_id,
+            'period': period,
+            'number-of-periods': number_of_periods,
+            'name': ','.join(name),
+        }
+        resp = self.request("GET", path="offer", params=params)
+        return Insights.parse(self.api, resp.text)
 
     def getPerformanceIndicators(self, name, year, week):
-        if name and isinstance(name, list) and year and week:
-            params = {
-                'name': ','.join(name),
-                'year': year,
-                'week': week
-            }
-            resp = self.request("GET", path="performance/indicator", params=params)
-            return PerformanceIndicators.parse(self.api, resp.text)
+        _require_list("getPerformanceIndicators", "name", name)
+        _require("getPerformanceIndicators", "year", year)
+        _require("getPerformanceIndicators", "week", week)
+        params = {
+            'name': ','.join(name),
+            'year': year,
+            'week': week
+        }
+        resp = self.request("GET", path="performance/indicator", params=params)
+        return PerformanceIndicators.parse(self.api, resp.text)
 
     def getProductRanks(self, ean, date, type=None, page=1):
-        if ean and date:
-            params = {'ean': ean, 'date': date}
-            if type:
-                params["type"] = ','.join(type)
-            if page != 1:
-                params["page"] = page
+        _require("getProductRanks", "ean", ean)
+        _require("getProductRanks", "date", date)
+        params = {'ean': ean, 'date': date}
+        if type:
+            params["type"] = ','.join(type)
+        if page != 1:
+            params["page"] = page
 
-            resp = self.request("GET", path="product-ranks", params=params)
-            return ProductRanks.parse(self.api, resp.text)
+        resp = self.request("GET", path="product-ranks", params=params)
+        return ProductRanks.parse(self.api, resp.text)
 
     def getSalesForecast(self, offer_id, weeks_ahead):
-        if offer_id and weeks_ahead:
-            params = {
-                "offer-id": offer_id,
-                "weeks-ahead": weeks_ahead
-            }
-            resp = self.request("GET", path="sales-forecast", params=params)
-            return SalesForecast.parse(self.api, resp.text)
+        _require("getSalesForecast", "offer_id", offer_id)
+        _require("getSalesForecast", "weeks_ahead", weeks_ahead)
+        params = {
+            "offer-id": offer_id,
+            "weeks-ahead": weeks_ahead
+        }
+        resp = self.request("GET", path="sales-forecast", params=params)
+        return SalesForecast.parse(self.api, resp.text)
 
     def getSearchTerms(self, search_term, period, number_of_periods, related_search_terms=None):
-        if search_term and period and number_of_periods:
-            params = {
-                "search-term": search_term,
-                "period": period,
-                "number-of-periods": number_of_periods
-            }
-            if related_search_terms:
-                params["related-search-terms"] = related_search_terms
+        _require("getSearchTerms", "search_term", search_term)
+        _require("getSearchTerms", "period", period)
+        _require("getSearchTerms", "number_of_periods", number_of_periods)
+        params = {
+            "search-term": search_term,
+            "period": period,
+            "number-of-periods": number_of_periods
+        }
+        if related_search_terms:
+            params["related-search-terms"] = related_search_terms
 
-            resp = self.request("GET", path="search-terms", params=params)
-            return SearchTerms.parse(self.api, resp.text)
+        resp = self.request("GET", path="search-terms", params=params)
+        return SearchTerms.parse(self.api, resp.text)
 
 class ReturnsMethods(MethodGroup):
     def __init__(self, api):
@@ -465,7 +518,7 @@ class InventoryMethods(MethodGroup):
     def __init__(self, api):
         super(InventoryMethods, self).__init__(api, "inventory")
 
-    def get(self, params={}):
+    def get(self, params=None):
         response = self.request("GET", params=params)
         return Inventories.parse(self.api, response.text)
 
@@ -498,6 +551,21 @@ class ProductContentMethods(MethodGroup):
 
 
 class RetailerAPI(object):
+    """The bol.com Retailer API.
+
+    Constructed and used exactly as it always has been::
+
+        api = RetailerAPI(demo=True)
+        api.login(client_id, client_secret)
+        orders = api.orders.list()
+
+    ``transport=`` is optional and changes only *how* the HTTP happens. Leave
+    it out and the library builds a :class:`~bol.retailer.transport.RequestsTransport`
+    around ``session`` and ``timeout``, which is what it has always done. Pass
+    one and every call — including :meth:`login` — goes through it instead; see
+    :class:`bol.retailer.transport.Transport` for the four methods it needs.
+    """
+
     def __init__(
         self,
         test=False,
@@ -507,6 +575,7 @@ class RetailerAPI(object):
         api_url=None,
         login_url=None,
         refresh_token=None,
+        transport=None,
     ):
         self.demo = demo
         self.api_url = api_url or "https://api.bol.com"
@@ -524,25 +593,39 @@ class RetailerAPI(object):
         self.inventory = InventoryMethods(self)
         self.product_content = ProductContentMethods(self)
         self.transports = TransportMethods(self)
-        self.session = session or requests.Session()
-        self.session.headers.update({"Accept": "application/json"})
+        self.transport = transport or RequestsTransport(
+            session=session, timeout=timeout
+        )
         self.insights = InsightsMethods(self)
         self.economic_operators = EconomicOperatorMethods(self)
 
 
+    @property
+    def session(self):
+        """The underlying :class:`requests.Session`.
+
+        Kept as a property so that ``api.session`` still resolves for anyone
+        who reaches for it. It only exists when the transport has one — the
+        default does; a transport that manages connections some other way does
+        not, and says so rather than handing back ``None``.
+        """
+        try:
+            return self.transport.session
+        except AttributeError:
+            raise AttributeError(
+                "%s has no 'session'; this RetailerAPI was given a transport "
+                "that does not use one. Use api.transport instead."
+                % type(self.transport).__name__
+            )
+
+    @session.setter
+    def session(self, session):
+        self.transport.session = session
+
     def login(self, client_id, client_secret):
-        data = {
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "grant_type": "client_credentials",
-        }
-        resp = self.session.post(
-            self.login_url + "/token",
-            auth=(client_id, client_secret),
-            data=data,
+        token = self.transport.login(
+            self.login_url, client_id, client_secret
         )
-        resp.raise_for_status()
-        token = resp.json()
         self.set_access_token(token["access_token"])
         return token
 
@@ -576,35 +659,13 @@ class RetailerAPI(object):
         return data
 
     def set_access_token(self, access_token):
-        self.session.headers.update(
-            {
-                "Authorization": "Bearer " + access_token,
-                "Accept": "application/vnd.retailer.v10+json",
-            }
+        self.transport.set_access_token(access_token)
+
+    def request(self, method, uri, params=None, **kwargs):
+        return self.transport.request(
+            method,
+            self.api_url + uri,
+            params={} if params is None else params,
+            timeout=self.timeout,
+            **kwargs
         )
-
-    def request(self, method, uri, params={}, **kwargs):
-        request_kwargs = dict(**kwargs)
-        request_kwargs.update(
-            {
-                "method": method,
-                "url": self.api_url + uri,
-                "params": params,
-                "timeout": self.timeout,
-            }
-        )
-        if "json" in request_kwargs:
-            if "headers" not in request_kwargs:
-                request_kwargs["headers"] = {}
-            # If these headers are not added, the api returns a 400
-            # Reference:
-            #   https://api.bol.com/retailer/public/conventions/index.html
-            content_header = "application/vnd.retailer.v10+json"
-
-            request_kwargs["headers"].update({
-                "content-type": content_header
-            })
-
-        resp = self.session.request(**request_kwargs)
-        resp.raise_for_status()
-        return resp
