@@ -17,3 +17,11 @@ build
 tests.zip
 /test.py
 /test2.py
+
+# The pre-1.6.0 online test suite (`bol_issues.md` L7). It logs in to bol.com in
+# setUp and carries a live CLIENT_ID/CLIENT_SECRET pair as a hardcoded fallback.
+# Never committed to this repo -- verified with `git log --all -S` on both
+# strings -- and this line is what keeps a stray `git add -A` from being the
+# first time, in a public repository. The offline suite under tests/offline/
+# replaces it. Delete the file once its live coverage is ported (P2-5).
+/tests/test_retailer_api.py
